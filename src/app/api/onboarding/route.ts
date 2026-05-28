@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { generateSlug } from "@/lib/utils";
 import { Plan, SubscriptionStatus } from "@prisma/client";
 
+export const dynamic = 'force-dynamic';
+
 const OnboardingSchema = z.object({
   restaurantName: z.string().min(1),
   description: z.string().nullable().optional(),
