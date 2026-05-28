@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { OrderStatus } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { pusherServer } from "@/lib/pusher";
+import { getPusherServer } from "@/lib/pusher";
 import { resend } from "@/lib/resend";
 import OrderReadyEmail from "@/lib/emails/orderReady";
 
@@ -64,13 +64,14 @@ export async function PATCH(
 
     if (canTriggerPusher()) {
       try {
-        await pusherServer.trigger(
+        const pusher = getPusherServer();
+        await pusher.trigger(
           `restaurant-${updatedOrder.restaurantId}`,
           "order-updated",
           { order: updatedOrder },
         );
 
-        await pusherServer.trigger(
+        await pusher.trigger(
           `order-${updatedOrder.id}`,
           "order-updated",
           { status: updatedOrder.status },

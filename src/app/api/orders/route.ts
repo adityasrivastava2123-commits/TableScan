@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { razorpay } from "@/lib/razorpay";
-import { pusherServer } from "@/lib/pusher";
+import { getPusherServer } from "@/lib/pusher";
 import { resend } from "@/lib/resend";
 import { z } from "zod";
 import OrderConfirmationEmail from "@/lib/emails/orderConfirmation";
@@ -189,7 +189,8 @@ export async function POST(req: Request) {
 
     if (canTriggerPusher()) {
       try {
-        await pusherServer.trigger(
+        const pusher = getPusherServer();
+        await pusher.trigger(
           `restaurant-${parsed.restaurantId}`,
           "new-order",
           { order },
