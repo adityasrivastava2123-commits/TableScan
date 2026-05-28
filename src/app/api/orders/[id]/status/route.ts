@@ -4,7 +4,7 @@ import { OrderStatus } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getPusherServer } from "@/lib/pusher";
-import { resend } from "@/lib/resend";
+import { getResend } from "@/lib/resend";
 import OrderReadyEmail from "@/lib/emails/orderReady";
 
 export const runtime = "nodejs";
@@ -91,6 +91,7 @@ export async function PATCH(
           : null;
 
         if (customerEmail) {
+          const resend = getResend();
           await resend.emails.send({
             from: "TableScan <onboarding@resend.dev>",
             to: customerEmail,

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { razorpay } from "@/lib/razorpay";
 import { getPusherServer } from "@/lib/pusher";
-import { resend } from "@/lib/resend";
+import { getResend } from "@/lib/resend";
 import { z } from "zod";
 import OrderConfirmationEmail from "@/lib/emails/orderConfirmation";
 import NewOrderAlertEmail from "@/lib/emails/newOrderAlert";
@@ -116,6 +116,7 @@ export async function POST(req: Request) {
 
     // Send emails after order creation
     const emailPromises = [];
+    const resend = getResend();
 
     // Send order confirmation to customer if email provided
     if (parsed.customerEmail) {
