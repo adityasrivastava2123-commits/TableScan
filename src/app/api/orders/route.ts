@@ -7,6 +7,7 @@ import { z } from "zod";
 import OrderConfirmationEmail from "@/lib/emails/orderConfirmation";
 import NewOrderAlertEmail from "@/lib/emails/newOrderAlert";
 
+export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
 
 const orderSchema = z.object({
