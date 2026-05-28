@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const statusValues = new Set(Object.values(OrderStatus));
 

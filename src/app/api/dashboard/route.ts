@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@prisma/client";
 import { differenceInDays, startOfDay, endOfDay } from "date-fns";
 
-export const dynamic = 'force-dynamic';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {

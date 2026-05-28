@@ -7,7 +7,10 @@ import { pusherServer } from "@/lib/pusher";
 import { resend } from "@/lib/resend";
 import OrderReadyEmail from "@/lib/emails/orderReady";
 
-export const dynamic = 'force-dynamic';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+
 
 const updateStatusSchema = z.object({
   status: z.enum(["PREPARING", "READY", "DONE", "CANCELLED"]),
