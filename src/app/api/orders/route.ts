@@ -7,6 +7,8 @@ import { z } from "zod";
 import OrderConfirmationEmail from "@/lib/emails/orderConfirmation";
 import NewOrderAlertEmail from "@/lib/emails/newOrderAlert";
 
+export const dynamic = 'force-dynamic';
+
 const orderSchema = z.object({
   tableToken: z.string(),
   restaurantId: z.string(),
