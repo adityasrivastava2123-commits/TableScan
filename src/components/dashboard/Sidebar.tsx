@@ -112,8 +112,8 @@ export default function Sidebar({ restaurant, restaurantOpen, userName, userImag
             onClick={() => handleNavigation(item)}
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               isActive(item.path)
-                ? "bg-black text-white"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/25"
+                : "text-muted-foreground hover:bg-orange-50 hover:text-foreground"
             }`}
           >
             {item.icon}

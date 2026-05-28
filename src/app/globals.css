@@ -6,6 +6,10 @@
   :root {
     --background: #ffffff;
     --foreground: #171717;
+    --primary: #f97316;
+    --primary-foreground: #ffffff;
+    --secondary: #f59e0b;
+    --secondary-foreground: #ffffff;
   }
 
   .dark {

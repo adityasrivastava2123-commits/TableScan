@@ -378,7 +378,7 @@ function StatCard({ title, value, change, icon, color, clickable, onClick }: Sta
 
   return (
     <Card
-      className={`cursor-pointer transition-all hover:shadow-md ${clickable ? "hover:border-primary" : ""}`}
+      className={`cursor-pointer transition-all hover:shadow-md ${clickable ? "hover:border-orange-500" : ""}`}
       onClick={onClick}
     >
       <CardContent className="p-6">
@@ -410,7 +410,7 @@ function QuickActionButton({ icon, label, onClick }: QuickActionButtonProps) {
   return (
     <Button
       variant="outline"
-      className="h-24 flex-col gap-2 hover:bg-primary hover:text-primary-foreground transition-all"
+      className="h-24 flex-col gap-2 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white hover:border-orange-500 transition-all"
       onClick={onClick}
     >
       {icon}
