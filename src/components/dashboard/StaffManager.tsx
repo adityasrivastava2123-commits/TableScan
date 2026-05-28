@@ -227,7 +227,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
             Manage staff members and role-based responsibilities.
           </p>
         </div>
-        <Button onClick={() => setShowForm((prev) => !prev)}>
+        <Button onClick={() => setShowForm((prev) => !prev)} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
           <Plus className="mr-1 h-4 w-4" />
           Add Staff
         </Button>
@@ -306,7 +306,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button onClick={() => void createStaff()} disabled={saving}>
+            <Button onClick={() => void createStaff()} disabled={saving} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
               Save
             </Button>
@@ -387,6 +387,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                         size="sm"
                         onClick={() => void toggleActive(member)}
                         disabled={updatingId === member.id}
+                        className={member.isActive ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600" : ""}
                       >
                         {updatingId === member.id ? (
                           <Loader2 className="mr-1 h-3 w-3 animate-spin" />

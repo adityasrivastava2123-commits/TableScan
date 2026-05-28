@@ -73,8 +73,8 @@ export default function CustomerMenu({
               onClick={() => setActiveCategory(cat.id)}
               className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all snap-start
                 ${activeCategory === cat.id
-                  ? "bg-black text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                  ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/25"
+                  : "bg-gray-100 text-gray-600 hover:bg-orange-50"}`}>
               {cat.name}
             </button>
           ))}
@@ -163,7 +163,7 @@ export default function CustomerMenu({
                   <Plus size={18} />
                 </button>
               </div>
-              <Button className="px-6 flex-1" onClick={() => handleAddToCart(selectedItem)}>
+              <Button className="px-6 flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600" onClick={() => handleAddToCart(selectedItem)}>
                 Add to Cart — ₹{selectedItem.price * itemQty}
               </Button>
             </div>
@@ -176,7 +176,7 @@ export default function CustomerMenu({
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-40">
           <button
             onClick={() => router.push(`/${slug}/${tableToken}/cart`)}
-            className="bg-black text-white px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl w-full max-w-2xl mx-auto justify-between">
+            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl shadow-orange-500/30 w-full max-w-2xl mx-auto justify-between">
             <div className="flex items-center gap-2">
               <ShoppingCart size={20} />
               <span className="font-semibold">{totalItems} items</span>

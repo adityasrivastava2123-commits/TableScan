@@ -39,13 +39,13 @@ const boardStatuses: BoardStatus[] = ["NEW", "PREPARING", "READY", "DONE"];
 
 const columnStyles: Record<BoardStatus, { bg: string; text: string; label: string }> = {
   NEW: {
-    bg: "bg-blue-100",
-    text: "text-blue-700",
+    bg: "bg-orange-100",
+    text: "text-orange-700",
     label: "NEW",
   },
   PREPARING: {
-    bg: "bg-orange-100",
-    text: "text-orange-700",
+    bg: "bg-amber-100",
+    text: "text-amber-700",
     label: "PREPARING",
   },
   READY: {

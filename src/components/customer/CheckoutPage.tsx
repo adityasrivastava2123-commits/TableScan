@@ -109,7 +109,7 @@ export default function CheckoutPage({
           name,
           contact: phone,
         },
-        theme: { color: "#000000" },
+        theme: { color: "#f97316" },
         modal: {
           ondismiss: () => setLoading(false),
         },
@@ -192,7 +192,7 @@ export default function CheckoutPage({
 
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-40">
         <Button
-          className="w-full max-w-2xl mx-auto py-4 text-lg rounded-2xl"
+          className="w-full max-w-2xl mx-auto py-4 text-lg rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/30"
           onClick={handleCheckout}
           disabled={loading || cartItems.length === 0}
         >

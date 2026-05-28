@@ -106,19 +106,19 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
     <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">Menu Builder</h1>
-        <Button onClick={() => setAddingCat(true)} className="gap-2 w-full sm:w-auto">
+        <Button onClick={() => setAddingCat(true)} className="gap-2 w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
           <Plus size={16} /> Add Category
         </Button>
       </div>
 
       {addingCat && (
-        <Card className="border-dashed border-2 border-blue-300">
+        <Card className="border-dashed border-2 border-orange-300">
           <CardContent className="pt-4 space-y-3">
             <Label>Category Name</Label>
             <Input value={newCatName} onChange={e => setNewCatName(e.target.value)}
               placeholder="e.g. Starters, Main Course..." onKeyDown={e => e.key === "Enter" && addCategory()} className="h-11" />
             <div className="flex gap-2">
-              <Button onClick={addCategory} className="flex-1 sm:flex-none">Save</Button>
+              <Button onClick={addCategory} className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">Save</Button>
               <Button variant="outline" className="flex-1 sm:flex-none" onClick={() => { setAddingCat(false); setNewCatName(""); }}>Cancel</Button>
             </div>
           </CardContent>
@@ -142,7 +142,7 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
                 <Badge variant="secondary">{cat.menuItems.length} items</Badge>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="gap-1"
+                <Button size="sm" variant="outline" className="gap-1 hover:bg-orange-50 hover:border-orange-300"
                   onClick={() => setAddingItemTo(addingItemTo === cat.id ? null : cat.id)}>
                   <Plus size={14} /> Add Item
                 </Button>
@@ -183,7 +183,7 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
                     </button>
                   </div>
                   <div className="flex gap-2">
-                    <Button className="flex-1 sm:flex-none" onClick={() => addItem(cat.id)}>Save Item</Button>
+                    <Button className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600" onClick={() => addItem(cat.id)}>Save Item</Button>
                     <Button variant="outline" className="flex-1 sm:flex-none" onClick={() => { setAddingItemTo(null); setNewItem({ name: "", price: "", description: "", isVeg: true }); }}>Cancel</Button>
                   </div>
                 </div>

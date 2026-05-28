@@ -41,7 +41,7 @@ type ReportsDashboardProps = {
   restaurantId: string;
 };
 
-const statusColors = ["#2563eb", "#f59e0b", "#22c55e", "#64748b", "#ef4444"];
+const statusColors = ["#f97316", "#f59e0b", "#22c55e", "#64748b", "#ef4444"];
 
 const inr = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -148,7 +148,7 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
               <Line
                 type="monotone"
                 dataKey="revenue"
-                stroke="#22c55e"
+                stroke="#f97316"
                 strokeWidth={3}
                 dot={{ r: 3 }}
               />
@@ -163,7 +163,7 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
               <XAxis type="number" tick={{ fontSize: 12 }} />
               <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 12 }} />
               <Tooltip formatter={(value) => typeof value === 'number' ? value : value} />
-              <Bar dataKey="quantity" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="quantity" fill="#f59e0b" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -175,7 +175,7 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
               <XAxis dataKey="hour" tickFormatter={(hour) => `${hour}:00`} tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip formatter={(value) => typeof value === 'number' ? value : value} />
-              <Bar dataKey="orders" fill="#6366f1" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="orders" fill="#f97316" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

@@ -113,13 +113,13 @@ export default function TableManager({
             Each table gets a unique QR code
           </p>
         </div>
-        <Button onClick={() => setAdding(true)} className="gap-2 w-full sm:w-auto">
+        <Button onClick={() => setAdding(true)} className="gap-2 w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
           <Plus size={16} /> Add Table
         </Button>
       </div>
 
       {adding && (
-        <Card className="border-dashed border-2 border-blue-300">
+        <Card className="border-dashed border-2 border-orange-300">
           <CardContent className="pt-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
@@ -148,7 +148,7 @@ export default function TableManager({
               </div>
             </div>
             <div className="flex gap-2 sm:flex-row">
-              <Button onClick={addTable} className="flex-1 sm:flex-none">
+              <Button onClick={addTable} className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
                 Save
               </Button>
               <Button
@@ -210,7 +210,7 @@ export default function TableManager({
                 {`/${restaurantSlug}/${table.qrToken}`}
               </p>
               <Button
-                className="w-full gap-2"
+                className="w-full gap-2 hover:bg-orange-50 hover:border-orange-300"
                 variant="outline"
                 size="sm"
                 onClick={() => downloadQR(table)}

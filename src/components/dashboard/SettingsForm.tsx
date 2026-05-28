@@ -351,7 +351,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={handleSaveGeneral} disabled={loading || !hasUnsavedChanges}>
+                <Button onClick={handleSaveGeneral} disabled={loading || !hasUnsavedChanges} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
                   {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
                   Save Changes
                 </Button>
@@ -421,7 +421,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={handleSaveTaxTheme} disabled={loading || !hasUnsavedChanges}>
+                <Button onClick={handleSaveTaxTheme} disabled={loading || !hasUnsavedChanges} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
                   {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
                   Save Changes
                 </Button>
@@ -480,7 +480,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
               ))}
 
               <div className="flex justify-end">
-                <Button onClick={handleSaveOperatingHours} disabled={loading || !hasUnsavedChanges}>
+                <Button onClick={handleSaveOperatingHours} disabled={loading || !hasUnsavedChanges} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
                   {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
                   Save Changes
                 </Button>
