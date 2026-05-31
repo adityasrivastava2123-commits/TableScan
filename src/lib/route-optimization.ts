@@ -106,7 +106,7 @@ function nearestNeighborRoute(points: DeliveryPoint[]): DeliveryPoint[] {
   return route;
 }
 
-async function calculateDistance(address1: string, address2: string): Promise<number> {
+function calculateDistance(address1: string, address2: string): number {
   // In production, use Google Maps API or similar for accurate distances
   // For now, use a simple heuristic based on address similarity
   
