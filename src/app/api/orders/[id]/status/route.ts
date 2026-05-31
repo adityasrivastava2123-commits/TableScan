@@ -92,16 +92,18 @@ export async function PATCH(
 
         if (customerEmail) {
           const resend = getResend();
-          await resend.emails.send({
-            from: "TableScan <onboarding@resend.dev>",
-            to: customerEmail,
-            subject: `Your Order is Ready! - ${updatedOrder.restaurant.name}`,
-            react: OrderReadyEmail({
-              restaurantName: updatedOrder.restaurant.name,
-              orderNumber: updatedOrder.orderNumber,
-              tableName: updatedOrder.table.name,
-            }),
-          });
+          if (resend) {
+            await resend.emails.send({
+              from: "TableScan <onboarding@resend.dev>",
+              to: customerEmail,
+              subject: `Your Order is Ready! - ${updatedOrder.restaurant.name}`,
+              react: OrderReadyEmail({
+                restaurantName: updatedOrder.restaurant.name,
+                orderNumber: updatedOrder.orderNumber,
+                tableName: updatedOrder.table.name,
+              }),
+            });
+          }
         }
       } catch (error) {
         // Do not block status update if email sending fails

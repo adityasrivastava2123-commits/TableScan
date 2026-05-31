@@ -118,75 +118,79 @@ export async function POST(req: Request) {
     const emailPromises = [];
     const resend = getResend();
 
-    // Send order confirmation to customer if email provided
-    if (parsed.customerEmail) {
+    if (resend) {
+      // Send order confirmation to customer if email provided
+      if (parsed.customerEmail) {
+        try {
+          const customerEmailPromise = resend.emails.send({
+            from: "TableScan <onboarding@resend.dev>",
+            to: parsed.customerEmail,
+            subject: `Order Confirmation - ${restaurant.name}`,
+            react: OrderConfirmationEmail({
+              restaurantName: restaurant.name,
+              restaurantLogo: restaurant.logo || undefined,
+              orderNumber: order.orderNumber,
+              tableName: table.name,
+              items: order.items.map((item) => ({
+                name: item.menuItem.name,
+                quantity: item.quantity,
+                price: item.price,
+              })),
+              totalAmount: order.totalAmount,
+              taxAmount: order.taxAmount,
+            }),
+          });
+          emailPromises.push(customerEmailPromise);
+        } catch (error) {
+          console.error("Failed to send customer email:", error);
+        }
+      }
+
+      // Send new order alert to restaurant owner
       try {
-        const customerEmailPromise = resend.emails.send({
-          from: "TableScan <onboarding@resend.dev>",
-          to: parsed.customerEmail,
-          subject: `Order Confirmation - ${restaurant.name}`,
-          react: OrderConfirmationEmail({
-            restaurantName: restaurant.name,
-            restaurantLogo: restaurant.logo || undefined,
-            orderNumber: order.orderNumber,
-            tableName: table.name,
-            items: order.items.map((item) => ({
-              name: item.menuItem.name,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-            totalAmount: order.totalAmount,
-            taxAmount: order.taxAmount,
-          }),
+        const restaurantOwner = await prisma.user.findUnique({
+          where: { id: restaurant.ownerId },
         });
-        emailPromises.push(customerEmailPromise);
+
+        if (restaurantOwner) {
+          const notificationEmail = (restaurant.notificationEmail as string) || restaurantOwner.email;
+          const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/orders`;
+
+          const ownerEmailPromise = resend.emails.send({
+            from: "TableScan <onboarding@resend.dev>",
+            to: notificationEmail,
+            subject: `New Order Received - ${restaurant.name}`,
+            react: NewOrderAlertEmail({
+              restaurantName: restaurant.name,
+              orderNumber: order.orderNumber,
+              tableName: table.name,
+              items: order.items.map((item) => ({
+                name: item.menuItem.name,
+                quantity: item.quantity,
+                price: item.price,
+              })),
+              totalAmount: order.totalAmount,
+              orderTime: new Date(order.createdAt).toLocaleString(),
+              dashboardUrl,
+            }),
+          });
+          emailPromises.push(ownerEmailPromise);
+        }
       } catch (error) {
-        console.error("Failed to send customer email:", error);
+        console.error("Failed to send owner email:", error);
       }
-    }
-
-    // Send new order alert to restaurant owner
-    try {
-      const restaurantOwner = await prisma.user.findUnique({
-        where: { id: restaurant.ownerId },
-      });
-
-      if (restaurantOwner) {
-        const notificationEmail = (restaurant.notificationEmail as string) || restaurantOwner.email;
-        const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/orders`;
-
-        const ownerEmailPromise = resend.emails.send({
-          from: "TableScan <onboarding@resend.dev>",
-          to: notificationEmail,
-          subject: `New Order Received - ${restaurant.name}`,
-          react: NewOrderAlertEmail({
-            restaurantName: restaurant.name,
-            orderNumber: order.orderNumber,
-            tableName: table.name,
-            items: order.items.map((item) => ({
-              name: item.menuItem.name,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-            totalAmount: order.totalAmount,
-            orderTime: new Date(order.createdAt).toLocaleString(),
-            dashboardUrl,
-          }),
-        });
-        emailPromises.push(ownerEmailPromise);
-      }
-    } catch (error) {
-      console.error("Failed to send owner email:", error);
     }
 
     // Send all emails without blocking the response
-    Promise.allSettled(emailPromises).then((results) => {
-      results.forEach((result, index) => {
-        if (result.status === "rejected") {
-          console.error(`Email ${index} failed:`, result.reason);
-        }
+    if (emailPromises.length > 0) {
+      Promise.allSettled(emailPromises).then((results) => {
+        results.forEach((result, index) => {
+          if (result.status === "rejected") {
+            console.error(`Email ${index} failed:`, result.reason);
+          }
+        });
       });
-    });
+    }
 
     if (canTriggerPusher()) {
       try {
