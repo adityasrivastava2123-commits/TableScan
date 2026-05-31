@@ -107,6 +107,30 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
     }
   }, [ordersData]);
 
+  const handleNewOrder = useCallback((payload: { order?: BoardOrder }) => {
+    if (!payload?.order) return;
+    setOrders((prev) => {
+      const exists = prev.some((order) => order.id === payload.order!.id);
+      if (exists) return prev;
+      if (payload.order!.status === "CANCELLED") return prev;
+      return [payload.order!, ...prev];
+    });
+    toast.success("New order received!");
+  }, []);
+
+  const handleOrderUpdated = useCallback((payload: { order?: BoardOrder }) => {
+    if (!payload?.order) return;
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === payload.order!.id ? payload.order! : order,
+      ).filter((order) => order.status !== "CANCELLED"),
+    );
+  }, []);
+
+  const handleConnectionError = useCallback(() => {
+    setUsePollingFallback(true);
+  }, []);
+
   useEffect(() => {
     const pusherClient = getPusherClient();
     const channelName = `restaurant-${restaurantId}`;
@@ -175,30 +199,6 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
       averageOrderValue,
     };
   }, [orders]);
-
-  const handleNewOrder = useCallback((payload: { order?: BoardOrder }) => {
-    if (!payload?.order) return;
-    setOrders((prev) => {
-      const exists = prev.some((order) => order.id === payload.order!.id);
-      if (exists) return prev;
-      if (payload.order!.status === "CANCELLED") return prev;
-      return [payload.order!, ...prev];
-    });
-    toast.success("New order received!");
-  }, []);
-
-  const handleOrderUpdated = useCallback((payload: { order?: BoardOrder }) => {
-    if (!payload?.order) return;
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === payload.order!.id ? payload.order! : order,
-      ).filter((order) => order.status !== "CANCELLED"),
-    );
-  }, []);
-
-  const handleConnectionError = useCallback(() => {
-    setUsePollingFallback(true);
-  }, []);
 
   const updateOrderStatus = useCallback(async (orderId: string, status: UpdatableStatus) => {
     try {
@@ -373,18 +373,18 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
       </motion.div>
     </motion.div>
   );
-}
+});
 
 function StatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { color: string; label: string; bg: string }> = {
-    NEW: { color: "text-blue-500", label: "NEW", bg: "bg-blue-500/10" },
-    PREPARING: { color: "text-[#f97316]", label: "PREPARING", bg: "bg-[#f97316]/10" },
-    READY: { color: "text-[#22c55e]", label: "READY", bg: "bg-[#22c55e]/10" },
-    DONE: { color: "text-[#999999]", label: "DONE", bg: "bg-[#999999]/10" },
-    CANCELLED: { color: "text-[#ef4444]", label: "CANCELLED", bg: "bg-[#ef4444]/10" },
+    "NEW": { color: "text-blue-500", label: "NEW", bg: "bg-blue-500/10" },
+    "PREPARING": { color: "text-[#f97316]", label: "PREPARING", bg: "bg-[#f97316]/10" },
+    "READY": { color: "text-[#22c55e]", label: "READY", bg: "bg-[#22c55e]/10" },
+    "DONE": { color: "text-[#999999]", label: "DONE", bg: "bg-[#999999]/10" },
+    "CANCELLED": { color: "text-[#ef4444]", label: "CANCELLED", bg: "bg-[#ef4444]/10" },
   };
 
-  const config = statusConfig[status] || statusConfig.NEW;
+  const config = statusConfig[status] || statusConfig["NEW"];
 
   return (
     <Badge className={`${config.bg} ${config.color} border-0`}>
@@ -423,5 +423,5 @@ function OrdersBoardSkeleton() {
       </div>
     </div>
   );
-});
+}
 
