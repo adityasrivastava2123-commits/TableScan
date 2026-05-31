@@ -465,7 +465,7 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
                               whileTap={{ scale: 0.98 }}
                               onClick={() => {
                                 setAddingItemTo(null);
-                                setNewItem({ name: "", price: "", description: "", isVeg: true });
+                                setNewItem({ name: "", price: "", description: "", isVeg: true, image: "" });
                               }}
                               className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] hover:bg-[#181818] transition-colors text-[12px]"
                             >
