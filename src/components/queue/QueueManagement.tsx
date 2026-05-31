@@ -44,12 +44,8 @@ export default function QueueManagement({ restaurantId }: { restaurantId: string
         await fetchQueueEntries();
       } finally {
         if (mounted) {
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
+          setLoading(false);
+          setMinLoading(false);
         }
       }
     };

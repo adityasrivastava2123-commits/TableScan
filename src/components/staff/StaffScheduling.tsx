@@ -63,12 +63,8 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
         ]);
       } finally {
         if (mounted) {
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
+          setLoading(false);
+          setMinLoading(false);
         }
       }
     };
@@ -192,16 +188,16 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
           <h1 className="text-[20px] font-bold text-[#f0ece4]">Staff Scheduling</h1>
           <p className="text-[12px] text-[#9a9488]">Manage shifts and staff assignments</p>
         </div>
-        <div className="ml-auto flex gap-2.5">
+        <div className="flex flex-wrap gap-2.5 w-full sm:w-auto sm:ml-auto">
           <button
             onClick={() => setAddingShift(true)}
-            className="px-4 py-2.5 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[12px] font-semibold hover:border-[#f97316] hover:text-[#f97316] transition-all"
+            className="px-4 py-2.5 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[12px] font-semibold hover:border-[#f97316] hover:text-[#f97316] transition-all flex-shrink-0"
           >
             + Add Shift
           </button>
           <button
             onClick={() => setAddingSchedule(true)}
-            className="px-4 py-2.5 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all"
+            className="px-4 py-2.5 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all flex-shrink-0"
           >
             + Add Schedule
           </button>
@@ -352,52 +348,56 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
           </button>
         </div>
 
-        {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div key={day} className="text-center text-[11px] text-[#5a5650] font-medium py-2">
-              {day}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-7 gap-1">
-          {/* Empty cells for days before first day of month */}
-          {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-            <div key={`empty-${i}`} className="aspect-square" />
-          ))}
-
-          {/* Days of the month */}
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const day = i + 1;
-            const daySchedules = getScheduleForDay(day);
-            const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
-
-            return (
-              <div
-                key={day}
-                className={`aspect-square border border-[rgba(255,255,255,0.07)] rounded-lg p-1.5 hover:border-[rgba(255,255,255,0.12)] transition-colors ${
-                  isToday ? "bg-[rgba(249,115,22,0.1)] border-[#f97316]" : ""
-                }`}
-              >
-                <div className="text-[11px] font-medium text-[#f0ece4] mb-1">{day}</div>
-                <div className="space-y-0.5">
-                  {daySchedules.slice(0, 2).map((schedule) => (
-                    <div
-                      key={schedule.id}
-                      className="text-[9px] px-1 py-0.5 rounded bg-[#222222] text-[#9a9488] truncate"
-                      title={`${schedule.staff.name} - ${schedule.shift.name}`}
-                    >
-                      {schedule.staff.name}
-                    </div>
-                  ))}
-                  {daySchedules.length > 2 && (
-                    <div className="text-[9px] text-[#5a5650]">+{daySchedules.length - 2}</div>
-                  )}
+        <div className="overflow-x-auto pb-2">
+          <div className="min-w-[600px]">
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                <div key={day} className="text-center text-[11px] text-[#5a5650] font-medium py-2">
+                  {day}
                 </div>
-              </div>
-            );
-          })}
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1">
+              {/* Empty cells for days before first day of month */}
+              {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                <div key={`empty-${i}`} className="aspect-square" />
+              ))}
+
+              {/* Days of the month */}
+              {Array.from({ length: daysInMonth }).map((_, i) => {
+                const day = i + 1;
+                const daySchedules = getScheduleForDay(day);
+                const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+
+                return (
+                  <div
+                    key={day}
+                    className={`aspect-square border border-[rgba(255,255,255,0.07)] rounded-lg p-1.5 hover:border-[rgba(255,255,255,0.12)] transition-colors ${
+                      isToday ? "bg-[rgba(249,115,22,0.1)] border-[#f97316]" : ""
+                    }`}
+                  >
+                    <div className="text-[11px] font-medium text-[#f0ece4] mb-1">{day}</div>
+                    <div className="space-y-0.5">
+                      {daySchedules.slice(0, 2).map((schedule) => (
+                        <div
+                          key={schedule.id}
+                          className="text-[9px] px-1 py-0.5 rounded bg-[#222222] text-[#9a9488] truncate"
+                          title={`${schedule.staff.name} - ${schedule.shift.name}`}
+                        >
+                          {schedule.staff.name}
+                        </div>
+                      ))}
+                      {daySchedules.length > 2 && (
+                        <div className="text-[9px] text-[#5a5650]">+{daySchedules.length - 2}</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 

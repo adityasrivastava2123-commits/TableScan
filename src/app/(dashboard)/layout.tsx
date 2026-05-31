@@ -47,7 +47,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   return (
-    <div className="flex h-screen bg-[#0a0a0a]">
+    <div className="flex flex-col md:flex-row h-screen bg-[#f9f9f6] dark:bg-[#0a0a0a] text-neutral-800 dark:text-[#f0ece4] overflow-hidden">
       <Sidebar
         restaurant={restaurant}
         restaurantOpen={restaurantOpen}
@@ -55,8 +55,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         userImageUrl={user?.imageUrl}
         userEmail={user?.emailAddresses?.[0]?.emailAddress}
       />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <Breadcrumbs />
           {children}
         </main>

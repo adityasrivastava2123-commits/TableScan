@@ -22,7 +22,7 @@ export default async function DeliveryPage() {
   if (!restaurant) redirect("/onboarding");
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="w-full">
       <DeliveryDashboard restaurantId={restaurant.id} />
     </div>
   );

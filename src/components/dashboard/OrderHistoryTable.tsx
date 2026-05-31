@@ -284,7 +284,7 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                           </td>
                           <td className="px-6 py-4 text-[#999999]">{order.table.name}</td>
                           <td className="px-6 py-4 text-sm text-[#999999]">
-                            {order.items.length} items
+                            {order.items.length} {order.items.length === 1 ? "item" : "items"}
                           </td>
                           <td className="px-6 py-4 text-white font-semibold tabular-nums">
                             {inr.format(order.totalAmount)}

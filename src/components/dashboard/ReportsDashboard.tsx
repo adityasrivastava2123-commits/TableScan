@@ -83,6 +83,63 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
     return (report.ordersByStatus.DONE / report.totalOrders) * 100;
   }, [report]);
 
+  const exportReportCsv = () => {
+    if (!report) return;
+
+    const csvRows = [];
+    
+    // 1. Header
+    csvRows.push(["TableScan Restaurant Report Summary"]);
+    csvRows.push([`Period,${period.toUpperCase()}`]);
+    csvRows.push([`Generated At,${new Date().toLocaleString("en-IN")}`]);
+    csvRows.push([]);
+
+    // 2. Overview Metrics
+    csvRows.push(["METRIC", "VALUE"]);
+    csvRows.push(["Total Revenue", `INR ${report.totalRevenue.toFixed(2)}`]);
+    csvRows.push(["Total Orders", report.totalOrders]);
+    csvRows.push(["Average Order Value", `INR ${report.avgOrderValue.toFixed(2)}`]);
+    csvRows.push(["Completion Rate", `${completionRate.toFixed(1)}%`]);
+    csvRows.push([]);
+
+    // 3. Status Breakdown
+    csvRows.push(["ORDER STATUS", "COUNT"]);
+    csvRows.push(["NEW", report.ordersByStatus.NEW]);
+    csvRows.push(["PREPARING", report.ordersByStatus.PREPARING]);
+    csvRows.push(["READY", report.ordersByStatus.READY]);
+    csvRows.push(["DONE", report.ordersByStatus.DONE]);
+    csvRows.push(["CANCELLED", report.ordersByStatus.CANCELLED]);
+    csvRows.push([]);
+
+    // 4. Daily Revenue Breakdown
+    csvRows.push(["DAILY REVENUE BREAKDOWN"]);
+    csvRows.push(["Date", "Revenue (INR)", "Orders"]);
+    report.revenueByDay.forEach(day => {
+      csvRows.push([day.date, day.revenue.toFixed(2), day.orders]);
+    });
+    csvRows.push([]);
+
+    // 5. Popular Items Breakdown
+    csvRows.push(["POPULAR ITEMS"]);
+    csvRows.push(["Item Name", "Quantity Sold", "Revenue (INR)"]);
+    report.topItems.forEach(item => {
+      csvRows.push([item.name, item.quantity, item.revenue.toFixed(2)]);
+    });
+
+    // Generate CSV string
+    const csvContent = csvRows
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `tablescan-report-${period}-${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return <ReportsSkeleton />;
   }
@@ -92,22 +149,25 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <Tabs value={period} onValueChange={(value) => setPeriod(value as Period)}>
-            <TabsList className="bg-[#141414] border-[#252525]">
+            <TabsList className="bg-neutral-100 dark:bg-[#141414] border border-neutral-200 dark:border-[#252525]">
               <TabsTrigger value="today" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">Today</TabsTrigger>
               <TabsTrigger value="week" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">This Week</TabsTrigger>
               <TabsTrigger value="month" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">This Month</TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button className="bg-[#141414] border-[#252525] text-white hover:bg-[#1e1e1e]">
+          <Button 
+            onClick={exportReportCsv}
+            className="bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white hover:bg-neutral-50 dark:hover:bg-[#1e1e1e]"
+          >
             <Download className="size-4 mr-2" />
             Export
           </Button>
         </div>
-        <Card className="flex min-h-[300px] items-center justify-center p-6 text-center bg-[#141414] border-[#252525]">
+        <Card className="flex min-h-[300px] items-center justify-center p-6 text-center bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] shadow-sm">
           <div>
-            <Activity className="size-12 mx-auto mb-4 text-[#555555]" />
-            <h3 className="text-xl font-semibold text-white">No orders yet</h3>
-            <p className="mt-2 text-sm text-[#999999]">
+            <Activity className="size-12 mx-auto mb-4 text-neutral-300 dark:text-[#555555]" />
+            <h3 className="text-xl font-semibold text-neutral-800 dark:text-white">No orders yet</h3>
+            <p className="mt-2 text-sm text-neutral-400 dark:text-[#999999]">
               Place orders to start seeing revenue and performance insights.
             </p>
           </div>
@@ -119,27 +179,30 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex gap-1 bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-lg p-1">
+        <div className="flex gap-1 bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-lg p-1 shadow-sm">
           <button
             onClick={() => setPeriod("today")}
-            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "today" ? "bg-[#f97316] text-white" : "text-[#9a9488] hover:text-[#f0ece4]"}`}
+            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "today" ? "bg-[#f97316] text-white" : "text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4]"}`}
           >
             Today
           </button>
           <button
             onClick={() => setPeriod("week")}
-            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "week" ? "bg-[#f97316] text-white" : "text-[#9a9488] hover:text-[#f0ece4]"}`}
+            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "week" ? "bg-[#f97316] text-white" : "text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4]"}`}
           >
             This Week
           </button>
           <button
             onClick={() => setPeriod("month")}
-            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "month" ? "bg-[#f97316] text-white" : "text-[#9a9488] hover:text-[#f0ece4]"}`}
+            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "month" ? "bg-[#f97316] text-white" : "text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4]"}`}
           >
             This Month
           </button>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#111111] border border-[rgba(255,255,255,0.07)] text-[#f0ece4] text-[12px] font-medium hover:border-[#f97316] hover:text-[#f97316] transition-all">
+        <button 
+          onClick={exportReportCsv}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] text-neutral-800 dark:text-[#f0ece4] text-[12px] font-medium hover:border-[#f97316] hover:text-[#f97316] transition-all shadow-sm"
+        >
           ↓ Export Report
         </button>
       </div>
@@ -181,17 +244,17 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
                   <stop offset="100%" stopColor="#f97316" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="date" tick={{ fontSize: 8 }} stroke="#5a5650" />
-              <YAxis tickFormatter={(value) => `₹${value}`} tick={{ fontSize: 8 }} stroke="#5a5650" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="date" tick={{ fontSize: 8 }} stroke="var(--text3)" />
+              <YAxis tickFormatter={(value) => `₹${value}`} tick={{ fontSize: 8 }} stroke="var(--text3)" />
               <Tooltip
                 formatter={(value) => typeof value === 'number' ? inr.format(value) : value}
                 contentStyle={{
-                  backgroundColor: "#1e1e1e",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  backgroundColor: "var(--bg1)",
+                  border: "1px solid var(--border)",
                   borderRadius: "8px",
                 }}
-                itemStyle={{ color: "#fff" }}
+                itemStyle={{ color: "var(--text)" }}
               />
               <Area
                 type="monotone"
@@ -210,10 +273,10 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
             {report.topItems.slice(0, 3).map((item, idx) => (
               <div key={idx}>
                 <div className="flex justify-between mb-1.5">
-                  <span className="text-[12px] text-[#9a9488]">{item.name}</span>
-                  <span className="text-[11px] text-[#5a5650]">{item.quantity}</span>
+                  <span className="text-[12px] text-neutral-500 dark:text-[#9a9488]">{item.name}</span>
+                  <span className="text-[11px] text-neutral-400 dark:text-[#5a5650]">{item.quantity}</span>
                 </div>
-                <div className="bg-[#222222] rounded-[4px] h-2">
+                <div className="bg-neutral-100 dark:bg-[#222222] rounded-[4px] h-2">
                   <div
                     className="bg-[#f97316] h-2 rounded-[4px]"
                     style={{ width: `${(item.quantity / Math.max(...report.topItems.map(i => i.quantity))) * 100}%` }}
@@ -240,25 +303,28 @@ function StatCard({
   color: "green" | "blue" | "purple" | "orange";
 }) {
   const colorClasses = {
-    green: "bg-[rgba(34,197,94,0.1)] text-[#4ade80]",
-    blue: "bg-[rgba(59,130,246,0.1)] text-[#60a5fa]",
-    purple: "bg-[rgba(168,85,247,0.1)] text-[#c084fc]",
-    orange: "bg-[rgba(249,115,22,0.1)] text-[#f97316]",
+    green: "bg-green-500/10 dark:bg-[rgba(34,197,94,0.1)] text-green-600 dark:text-[#4ade80]",
+    blue: "bg-blue-500/10 dark:bg-[rgba(59,130,246,0.1)] text-blue-600 dark:text-[#60a5fa]",
+    purple: "bg-purple-500/10 dark:bg-[rgba(168,85,247,0.1)] text-purple-600 dark:text-[#c084fc]",
+    orange: "bg-orange-500/10 dark:bg-[rgba(249,115,22,0.1)] text-orange-600 dark:text-[#f97316]",
   };
 
   return (
-    <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-[18px_20px]">
-      <p className="text-[10px] tracking-wider uppercase text-[#5a5650] mb-1.5">{label}</p>
-      <p className="text-[22px] font-bold text-[#f0ece4] tracking-tight leading-none">{value}</p>
+    <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-[18px_20px] card-hover shadow-sm">
+      <div className={`w-[34px] h-[34px] rounded-lg flex items-center justify-center ${colorClasses[color]} mb-3.5`}>
+        {icon}
+      </div>
+      <p className="text-[10px] tracking-wider uppercase text-neutral-400 dark:text-[#5a5650] mb-1.5">{label}</p>
+      <p className="text-[22px] font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight leading-none">{value}</p>
     </div>
   );
 }
 
 function ChartCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-      <div className="text-[14px] font-semibold text-[#f0ece4] mb-2">{title}</div>
-      {description && <div className="text-[11px] text-[#5a5650] mb-4">{description}</div>}
+    <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
+      <div className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4] mb-2">{title}</div>
+      {description && <div className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">{description}</div>}
       {children}
     </div>
   );
@@ -267,20 +333,20 @@ function ChartCard({ title, description, children }: { title: string; descriptio
 function ReportsSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="h-8 w-80 animate-pulse rounded-md bg-[#141414]" />
+      <div className="h-8 w-80 animate-pulse rounded-md bg-neutral-100 dark:bg-[#141414]" />
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="space-y-3 p-4 bg-[#141414] border-[#252525]">
-            <div className="h-4 w-28 animate-pulse rounded bg-[#1e1e1e]" />
-            <div className="h-7 w-32 animate-pulse rounded bg-[#1e1e1e]" />
+          <Card key={idx} className="space-y-3 p-4 bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] shadow-sm">
+            <div className="h-4 w-28 animate-pulse rounded bg-neutral-100 dark:bg-[#1e1e1e]" />
+            <div className="h-7 w-32 animate-pulse rounded bg-neutral-100 dark:bg-[#1e1e1e]" />
           </Card>
         ))}
       </div>
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="space-y-3 p-4 bg-[#141414] border-[#252525]">
-            <div className="h-5 w-36 animate-pulse rounded bg-[#1e1e1e]" />
-            <div className="h-[300px] animate-pulse rounded bg-[#1e1e1e]/70" />
+          <Card key={idx} className="space-y-3 p-4 bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] shadow-sm">
+            <div className="h-5 w-36 animate-pulse rounded bg-neutral-100 dark:bg-[#1e1e1e]" />
+            <div className="h-[300px] animate-pulse rounded bg-neutral-100/70 dark:bg-[#1e1e1e]/70" />
           </Card>
         ))}
       </div>

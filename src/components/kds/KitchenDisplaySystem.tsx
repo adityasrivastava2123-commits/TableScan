@@ -49,12 +49,8 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
         await fetchPreparations();
       } finally {
         if (mounted) {
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
+          setLoading(false);
+          setMinLoading(false);
         }
       }
     };

@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-import { ReportsDashboard } from "@/components/dashboard/ReportsDashboard";
+import ForecastingDashboard from "@/components/dashboard/ForecastingDashboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Reports - TableScan",
-  description: "Revenue and order performance insights",
+  title: "AI Forecasting - TableScan",
+  description: "AI-powered sales and demand forecasting for your restaurant",
 };
 
-export default async function ReportsPage() {
+export default async function ForecastingPage() {
   const user = await currentUser();
   if (!user) {
     redirect("/sign-in");
@@ -30,15 +30,5 @@ export default async function ReportsPage() {
     redirect("/onboarding");
   }
 
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold text-neutral-800 dark:text-white">Reports</h1>
-        <p className="text-sm text-neutral-500 dark:text-[#999999]">
-          Revenue and order performance insights.
-        </p>
-      </div>
-      <ReportsDashboard restaurantId={restaurant.id} />
-    </div>
-  );
+  return <ForecastingDashboard restaurant={restaurant} />;
 }

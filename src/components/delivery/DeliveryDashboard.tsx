@@ -65,12 +65,8 @@ export default function DeliveryDashboard({ restaurantId }: { restaurantId: stri
         ]);
       } finally {
         if (mounted) {
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
+          setLoading(false);
+          setMinLoading(false);
         }
       }
     };
@@ -193,10 +189,10 @@ export default function DeliveryDashboard({ restaurantId }: { restaurantId: stri
           <h1 className="text-[20px] font-bold text-[#f0ece4]">Delivery Management</h1>
           <p className="text-[12px] text-[#9a9488]">Track deliveries and manage drivers</p>
         </div>
-        <div className="ml-auto flex gap-2.5">
+        <div className="flex flex-wrap gap-2.5 w-full sm:w-auto sm:ml-auto">
           <button
             onClick={() => setAddingDriver(true)}
-            className="px-4 py-2.5 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[12px] font-semibold hover:border-[#f97316] hover:text-[#f97316] transition-all"
+            className="px-4 py-2.5 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[12px] font-semibold hover:border-[#f97316] hover:text-[#f97316] transition-all flex-shrink-0"
           >
             + Add Driver
           </button>
@@ -322,7 +318,7 @@ export default function DeliveryDashboard({ restaurantId }: { restaurantId: stri
                   </span>
                 </div>
                 <div className="text-[11px] text-[#9a9488]">
-                  ₹{delivery.order.totalAmount.toFixed(2)} · {delivery.order.items.length} items
+                  ₹{delivery.order.totalAmount.toFixed(2)} · {delivery.order.items.length} {delivery.order.items.length === 1 ? "item" : "items"}
                 </div>
               </div>
               {delivery.driver && (

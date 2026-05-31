@@ -68,7 +68,20 @@ export async function GET(req: Request) {
           createdAt: { gte: todayStart, lte: todayEnd },
           status: { not: "CANCELLED" },
         },
-        select: { totalAmount: true },
+        select: {
+          totalAmount: true,
+          items: {
+            select: {
+              quantity: true,
+              price: true,
+              menuItem: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
       }),
       prisma.order.findMany({
         where: {
@@ -86,7 +99,16 @@ export async function GET(req: Request) {
       }),
       prisma.order.findMany({
         where: { restaurantId },
-        include: { table: { select: { name: true } }, items: true },
+        include: {
+          table: { select: { name: true } },
+          items: {
+            include: {
+              menuItem: {
+                select: { name: true },
+              },
+            },
+          },
+        },
         orderBy: { createdAt: "desc" },
         take: 5,
       }),
@@ -119,6 +141,22 @@ export async function GET(req: Request) {
       0
     );
     const todayOrdersCount = todayOrders.length;
+
+    // Calculate Top Items today
+    const itemMap = new Map<string, { name: string; quantity: number; revenue: number }>();
+    for (const order of todayOrders) {
+      for (const item of order.items) {
+        const key = item.menuItem?.name || "Unknown item";
+        const current = itemMap.get(key) ?? { name: key, quantity: 0, revenue: 0 };
+        current.quantity += item.quantity;
+        current.revenue += item.price * item.quantity;
+        itemMap.set(key, current);
+      }
+    }
+
+    const topItems = Array.from(itemMap.values())
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
 
     const yesterdayRevenue = yesterdayOrders.reduce(
       (sum, order) => sum + order.totalAmount,
@@ -191,6 +229,7 @@ export async function GET(req: Request) {
       totalTables,
       occupiedTables,
       recentOrders,
+      topItems,
       lowStockAlert: false,
       trialDaysLeft,
       revenueChange,

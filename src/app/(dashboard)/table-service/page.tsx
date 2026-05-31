@@ -31,7 +31,7 @@ export default async function TableServicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="w-full">
       <TableServiceManagement restaurantId={restaurant.id} locationId={location.id} />
     </div>
   );

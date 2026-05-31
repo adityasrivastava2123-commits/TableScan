@@ -101,9 +101,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
   useEffect(() => {
     if (ordersData) {
       setOrders(ordersData);
-      setTimeout(() => {
-        setMinLoading(false);
-      }, 300);
+      setMinLoading(false);
     }
   }, [ordersData]);
 

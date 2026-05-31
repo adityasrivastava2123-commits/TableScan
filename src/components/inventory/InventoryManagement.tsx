@@ -69,12 +69,8 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
         ]);
       } finally {
         if (mounted) {
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
+          setLoading(false);
+          setMinLoading(false);
         }
       }
     };

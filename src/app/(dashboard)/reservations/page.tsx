@@ -38,7 +38,7 @@ export default async function ReservationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="w-full">
       <ReservationBooking restaurantId={restaurant.id} locationId={location.id} />
     </div>
   );

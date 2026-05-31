@@ -50,13 +50,8 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
         ]);
       } finally {
         if (mounted) {
-          // Minimum 300ms display time for smooth transition
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
+          setLoading(false);
+          setMinLoading(false);
         }
       }
     };
@@ -178,10 +173,10 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
           <h1 className="text-[20px] font-bold text-[#f0ece4]">Table Service</h1>
           <p className="text-[12px] text-[#9a9488]">Track table status and server assignments</p>
         </div>
-        <div className="ml-auto flex gap-2">
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:ml-auto">
           <button
             onClick={() => setAddingTable(true)}
-            className="px-4 py-2.5 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all"
+            className="px-4 py-2.5 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all flex-shrink-0"
           >
             + Add Table
           </button>

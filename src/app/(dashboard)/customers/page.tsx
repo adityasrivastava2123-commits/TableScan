@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-import KitchenDisplaySystem from "@/components/kds/KitchenDisplaySystem";
+import CustomersDashboard from "@/components/customers/CustomersDashboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "KDS - TableScan",
-  description: "Kitchen Display System for order preparation",
+  title: "Customers CRM - TableScan",
+  description: "View customer profiles, spend data, loyalty groups, and visit timelines",
 };
 
-export default async function KDSPage() {
+export default async function CustomersPage() {
   const user = await currentUser();
   if (!user) redirect("/sign-in");
 
@@ -23,7 +23,7 @@ export default async function KDSPage() {
 
   return (
     <div className="w-full">
-      <KitchenDisplaySystem restaurantId={restaurant.id} />
+      <CustomersDashboard restaurant={restaurant} />
     </div>
   );
 }
