@@ -209,7 +209,10 @@ export async function POST(req: Request) {
       currency: "INR",
     });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+    console.error("Order creation error:", error);
+    return NextResponse.json({ 
+      error: "Failed to create order",
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }

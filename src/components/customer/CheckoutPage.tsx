@@ -112,8 +112,10 @@ export default function CheckoutPage({
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } catch {
-      toast.error("Failed to create order");
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      const errMsg = error.response?.data?.details || error.response?.data?.error || "Failed to create order";
+      toast.error(errMsg);
       setLoading(false);
     }
   }
