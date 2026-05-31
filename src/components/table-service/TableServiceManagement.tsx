@@ -5,6 +5,7 @@ import { MapPin, User, Clock, CheckCircle, XCircle, AlertCircle, Users, Plus } f
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import FloorPlanEditor from "./FloorPlanEditor";
 
 interface Table {
   id: string;
@@ -38,6 +39,7 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
   const [filter, setFilter] = useState("all"); // all, available, occupied, reserved, dirty
   const [addingTable, setAddingTable] = useState(false);
   const [newTable, setNewTable] = useState({ name: "", capacity: 4 });
+  const [viewMode, setViewMode] = useState<"grid" | "floorplan">("floorplan");
 
   useEffect(() => {
     let mounted = true;
@@ -173,10 +175,32 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
           <h1 className="text-[20px] font-bold text-[#f0ece4]">Table Service</h1>
           <p className="text-[12px] text-[#9a9488]">Track table status and server assignments</p>
         </div>
-        <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:ml-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:ml-auto">
+          <div className="flex bg-[#222222] border border-[rgba(255,255,255,0.12)] p-1 rounded-lg">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`px-3.5 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                viewMode === "grid"
+                  ? "bg-[#f97316] text-white shadow-sm"
+                  : "text-[#9a9488] hover:text-[#f0ece4]"
+              }`}
+            >
+              Grid View
+            </button>
+            <button
+              onClick={() => setViewMode("floorplan")}
+              className={`px-3.5 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                viewMode === "floorplan"
+                  ? "bg-[#f97316] text-white shadow-sm"
+                  : "text-[#9a9488] hover:text-[#f0ece4]"
+              }`}
+            >
+              Floor Plan
+            </button>
+          </div>
           <button
             onClick={() => setAddingTable(true)}
-            className="px-4 py-2.5 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all flex-shrink-0"
+            className="px-4 py-2 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all flex-shrink-0"
           >
             + Add Table
           </button>
@@ -272,13 +296,23 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
         </div>
       )}
 
-      {/* Tables Grid */}
+      {/* Tables Display */}
       {minLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <Skeleton key={i} className="h-48 rounded-xl" />
+            <Skeleton key={i} className="h-48 rounded-xl bg-neutral-100 dark:bg-[#141414]" />
           ))}
         </div>
+      ) : viewMode === "floorplan" ? (
+        <FloorPlanEditor
+          locationId={locationId}
+          restaurantId={restaurantId}
+          tables={tables}
+          tableServices={tableServices}
+          staff={staff}
+          updateTableService={updateTableService}
+          assignServer={assignServer}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredServices.length > 0 ? (
