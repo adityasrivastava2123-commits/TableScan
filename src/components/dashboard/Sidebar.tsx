@@ -164,6 +164,7 @@ function Sidebar({ restaurant, restaurantOpen }: SidebarProps) {
                       )}
                     </button>
                   ))}
+
                 </div>
               </div>
             );

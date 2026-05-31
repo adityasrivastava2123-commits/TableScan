@@ -616,8 +616,15 @@ function PageFooter() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-[#27272a] text-center text-zinc-500 text-sm">
-          © {new Date().getFullYear()} TableScan. All rights reserved.
+        <div className="mt-12 pt-8 border-t border-[#27272a] flex flex-col sm:flex-row items-center justify-between gap-2 text-zinc-600 text-sm">
+          <span>© {new Date().getFullYear()} TableScan. All rights reserved.</span>
+          <Link
+            href="/superadmin"
+            className="text-[11px] text-zinc-800 hover:text-zinc-600 transition-colors font-mono tracking-widest"
+            title="Developer Portal"
+          >
+            ⬡ dev
+          </Link>
         </div>
       </div>
     </div>
