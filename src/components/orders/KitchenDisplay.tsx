@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Clock, ChefHat, Package, AlertTriangle, Bell, Timer } from "lucide-react";
 import { formatDistanceToNowStrict, format } from "date-fns";
 import { getPusherClient } from "@/lib/pusher-client";
+import { Badge } from "@/components/ui/badge";
 
 type KitchenOrderStatus = "NEW" | "PREPARING" | "READY" | "DONE" | "CANCELLED";
 
@@ -133,7 +135,7 @@ export function KitchenDisplay({
     );
   }, [orders]);
 
-  async function updateOrderStatus(orderId: string, nextStatus: "PREPARING" | "READY") {
+  async function updateOrderStatus(orderId: string, nextStatus: "PREPARING" | "READY" | "DONE") {
     try {
       await axios.patch(`/api/orders/${orderId}/status`, { status: nextStatus });
     } catch (error) {
@@ -142,100 +144,246 @@ export function KitchenDisplay({
   }
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white">
-      <header className="flex items-center justify-between border-b border-gray-700 px-6 py-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Kitchen Display</h1>
-          <p className="text-lg text-gray-300">{restaurantName}</p>
+    <motion.main
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-[#0a0a0a] text-white"
+    >
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="flex items-center justify-between border-b border-[#252525] px-6 py-4 bg-[#0a0a0a]/80 backdrop-blur-xl sticky top-0 z-50"
+      >
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea6c0a]">
+            <ChefHat className="size-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Kitchen Display</h1>
+            <p className="text-sm text-[#999999]">Live orders update automatically</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-sm uppercase tracking-wide text-gray-400">Current Time</p>
-          <p className="text-2xl font-semibold">{clock || "--:--:-- --"}</p>
+        <div className="flex items-center gap-6">
+          <div className="text-right">
+            <p className="text-xs uppercase tracking-wide text-[#999999]">Active Orders</p>
+            <p className="text-3xl font-bold text-white tabular-nums">{sortedOrders.length}</p>
+          </div>
+          <div className="h-12 w-px bg-[#252525]" />
+          <div className="text-right">
+            <p className="text-xs uppercase tracking-wide text-[#999999]">Time</p>
+            <p className="text-2xl font-bold text-white tabular-nums">{clock}</p>
+          </div>
         </div>
-      </header>
+      </motion.header>
 
-      <section className="p-6">
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="p-6"
+      >
         {sortedOrders.length === 0 ? (
           <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-            <CheckCircle2 className="h-20 w-20 text-green-400" />
-            <h2 className="mt-5 text-4xl font-bold">No active orders</h2>
-            <p className="mt-2 text-xl text-gray-300">Kitchen is clear!</p>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="flex h-24 w-24 items-center justify-center rounded-full bg-[#141414] border border-[#252525] mb-4"
+            >
+              <Package className="size-10 text-[#555555]" />
+            </motion.div>
+            <p className="text-2xl text-[#555555]">Nothing here yet</p>
+            <p className="text-sm text-[#999999] mt-2">Orders will appear here when they come in</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {sortedOrders.map((order) => {
-              const createdAt = new Date(order.createdAt);
-              const elapsedMinutes = Math.floor(
-                (Date.now() - createdAt.getTime()) / (1000 * 60),
-              );
-              const isLate = elapsedMinutes > 15;
-              const borderColor =
-                order.status === "NEW" ? "border-blue-500" : "border-orange-500";
-              const isFlashing = flashingOrderIds.includes(order.id);
-
-              return (
-                <article
-                  key={order.id}
-                  className={`rounded-xl border-l-8 ${borderColor} bg-gray-800 p-5 shadow-lg transition ${
-                    isFlashing ? "animate-pulse ring-2 ring-blue-300/70" : ""
-                  }`}
-                >
-                  <div className="mb-4 flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-3xl font-extrabold">#{order.orderNumber}</p>
-                      <p className="mt-1 text-2xl font-semibold text-gray-200">
-                        Table: {order.table.name}
-                      </p>
-                    </div>
-                    <p
-                      className={`text-xl font-bold ${
-                        isLate ? "text-red-400" : "text-gray-300"
-                      }`}
-                    >
-                      {formatDistanceToNowStrict(createdAt, { unit: "minute" })} ago
-                    </p>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {/* New Column */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-[#141414] border border-[#252525] rounded-xl overflow-hidden"
+            >
+              <div className="p-4 border-b border-[#252525] bg-blue-500/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-5 text-blue-500" />
+                    <h2 className="text-lg font-semibold text-blue-500">New</h2>
                   </div>
-
-                  <div className="space-y-2">
-                    {order.items.map((item) => (
-                      <p key={item.id} className="text-lg leading-6">
-                        <span className="mr-2 font-bold">{item.quantity}x</span>
-                        {item.menuItem.name}
-                      </p>
+                  <Badge className="bg-blue-500/10 text-blue-500 border-0">
+                    {sortedOrders.filter((o) => o.status === "NEW").length}
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-4 space-y-3 min-h-[400px]">
+                <AnimatePresence mode="popLayout">
+                  {sortedOrders
+                    .filter((order) => order.status === "NEW")
+                    .map((order) => (
+                      <OrderCard
+                        key={order.id}
+                        order={order}
+                        onUpdate={() => void updateOrderStatus(order.id, "PREPARING")}
+                        actionLabel="Start Preparing"
+                        isFlashing={flashingOrderIds.includes(order.id)}
+                      />
                     ))}
-                  </div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
 
-                  {order.specialNote ? (
-                    <div className="mt-4 rounded-md border border-yellow-400/40 bg-yellow-300/10 p-3">
-                      <p className="text-base font-semibold text-yellow-300">Special Note</p>
-                      <p className="mt-1 text-base text-yellow-100">{order.specialNote}</p>
-                    </div>
-                  ) : null}
-
-                  <div className="mt-5">
-                    {order.status === "NEW" ? (
-                      <button
-                        onClick={() => void updateOrderStatus(order.id, "PREPARING")}
-                        className="w-full rounded-md bg-orange-500 px-4 py-3 text-lg font-semibold text-white transition hover:bg-orange-600"
-                      >
-                        Start Preparing
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => void updateOrderStatus(order.id, "READY")}
-                        className="w-full rounded-md bg-green-600 px-4 py-3 text-lg font-semibold text-white transition hover:bg-green-700"
-                      >
-                        Mark Ready
-                      </button>
-                    )}
+            {/* Preparing Column */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-[#141414] border border-[#252525] rounded-xl overflow-hidden"
+            >
+              <div className="p-4 border-b border-[#252525] bg-[#f97316]/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ChefHat className="size-5 text-[#f97316]" />
+                    <h2 className="text-lg font-semibold text-[#f97316]">Preparing</h2>
                   </div>
-                </article>
-              );
-            })}
+                  <Badge className="bg-[#f97316]/10 text-[#f97316] border-0">
+                    {sortedOrders.filter((o) => o.status === "PREPARING").length}
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-4 space-y-3 min-h-[400px]">
+                <AnimatePresence mode="popLayout">
+                  {sortedOrders
+                    .filter((order) => order.status === "PREPARING")
+                    .map((order) => (
+                      <OrderCard
+                        key={order.id}
+                        order={order}
+                        onUpdate={() => void updateOrderStatus(order.id, "READY")}
+                        actionLabel="Mark Ready"
+                        isFlashing={flashingOrderIds.includes(order.id)}
+                      />
+                    ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+            {/* Ready to Serve Column */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-[#141414] border border-[#252525] rounded-xl overflow-hidden"
+            >
+              <div className="p-4 border-b border-[#252525] bg-[#22c55e]/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Package className="size-5 text-[#22c55e]" />
+                    <h2 className="text-lg font-semibold text-[#22c55e]">Ready to serve</h2>
+                  </div>
+                  <Badge className="bg-[#22c55e]/10 text-[#22c55e] border-0">
+                    {sortedOrders.filter((o) => o.status === "READY").length}
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-4 space-y-3 min-h-[400px]">
+                <AnimatePresence mode="popLayout">
+                  {sortedOrders
+                    .filter((order) => order.status === "READY")
+                    .map((order) => (
+                      <OrderCard
+                        key={order.id}
+                        order={order}
+                        onUpdate={() => void updateOrderStatus(order.id, "DONE")}
+                        actionLabel="Mark Done"
+                        isFlashing={flashingOrderIds.includes(order.id)}
+                      />
+                    ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
           </div>
         )}
-      </section>
-    </main>
+      </motion.section>
+    </motion.main>
+  );
+}
+
+function OrderCard({
+  order,
+  onUpdate,
+  actionLabel,
+  isFlashing,
+}: {
+  order: KitchenOrder;
+  onUpdate: () => void;
+  actionLabel: string;
+  isFlashing: boolean;
+}) {
+  const createdAt = new Date(order.createdAt);
+  const elapsedMinutes = Math.floor(
+    (Date.now() - createdAt.getTime()) / (1000 * 60),
+  );
+  const isLate = elapsedMinutes > 15;
+
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      whileHover={{ scale: 1.02, y: -2 }}
+      className={`rounded-xl bg-[#1e1e1e] border border-[#252525] p-5 shadow-lg transition-all hover-lift ${
+        isFlashing ? "animate-pulse ring-2 ring-[#f97316]/50" : ""
+      }`}
+    >
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-3xl font-bold text-white">{order.table.name}</p>
+          <p className="text-sm text-[#999999]">#{order.orderNumber}</p>
+        </div>
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+          isLate ? "bg-[#ef4444]/10 text-[#ef4444]" : "bg-[#f97316]/10 text-[#f97316]"
+        }`}>
+          {isLate ? <AlertTriangle className="size-4" /> : <Timer className="size-4" />}
+          <p className="text-sm font-bold tabular-nums">{elapsedMinutes}m</p>
+        </div>
+      </div>
+
+      <div className="space-y-3 mb-4">
+        {order.items.map((item) => (
+          <div key={item.id} className="flex items-center justify-between p-2 bg-[#141414] rounded-lg">
+            <span className="text-sm text-[#999999]">
+              <span className="mr-2 font-bold text-white">{item.quantity}x</span>
+              {item.menuItem.name}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {order.specialNote && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="mb-4 rounded-lg border border-[#eab308]/40 bg-[#eab308]/10 p-3"
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <Bell className="size-4 text-[#eab308]" />
+            <p className="text-sm font-semibold text-[#eab308]">Special Note</p>
+          </div>
+          <p className="mt-1 text-sm text-[#fef9c3]">{order.specialNote}</p>
+        </motion.div>
+      )}
+
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={onUpdate}
+        className="w-full rounded-lg bg-[#f97316] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#ea6c0a] shadow-lg shadow-[#f97316]/20"
+      >
+        {actionLabel}
+      </motion.button>
+    </motion.article>
   );
 }
 

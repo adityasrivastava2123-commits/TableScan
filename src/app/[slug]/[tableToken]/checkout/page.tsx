@@ -23,6 +23,7 @@ export default async function Checkout({
       tableName={table.name}
       restaurantId={restaurant.id}
       restaurantName={restaurant.name}
+      taxPercent={restaurant.taxPercent}
     />
   );
 }

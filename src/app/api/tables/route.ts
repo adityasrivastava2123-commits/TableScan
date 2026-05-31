@@ -40,11 +40,31 @@ export async function POST(req: Request) {
     const body = await req.json();
     const parsed = tableSchema.parse(body);
 
+    // Get the location to find the restaurantId
+    const location = await prisma.location.findUnique({
+      where: { id: parsed.locationId },
+      select: { restaurantId: true },
+    });
+
+    if (!location) {
+      return NextResponse.json({ error: "Location not found" }, { status: 404 });
+    }
+
+    // Create the table
     const table = await prisma.table.create({
       data: {
         name: parsed.name,
         capacity: parsed.capacity,
         locationId: parsed.locationId,
+      },
+    });
+
+    // Automatically create a table service entry
+    await prisma.tableService.create({
+      data: {
+        tableId: table.id,
+        status: "AVAILABLE",
+        restaurantId: location.restaurantId,
       },
     });
 

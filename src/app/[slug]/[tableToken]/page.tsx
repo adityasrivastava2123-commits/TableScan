@@ -31,9 +31,20 @@ export default async function CustomerMenuPage({ params }: Props) {
 
   const table = await prisma.table.findUnique({
     where: { qrToken: params.tableToken },
+    include: { location: true },
   });
 
   if (!table) notFound();
+
+  // Fetch any active order for this table (for status tracker)
+  const activeOrder = await prisma.order.findFirst({
+    where: {
+      tableId: table.id,
+      status: { in: ["NEW", "PREPARING", "READY"] },
+    },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, orderNumber: true, status: true },
+  });
 
   return (
     <CustomerMenu
@@ -41,6 +52,7 @@ export default async function CustomerMenuPage({ params }: Props) {
       table={table}
       slug={params.slug}
       tableToken={params.tableToken}
+      activeOrder={activeOrder}
     />
   );
 }

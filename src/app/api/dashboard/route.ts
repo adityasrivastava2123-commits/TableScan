@@ -24,38 +24,6 @@ export async function GET(req: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const restaurant = await prisma.restaurant.findFirst({
-      where: {
-        id: restaurantId,
-        ownerId: user.id,
-      },
-      include: {
-        subscription: true,
-        locations: {
-          include: {
-            tables: {
-              where: { isActive: true },
-            },
-          },
-        },
-      },
-    });
-
-    if (!restaurant) {
-      return NextResponse.json(
-        { error: "Restaurant not found" },
-        { status: 404 }
-      );
-    }
-
     const today = new Date();
     const todayStart = startOfDay(today);
     const todayEnd = endOfDay(today);
@@ -66,29 +34,91 @@ export async function GET(req: Request) {
       new Date(today.getTime() - 24 * 60 * 60 * 1000)
     );
 
-    // Today's orders
-    const todayOrders = await prisma.order.findMany({
-      where: {
-        restaurantId,
-        createdAt: { gte: todayStart, lte: todayEnd },
-        status: { not: "CANCELLED" },
-      },
+    // Fetch user first
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
     });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Run independent queries in parallel for better performance
+    const [restaurant, todayOrders, yesterdayOrders, activeOrders, recentOrders, totalMenuItems, totalStaff, occupiedTablesResult] = await Promise.all([
+      prisma.restaurant.findFirst({
+        where: {
+          id: restaurantId,
+          ownerId: user.id,
+        },
+        include: {
+          subscription: true,
+          locations: {
+            include: {
+              tables: {
+                where: { isActive: true },
+                select: { id: true },
+              },
+            },
+          },
+        },
+      }),
+      prisma.order.findMany({
+        where: {
+          restaurantId,
+          createdAt: { gte: todayStart, lte: todayEnd },
+          status: { not: "CANCELLED" },
+        },
+        select: { totalAmount: true },
+      }),
+      prisma.order.findMany({
+        where: {
+          restaurantId,
+          createdAt: { gte: yesterdayStart, lte: yesterdayEnd },
+          status: { not: "CANCELLED" },
+        },
+        select: { totalAmount: true },
+      }),
+      prisma.order.count({
+        where: {
+          restaurantId,
+          status: { in: ["NEW", "PREPARING", "READY"] },
+        },
+      }),
+      prisma.order.findMany({
+        where: { restaurantId },
+        include: { table: { select: { name: true } }, items: true },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
+      prisma.menuItem.count({
+        where: { restaurantId, isAvailable: true },
+      }),
+      prisma.staff.count({
+        where: { restaurantId, isActive: true },
+      }),
+      prisma.order.findMany({
+        where: {
+          restaurantId,
+          status: { in: ["NEW", "PREPARING", "READY"] },
+          createdAt: { gte: todayStart },
+        },
+        distinct: ["tableId"],
+        select: { tableId: true },
+      }),
+    ]);
+
+    if (!restaurant) {
+      return NextResponse.json(
+        { error: "Restaurant not found" },
+        { status: 404 }
+      );
+    }
 
     const todayRevenue = todayOrders.reduce(
       (sum, order) => sum + order.totalAmount,
       0
     );
     const todayOrdersCount = todayOrders.length;
-
-    // Yesterday's orders
-    const yesterdayOrders = await prisma.order.findMany({
-      where: {
-        restaurantId,
-        createdAt: { gte: yesterdayStart, lte: yesterdayEnd },
-        status: { not: "CANCELLED" },
-      },
-    });
 
     const yesterdayRevenue = yesterdayOrders.reduce(
       (sum, order) => sum + order.totalAmount,
@@ -107,38 +137,13 @@ export async function GET(req: Request) {
           100
         : 0;
 
-    // Active orders
-    const activeOrders = await prisma.order.count({
-      where: {
-        restaurantId,
-        status: { in: ["NEW", "PREPARING", "READY"] },
-      },
-    });
-
     // Tables
     const totalTables = restaurant.locations.reduce(
       (sum, location) => sum + location.tables.length,
       0
     );
 
-    const occupiedTablesResult = await prisma.order.findMany({
-      where: {
-        restaurantId,
-        status: { in: ["NEW", "PREPARING", "READY"] },
-        createdAt: { gte: todayStart },
-      },
-      distinct: ["tableId"],
-      select: { tableId: true },
-    });
     const occupiedTables = occupiedTablesResult.length;
-
-    // Recent orders
-    const recentOrders = await prisma.order.findMany({
-      where: { restaurantId },
-      include: { table: true, items: true },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    });
 
     // Trial days left
     let trialDaysLeft = 0;
@@ -152,15 +157,6 @@ export async function GET(req: Request) {
       );
       if (trialDaysLeft < 0) trialDaysLeft = 0;
     }
-
-    // Quick stats
-    const totalMenuItems = await prisma.menuItem.count({
-      where: { restaurantId, isAvailable: true },
-    });
-
-    const totalStaff = await prisma.staff.count({
-      where: { restaurantId, isActive: true },
-    });
 
     // Restaurant open status
     const currentDay = today

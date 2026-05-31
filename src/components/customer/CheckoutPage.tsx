@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/cartStore";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronRight, User, Phone, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -23,12 +20,14 @@ export default function CheckoutPage({
   tableName,
   restaurantId,
   restaurantName,
+  taxPercent = 0,
 }: {
   slug: string;
   tableToken: string;
   tableName: string;
   restaurantId: string;
   restaurantName: string;
+  taxPercent?: number;
 }) {
   const [mounted, setMounted] = useState(false);
   const [name, setName] = useState("");
@@ -38,11 +37,11 @@ export default function CheckoutPage({
   const { items, getTotalPrice, clearCart } = useCartStore();
   const router = useRouter();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
-  const total = mounted ? getTotalPrice() : 0;
+  const subtotal = mounted ? getTotalPrice() : 0;
+  const taxAmount = subtotal * (taxPercent / 100);
+  const total = subtotal + taxAmount;
   const cartItems = mounted ? items : [];
 
   function loadRazorpayScript(): Promise<boolean> {
@@ -75,9 +74,10 @@ export default function CheckoutPage({
         customerPhone: phone,
         specialNote: note,
         items: cartItems.map((i) => ({
-          menuItemId: i.id,
+          menuItemId: i.id.includes("-") ? i.id.split("-")[0] : i.id,
           quantity: i.quantity,
           price: i.price,
+          note: i.note,
         })),
       });
 
@@ -97,107 +97,123 @@ export default function CheckoutPage({
               orderId: data.orderId,
             });
             clearCart();
-            toast.success("Order placed successfully!");
-            router.push(
-              `/${slug}/${tableToken}/order-status?orderId=${data.orderId}`
-            );
+            toast.success("Order placed!", {
+              style: { background: "#ffffff", color: "#1a1a1a", border: "1px solid rgba(255,255,255,0.07)" },
+            });
+            router.push(`/${slug}/${tableToken}/order-status?orderId=${data.orderId}`);
           } catch {
             toast.error("Payment verification failed");
           }
         },
-        prefill: {
-          name,
-          contact: phone,
-        },
+        prefill: { name, contact: phone },
         theme: { color: "#f97316" },
-        modal: {
-          ondismiss: () => setLoading(false),
-        },
+        modal: { ondismiss: () => setLoading(false) },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } catch (error) {
+    } catch {
       toast.error("Failed to create order");
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32">
-      <div className="bg-white sticky top-0 z-10 px-4 py-4 flex items-center gap-3 shadow-sm">
-        <button onClick={() => router.back()} className="p-2 -ml-2">
-          <ArrowLeft size={24} />
+    <div className="min-h-screen bg-[#f5f5f0] pb-32">
+      {/* Header */}
+      <div className="bg-[#f5f5f0]/90 backdrop-blur-xl border-b border-[#e8e8e3] sticky top-0 z-10 px-4 py-4 flex items-center gap-3">
+        <button onClick={() => router.back()} className="p-2 -ml-2 text-[#6b6b6b] hover:text-[#f97316] transition-colors">
+          <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="font-bold text-lg">Checkout</h1>
-          <p className="text-sm text-gray-500">Table: {tableName}</p>
+          <h1 className="font-bold text-[15px] text-[#1a1a1a]">Checkout</h1>
+          <p className="text-[11px] text-[#9a9a9a]">Table: {tableName}</p>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+      <div className="max-w-2xl mx-auto px-4 py-4 space-y-3">
         {/* Order Summary */}
-        <div className="bg-white rounded-xl p-4 shadow-sm space-y-2">
-          <h2 className="font-semibold text-gray-700">Order Summary</h2>
-          {cartItems.map((item) => (
-            <div key={item.id} className="flex justify-between text-sm">
-              <span>{item.name} × {item.quantity}</span>
-              <span>₹{item.price * item.quantity}</span>
+        <div className="bg-white border border-[#e8e8e3] rounded-xl p-4">
+          <p className="text-[12px] font-semibold text-[#9a9a9a] uppercase tracking-wider mb-3">Order Summary</p>
+          <div className="space-y-2 mb-3">
+            {cartItems.map((item) => (
+              <div key={item.id} className="flex justify-between text-[13px]">
+                <span className="text-[#6b6b6b]">{item.name} × {item.quantity}</span>
+                <span className="text-[#1a1a1a] font-medium">₹{(item.price * item.quantity).toFixed(0)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-[#e5e5e0] pt-2.5 space-y-1.5">
+            <div className="flex justify-between text-[13px]">
+              <span className="text-[#6b6b6b]">Subtotal</span>
+              <span className="text-[#1a1a1a]">₹{subtotal.toFixed(0)}</span>
             </div>
-          ))}
-          <div className="border-t pt-2 flex justify-between font-bold">
-            <span>Total</span>
-            <span>₹{total}</span>
+            {taxPercent > 0 && (
+              <div className="flex justify-between text-[13px]">
+                <span className="text-[#6b6b6b]">GST ({taxPercent}%)</span>
+                <span className="text-[#1a1a1a]">₹{taxAmount.toFixed(0)}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-bold text-[15px] pt-1">
+              <span className="text-[#1a1a1a]">Total</span>
+              <span className="text-[#f97316]">₹{total.toFixed(0)}</span>
+            </div>
           </div>
         </div>
 
         {/* Customer Details */}
-        <div className="bg-white rounded-xl p-4 shadow-sm space-y-4">
-          <h2 className="font-semibold text-gray-700">
-            Your Details (optional)
-          </h2>
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
+        <div className="bg-white border border-[#e8e8e3] rounded-xl p-4 space-y-3">
+          <p className="text-[12px] font-semibold text-[#9a9a9a] uppercase tracking-wider">Your Details <span className="normal-case font-normal text-[#9a9a9a]">(optional)</span></p>
+
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9a9a9a]" />
+            <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="h-12 text-base"
+              className="w-full bg-[#f0f0eb] border border-[#e5e5e0] rounded-xl pl-9 pr-4 py-2.5 text-[13px] text-[#1a1a1a] placeholder-[#b0b0b0] focus:outline-none focus:border-[#f97316] transition-colors"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
+
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9a9a9a]" />
+            <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="Your phone number"
+              placeholder="Phone number"
               type="tel"
-              className="h-12 text-base"
+              className="w-full bg-[#f0f0eb] border border-[#e5e5e0] rounded-xl pl-9 pr-4 py-2.5 text-[13px] text-[#1a1a1a] placeholder-[#b0b0b0] focus:outline-none focus:border-[#f97316] transition-colors"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="note">Special Instructions</Label>
-            <Input
-              id="note"
+
+          <div className="relative">
+            <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-[#9a9a9a]" />
+            <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Any special requests..."
-              className="h-12 text-base"
+              placeholder="Any special requests for the whole order..."
+              rows={2}
+              className="w-full bg-[#f0f0eb] border border-[#e5e5e0] rounded-xl pl-9 pr-4 py-2.5 text-[13px] text-[#1a1a1a] placeholder-[#b0b0b0] focus:outline-none focus:border-[#f97316] transition-colors resize-none"
             />
           </div>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-40">
-        <Button
-          className="w-full max-w-2xl mx-auto py-4 text-lg rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/30"
+      {/* Pay button */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 z-40 bg-[#f5f5f0]/80 backdrop-blur-xl border-t border-[#e8e8e3]">
+        <button
+          className="w-full max-w-2xl mx-auto flex items-center justify-between bg-[#f97316] hover:bg-[#ea6c0a] disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-3.5 rounded-2xl shadow-2xl shadow-[#f97316]/30 transition-colors"
           onClick={handleCheckout}
           disabled={loading || cartItems.length === 0}
         >
-          {loading ? "Processing..." : `Pay ₹${total}`}
-        </Button>
+          <span className="font-semibold text-[14px]">
+            {loading ? "Processing..." : "Pay Now"}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-[15px]">₹{total.toFixed(0)}</span>
+            {!loading && <ChevronRight className="w-4 h-4" />}
+          </div>
+        </button>
       </div>
     </div>
   );

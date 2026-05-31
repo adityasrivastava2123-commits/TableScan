@@ -47,8 +47,16 @@ export async function GET(
             },
           },
         },
-        table: true,
-        payment: true,
+        table: {
+          select: {
+            name: true,
+          },
+        },
+        payment: {
+          select: {
+            status: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

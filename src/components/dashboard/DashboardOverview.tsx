@@ -8,23 +8,27 @@ import {
   DollarSign,
   ShoppingCart,
   Users,
-  Table,
-  Utensils,
-  LayoutGrid,
-  ChefHat,
-  QrCode,
-  Share2,
   TrendingUp,
-  TrendingDown,
-  Package,
-  UserCheck,
-  AlertCircle,
+  ArrowUpRight,
+  Activity,
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { pusherClient } from "@/lib/pusher-client";
-import type { Restaurant, Order } from "@prisma/client";
+import type { Restaurant } from "@prisma/client";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface DashboardData {
   todayRevenue: number;
@@ -53,6 +57,30 @@ interface DashboardData {
 interface DashboardOverviewProps {
   restaurant: Restaurant;
   userName: string;
+}
+
+function OrderStatusBadge({ status }: { status: string }) {
+  const statusClasses = {
+    NEW: "bg-[rgba(59,130,246,0.15)] text-[#60a5fa]",
+    PREPARING: "bg-[rgba(249,115,22,0.15)] text-[#f97316]",
+    READY: "bg-[rgba(34,197,94,0.1)] text-[#4ade80]",
+    DONE: "bg-[#222222] text-[#9a9488]",
+    CANCELLED: "bg-[rgba(239,68,68,0.15)] text-[#f87171]",
+  };
+
+  const statusLabels = {
+    NEW: "NEW",
+    PREPARING: "PREP",
+    READY: "READY",
+    DONE: "DONE",
+    CANCELLED: "CANCELLED",
+  };
+
+  return (
+    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider ${statusClasses[status as keyof typeof statusClasses] || statusClasses.DONE}`}>
+      {statusLabels[status as keyof typeof statusLabels] || status}
+    </span>
+  );
 }
 
 export default function DashboardOverview({ restaurant, userName }: DashboardOverviewProps) {
@@ -119,10 +147,13 @@ export default function DashboardOverview({ restaurant, userName }: DashboardOve
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 animate-pulse bg-muted rounded" />
+        <div className="h-8 animate-pulse bg-[#141414] rounded" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 animate-pulse bg-muted rounded-lg" />
+            <div
+              key={i}
+              className="h-32 animate-pulse bg-[#141414] rounded-xl border border-[#252525]"
+            />
           ))}
         </div>
       </div>
@@ -131,226 +162,216 @@ export default function DashboardOverview({ restaurant, userName }: DashboardOve
 
   if (!data) return null;
 
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  // Mock data for charts (in production, this would come from API)
+  const revenueData = [
+    { name: "Mon", value: 4500 },
+    { name: "Tue", value: 5200 },
+    { name: "Wed", value: 4800 },
+    { name: "Thu", value: 6100 },
+    { name: "Fri", value: 7500 },
+    { name: "Sat", value: 8900 },
+    { name: "Sun", value: 7200 },
+  ];
+
+  const orderData = [
+    { name: "9AM", orders: 12 },
+    { name: "12PM", orders: 45 },
+    { name: "3PM", orders: 28 },
+    { name: "6PM", orders: 62 },
+    { name: "9PM", orders: 38 },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Top Bar */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">
-            {getGreeting()}, {userName}!
+          <h1 className="text-3xl font-bold tracking-tight text-[#f0ece4] leading-[1.1]">
+            {getGreeting()} at <em className="text-[#f97316] not-italic">{restaurant.name}</em>
           </h1>
-          <p className="text-muted-foreground">{restaurant.name}</p>
-          <p className="text-sm text-muted-foreground">{currentDate}</p>
+          <p className="text-[13px] text-[#9a9488] mt-1">Real-time pulse of your operations.</p>
+          <div className="text-[11px] text-[#5a5650] mt-1 tracking-wider uppercase">
+            {new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" })}
+          </div>
         </div>
-        {data.trialDaysLeft > 0 && (
-          <Badge variant="outline" className="border-orange-500 text-orange-500">
-            <AlertCircle className="size-3 mr-1" />
-            {data.trialDaysLeft} days left in free trial
-          </Badge>
-        )}
+        <div className="flex gap-2.5">
+          <button className="px-4 py-2.5 border border-[rgba(255,255,255,0.12)] rounded-lg bg-transparent text-[#f0ece4] text-[12px] font-medium hover:border-[#f97316] hover:text-[#f97316] transition-all flex items-center gap-1.5">
+            ↓ Export report
+          </button>
+          <button className="px-4 py-2.5 border-none rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all flex items-center gap-1.5">
+            ✦ AI insights
+          </button>
+        </div>
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <StatCard
-          title="Today's Revenue"
+          title="REVENUE TODAY"
           value={`₹${data.todayRevenue.toFixed(2)}`}
           change={data.revenueChange}
-          icon={<DollarSign className="size-4" />}
+          icon={<DollarSign className="text-[18px]" />}
           color="green"
         />
         <StatCard
-          title="Today's Orders"
+          title="ORDERS"
           value={data.todayOrders.toString()}
-          change={data.ordersChange}
-          icon={<ShoppingCart className="size-4" />}
+          subtitle={`+${data.todayOrders} today`}
+          icon={<ShoppingCart className="text-[16px]" />}
           color="blue"
         />
         <StatCard
-          title="Active Orders"
+          title="PENDING"
           value={activeOrders.toString()}
-          icon={<Users className="size-4" />}
+          subtitle="in queue"
+          icon={<Users className="text-[16px]" />}
           color="purple"
           clickable
           onClick={() => router.push("/orders")}
         />
         <StatCard
-          title="Tables Occupied"
-          value={`${data.occupiedTables}/${data.totalTables}`}
-          icon={<Table className="size-4" />}
+          title="TAX RATE"
+          value="18%"
+          subtitle="GST applied"
+          icon={<TrendingUp className="text-[16px]" />}
           color="orange"
         />
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <QuickActionButton
-          icon={<ShoppingCart className="size-6" />}
-          label="View Orders"
-          onClick={() => router.push("/orders")}
-        />
-        <QuickActionButton
-          icon={<Utensils className="size-6" />}
-          label="Menu Builder"
-          onClick={() => router.push("/menu")}
-        />
-        <QuickActionButton
-          icon={<LayoutGrid className="size-6" />}
-          label="Table Manager"
-          onClick={() => router.push("/tables")}
-        />
-        <QuickActionButton
-          icon={<ChefHat className="size-6" />}
-          label="Kitchen Display"
-          onClick={() => window.open("/kitchen", "_blank")}
-        />
+      {/* Revenue Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-3.5">
+        <Card className="bg-[#111111] border-[rgba(255,255,255,0.07)] rounded-xl p-5 overflow-hidden">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[14px]">♦</span>
+              <span className="text-[14px] font-semibold text-[#f0ece4]">Revenue Analytics</span>
+            </div>
+            <Badge className="bg-[rgba(34,197,94,0.15)] text-[#4ade80] border-0 text-[9px] font-bold tracking-wider">LIVE</Badge>
+          </div>
+          <p className="text-[11px] text-[#5a5650] mb-4">Weekly revenue trends</p>
+          <ResponsiveContainer width="100%" height={190}>
+            <AreaChart data={revenueData}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f97316" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#f97316" stopOpacity={0.02} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="name" stroke="#5a5650" fontSize={9} />
+              <YAxis stroke="#5a5650" fontSize={9} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1e1e1e",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "8px",
+                }}
+                itemStyle={{ color: "#fff" }}
+              />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="#f97316"
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#colorRevenue)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card className="bg-[#111111] border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[14px]">◷</span>
+            <span className="text-[14px] font-semibold text-[#f0ece4]">Order Trends</span>
+          </div>
+          <p className="text-[11px] text-[#5a5650] mb-4">Orders by time of day</p>
+          <ResponsiveContainer width="100%" height={190}>
+            <BarChart data={orderData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="name" stroke="#5a5650" fontSize={9} />
+              <YAxis stroke="#5a5650" fontSize={9} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1e1e1e",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "8px",
+                }}
+                itemStyle={{ color: "#fff" }}
+              />
+              <Bar dataKey="orders" fill="#f97316" radius={[3, 3, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Recent Orders */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Orders</CardTitle>
-              <CardDescription>Last 5 orders</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {data.recentOrders.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">No orders yet</p>
-                ) : (
-                  data.recentOrders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">#{order.orderNumber}</span>
-                          <Badge variant={getStatusVariant(order.status)}>
-                            {order.status}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Table: {(order as any).table?.name || "N/A"} • {order.items.length} items
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">₹{order.totalAmount.toFixed(2)}</p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              <Button
-                variant="outline"
-                className="w-full mt-4"
-                onClick={() => router.push("/orders")}
-              >
-                View all orders
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Sidebar */}
-        <div className="space-y-4">
-          {/* Quick Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Stats</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Package className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Menu Items</span>
-                </div>
-                <span className="font-medium">{data.totalMenuItems}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <UserCheck className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Staff Members</span>
-                </div>
-                <span className="font-medium">{data.totalStaff}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Restaurant Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Restaurant Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+        {/* Left: Top Items */}
+        <Card className="bg-[#111111] border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[14px]">🔥</span>
+            <span className="text-[14px] font-semibold text-[#f0ece4]">Top items today</span>
+          </div>
+          <p className="text-[11px] text-[#5a5650] mb-4">Best selling menu items</p>
+          {data.recentOrders.length === 0 ? (
+            <p className="text-center text-[#5a5650] py-8 text-[12px]">No orders yet today.</p>
+          ) : (
+            <div className="space-y-0">
+              {data.recentOrders.slice(0, 4).map((order, idx) => (
                 <div
-                  className={`size-2 rounded-full ${
-                    data.restaurantOpen ? "bg-green-500" : "bg-red-500"
-                  }`}
-                />
-                <span className="font-medium">
-                  {data.restaurantOpen ? "Open" : "Closed"}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Based on operating hours
-              </p>
-            </CardContent>
-          </Card>
+                  key={order.id}
+                  className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.07)] last:border-0"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-[#222222] flex items-center justify-center text-[10px] font-semibold text-[#9a9488]">{idx + 1}</span>
+                    <div>
+                      <p className="text-[13px] text-[#f0ece4] font-medium">
+                        {order.items[0]?.name || "Unknown item"}
+                      </p>
+                      <p className="text-[11px] text-[#5a5650]">
+                        {order.items.length} {order.items.length === 1 ? "order" : "orders"}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[13px] font-semibold text-[#f0ece4]">₹{order.totalAmount.toFixed(0)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
 
-          {/* QR Codes */}
-          <Card>
-            <CardHeader>
-              <CardTitle>QR Codes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <QrCode className="size-4 text-muted-foreground" />
-                <span className="font-medium">{data.totalTables} Active Tables</span>
-              </div>
-              <Button
-                variant="outline"
-                className="w-full mt-4"
-                onClick={() => router.push("/tables")}
-              >
-                Manage QR Codes
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Share Menu Link */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Share Menu</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleShareMenu}
-              >
-                <Share2 className="size-4 mr-2" />
-                Copy Menu Link
-              </Button>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Share with customers to view menu
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Right: Recent Orders */}
+        <Card className="bg-[#111111] border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[14px]">Recent orders</span>
+            </div>
+            <Badge className="bg-[rgba(34,197,94,0.15)] text-[#4ade80] border-0 text-[9px] font-bold tracking-wider">LIVE</Badge>
+          </div>
+          <p className="text-[11px] text-[#5a5650] mb-4">Latest incoming orders</p>
+          {data.recentOrders.length === 0 ? (
+            <p className="text-center text-[#5a5650] py-8 text-[12px]">No orders yet.</p>
+          ) : (
+            <div className="space-y-0">
+              {data.recentOrders.slice(0, 4).map((order) => (
+                <div
+                  key={order.id}
+                  className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.07)] last:border-0 cursor-pointer hover:bg-[#181818] transition-colors px-[-10px] mx-[-10px]"
+                >
+                  <div>
+                    <p className="text-[13px] text-[#f0ece4] font-medium">#{order.orderNumber}</p>
+                    <p className="text-[11px] text-[#5a5650]">{(order as any).table?.name || "N/A"} · {order.items.length} items</p>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[13px] font-semibold text-[#f0ece4]">₹{order.totalAmount.toFixed(0)}</span>
+                    <OrderStatusBadge status={order.status} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
       </div>
     </div>
   );
@@ -360,78 +381,44 @@ interface StatCardProps {
   title: string;
   value: string;
   change?: number;
+  subtitle?: string;
   icon: React.ReactNode;
   color: "green" | "blue" | "purple" | "orange";
   clickable?: boolean;
   onClick?: () => void;
 }
 
-function StatCard({ title, value, change, icon, color, clickable, onClick }: StatCardProps) {
+function StatCard({ title, value, change, subtitle, icon, color, clickable, onClick }: StatCardProps) {
   const colorClasses = {
-    green: "bg-green-50 text-green-600 border-green-200",
-    blue: "bg-blue-50 text-blue-600 border-blue-200",
-    purple: "bg-purple-50 text-purple-600 border-purple-200",
-    orange: "bg-orange-50 text-orange-600 border-orange-200",
+    green: "bg-[rgba(34,197,94,0.1)] text-[#4ade80]",
+    blue: "bg-[rgba(59,130,246,0.1)] text-[#60a5fa]",
+    purple: "bg-[rgba(168,85,247,0.1)] text-[#c084fc]",
+    orange: "bg-[rgba(249,115,22,0.1)] text-[#f97316]",
   };
 
   const isPositive = change !== undefined && change >= 0;
 
   return (
-    <Card
-      className={`cursor-pointer transition-all hover:shadow-md ${clickable ? "hover:border-orange-500" : ""}`}
+    <div
+      className={`bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-[18px_20px] relative overflow-hidden transition-all hover:border-[rgba(255,255,255,0.12)] ${clickable ? "cursor-pointer" : ""}`}
       onClick={onClick}
     >
-      <CardContent className="p-6">
+      <div className="absolute inset-0 bg-gradient-to-br from-[rgba(249,115,22,0.15)] to-transparent opacity-0 hover:opacity-100 transition-opacity pointer-events-none" />
+      <div className="relative z-10">
         <div className="flex items-center justify-between">
-          <div className={`p-2 rounded-lg ${colorClasses[color]}`}>{icon}</div>
+          <div className={`w-[34px] h-[34px] rounded-lg flex items-center justify-center ${colorClasses[color]} mb-3.5`}>{icon}</div>
           {change !== undefined && (
-            <div className={`flex items-center text-xs ${isPositive ? "text-green-600" : "text-red-600"}`}>
-              {isPositive ? <TrendingUp className="size-3 mr-1" /> : <TrendingDown className="size-3 mr-1" />}
-              {Math.abs(change).toFixed(1)}%
+            <div className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${isPositive ? "bg-[rgba(34,197,94,0.15)] text-[#4ade80]" : "bg-[rgba(239,68,68,0.15)] text-[#f87171]"}`}>
+              {isPositive ? "↑" : "↓"} {Math.abs(change).toFixed(1)}%
             </div>
           )}
         </div>
-        <div className="mt-4">
-          <p className="text-sm text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold">{value}</p>
-        </div>
-      </CardContent>
-    </Card>
+        <p className="text-[10px] tracking-wider uppercase text-[#5a5650] mb-1.5">{title}</p>
+        <p className="text-[26px] font-bold text-[#f0ece4] tracking-tight leading-none">{value}</p>
+        {subtitle && <p className="text-[11px] text-[#5a5650] mt-1.5">{subtitle}</p>}
+      </div>
+    </div>
   );
 }
 
-interface QuickActionButtonProps {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}
 
-function QuickActionButton({ icon, label, onClick }: QuickActionButtonProps) {
-  return (
-    <Button
-      variant="outline"
-      className="h-24 flex-col gap-2 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white hover:border-orange-500 transition-all"
-      onClick={onClick}
-    >
-      {icon}
-      <span className="text-sm">{label}</span>
-    </Button>
-  );
-}
-
-function getStatusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "NEW":
-      return "default";
-    case "PREPARING":
-      return "secondary";
-    case "READY":
-      return "outline";
-    case "DONE":
-      return "secondary";
-    case "CANCELLED":
-      return "destructive";
-    default:
-      return "default";
-  }
-}

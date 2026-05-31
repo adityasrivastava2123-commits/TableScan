@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2, Settings, Building2, Clock, Palette, AlertTriangle, Upload, X } from "lucide-react";
 import axios from "axios";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -237,313 +237,368 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea6c0a]">
+          <Settings className="size-6 text-white" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Settings</h1>
+          <p className="text-sm text-[#999999]">Manage your restaurant preferences</p>
+        </div>
+      </div>
+
       <Tabs defaultValue="general" className="w-full">
-        <TabsList>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="tax-theme">Tax & Theme</TabsTrigger>
-          <TabsTrigger value="hours">Operating Hours</TabsTrigger>
-        </TabsList>
+        <div>
+          <TabsList className="bg-[#141414] border border-[#252525]">
+            <TabsTrigger value="general" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
+              <Building2 className="size-4 mr-2" /> General
+            </TabsTrigger>
+            <TabsTrigger value="tax-theme" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
+              <Palette className="size-4 mr-2" /> Tax & Theme
+            </TabsTrigger>
+            <TabsTrigger value="hours" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
+              <Clock className="size-4 mr-2" /> Hours
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="general" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>General Settings</CardTitle>
-              <CardDescription>Update your restaurant's basic information</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Restaurant Name *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, name: e.target.value }));
-                    setHasUnsavedChanges(true);
-                  }}
-                  placeholder="Enter restaurant name"
-                />
-              </div>
+          <div>
+            <Card className="bg-[#141414] border-[#252525]">
+              <CardHeader>
+                <CardTitle className="text-white">General Settings</CardTitle>
+                <CardDescription className="text-[#999999]">Update your restaurant's basic information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-white text-sm font-medium">Restaurant Name *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, name: e.target.value }));
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="Enter restaurant name"
+                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, description: e.target.value }));
-                    setHasUnsavedChanges(true);
-                  }}
-                  placeholder="Enter restaurant description"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-white text-sm font-medium">Description</Label>
+                  <Input
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, description: e.target.value }));
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="Enter restaurant description"
+                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, phone: e.target.value }));
-                    setHasUnsavedChanges(true);
-                  }}
-                  placeholder="Enter phone number"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-white text-sm font-medium">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, phone: e.target.value }));
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="Enter phone number"
+                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, email: e.target.value }));
-                    setHasUnsavedChanges(true);
-                  }}
-                  placeholder="Enter email address"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-white text-sm font-medium">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, email: e.target.value }));
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="Enter email address"
+                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="notificationEmail">Notification Email</Label>
-                <Input
-                  id="notificationEmail"
-                  type="email"
-                  value={formData.notificationEmail}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, notificationEmail: e.target.value }));
-                    setHasUnsavedChanges(true);
-                  }}
-                  placeholder="Enter email for order notifications (optional)"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Separate email for receiving new order alerts. If not set, your account email will be used.
-                </p>
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="notificationEmail" className="text-white text-sm font-medium">Notification Email</Label>
+                  <Input
+                    id="notificationEmail"
+                    type="email"
+                    value={formData.notificationEmail}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, notificationEmail: e.target.value }));
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="Enter email for order notifications (optional)"
+                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                  />
+                  <p className="text-xs text-[#999999]">
+                    Separate email for receiving new order alerts. If not set, your account email will be used.
+                  </p>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="logo">Logo</Label>
-                <div className="flex items-center gap-4">
-                  {formData.logo && (
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden border">
-                      <img src={formData.logo} alt="Logo" className="w-full h-full object-cover" />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 right-1 size-6"
-                        onClick={handleRemoveLogo}
-                      >
-                        <Trash2 className="size-3" />
-                      </Button>
+                <div className="space-y-2">
+                  <Label htmlFor="logo" className="text-white text-sm font-medium">Logo</Label>
+                  <div className="flex items-center gap-4">
+                    {formData.logo && (
+                      <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-[#252525]">
+                        <img src={formData.logo} alt="Logo" className="w-full h-full object-cover" />
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          type="button"
+                          className="absolute top-1 right-1 size-6 rounded-lg bg-[#ef4444] hover:bg-[#dc2626] flex items-center justify-center transition-colors"
+                          onClick={handleRemoveLogo}
+                        >
+                          <X className="size-3 text-white" />
+                        </motion.button>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <Input
+                        id="logo"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="bg-[#1a1a1a] border-[#252525] text-white cursor-pointer"
+                      />
                     </div>
-                  )}
-                  <div className="flex-1">
-                    <Input
-                      id="logo"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="cursor-pointer"
-                    />
                   </div>
                 </div>
-              </div>
 
-              <div className="flex justify-end">
-                <Button onClick={handleSaveGeneral} disabled={loading || !hasUnsavedChanges} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
-                  {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-                  Save Changes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveGeneral}
+                    disabled={loading || !hasUnsavedChanges}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] transition-colors disabled:opacity-50"
+                  >
+                    {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    Save Changes
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="tax-theme" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Tax & Theme</CardTitle>
-              <CardDescription>Configure tax rate and visual theme</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="taxPercent">Tax Percentage (0-30%)</Label>
-                <Input
-                  id="taxPercent"
-                  type="number"
-                  min="0"
-                  max="30"
-                  step="0.5"
-                  value={formData.taxPercent}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    setFormData((prev) => ({ ...prev, taxPercent: value }));
-                    setHasUnsavedChanges(true);
-                  }}
-                />
-                <p className="text-sm text-muted-foreground">
-                  Live preview: ₹100 item → ₹{calculateTaxPreview(100)} after tax
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Theme</Label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {THEMES.map((theme) => (
-                    <button
-                      key={theme.value}
-                      type="button"
-                      onClick={() => {
-                        setFormData((prev) => ({ ...prev, theme: theme.value as "default" | "warm" | "fresh" | "bold" }));
-                        setHasUnsavedChanges(true);
-                      }}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        formData.theme === theme.value
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: theme.colors[0] }}
-                        />
-                        <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: theme.colors[1] }}
-                        />
-                      </div>
-                      <p className="text-sm font-medium">{theme.name}</p>
-                    </button>
-                  ))}
+          <div>
+            <Card className="bg-[#141414] border-[#252525]">
+              <CardHeader>
+                <CardTitle className="text-white">Tax & Theme</CardTitle>
+                <CardDescription className="text-[#999999]">Configure tax rate and visual theme</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="taxPercent" className="text-white text-sm font-medium">Tax Percentage (0-30%)</Label>
+                  <Input
+                    id="taxPercent"
+                    type="number"
+                    min="0"
+                    max="30"
+                    step="0.5"
+                    value={formData.taxPercent}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value);
+                      setFormData((prev) => ({ ...prev, taxPercent: value }));
+                      setHasUnsavedChanges(true);
+                    }}
+                    className="bg-[#1a1a1a] border-[#252525] text-white focus:border-[#f97316]"
+                  />
+                  <p className="text-sm text-[#999999]">
+                    Live preview: ₹100 item → ₹{calculateTaxPreview(100)} after tax
+                  </p>
                 </div>
-              </div>
 
-              <div className="flex justify-end">
-                <Button onClick={handleSaveTaxTheme} disabled={loading || !hasUnsavedChanges} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
-                  {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-                  Save Changes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="space-y-2">
+                  <Label className="text-white text-sm font-medium">Theme</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {THEMES.map((theme) => (
+                      <button
+                        key={theme.value}
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({ ...prev, theme: theme.value as "default" | "warm" | "fresh" | "bold" }));
+                          setHasUnsavedChanges(true);
+                        }}
+                        className={`p-4 rounded-xl border-2 transition-all ${
+                          formData.theme === theme.value
+                            ? "border-[#f97316] bg-[#f97316]/10"
+                            : "border-[#252525] hover:border-[#f97316]/50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: theme.colors[0] }}
+                          />
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: theme.colors[1] }}
+                          />
+                        </div>
+                        <p className="text-sm font-medium text-white">{theme.name}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveTaxTheme}
+                    disabled={loading || !hasUnsavedChanges}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] transition-colors disabled:opacity-50"
+                  >
+                    {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    Save Changes
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="hours" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Operating Hours</CardTitle>
-              <CardDescription>Set your restaurant's operating hours for each day</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-end mb-4">
-                <Button variant="outline" size="sm" onClick={handleApplyToAllDays}>
-                  Apply Monday to All Days
-                </Button>
-              </div>
-
-              {DAYS.map((day) => (
-                <div key={day} className="flex items-center gap-4 p-4 border rounded-lg">
-                  <div className="w-32 capitalize font-medium">{day}</div>
-                  <Switch
-                    checked={formData.operatingHours[day]?.isOpen || false}
-                    onCheckedChange={(checked) =>
-                      handleOperatingHoursChange(day, "isOpen", checked)
-                    }
-                  />
-                  <div className="flex items-center gap-2 flex-1">
-                    <Label htmlFor={`${day}-open`} className="text-sm">
-                      Open
-                    </Label>
-                    <Input
-                      id={`${day}-open`}
-                      type="time"
-                      value={formData.operatingHours[day]?.open || "09:00"}
-                      onChange={(e) => handleOperatingHoursChange(day, "open", e.target.value)}
-                      disabled={!formData.operatingHours[day]?.isOpen}
-                      className="w-32"
-                    />
-                    <Label htmlFor={`${day}-close`} className="text-sm">
-                      Close
-                    </Label>
-                    <Input
-                      id={`${day}-close`}
-                      type="time"
-                      value={formData.operatingHours[day]?.close || "22:00"}
-                      onChange={(e) => handleOperatingHoursChange(day, "close", e.target.value)}
-                      disabled={!formData.operatingHours[day]?.isOpen}
-                      className="w-32"
-                    />
-                  </div>
+          <div>
+            <Card className="bg-[#141414] border-[#252525]">
+              <CardHeader>
+                <CardTitle className="text-white">Operating Hours</CardTitle>
+                <CardDescription className="text-[#999999]">Set your restaurant's operating hours for each day</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-end mb-4">
+                  <button
+                    onClick={handleApplyToAllDays}
+                    className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors text-sm"
+                  >
+                    Apply Monday to All Days
+                  </button>
                 </div>
-              ))}
 
-              <div className="flex justify-end">
-                <Button onClick={handleSaveOperatingHours} disabled={loading || !hasUnsavedChanges} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
-                  {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-                  Save Changes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                {DAYS.map((day) => (
+                  <div key={day} className="flex items-center gap-4 p-4 border border-[#252525] rounded-xl bg-[#1e1e1e]">
+                    <div className="w-32 capitalize font-medium text-white">{day}</div>
+                    <Switch
+                      checked={formData.operatingHours[day]?.isOpen || false}
+                      onCheckedChange={(checked) =>
+                        handleOperatingHoursChange(day, "isOpen", checked)
+                      }
+                    />
+                    <div className="flex items-center gap-2 flex-1">
+                      <Label htmlFor={`${day}-open`} className="text-sm text-[#999999]">
+                        Open
+                      </Label>
+                      <Input
+                        id={`${day}-open`}
+                        type="time"
+                        value={formData.operatingHours[day]?.open || "09:00"}
+                        onChange={(e) => handleOperatingHoursChange(day, "open", e.target.value)}
+                        disabled={!formData.operatingHours[day]?.isOpen}
+                        className="w-32 bg-[#1a1a1a] border-[#252525] text-white"
+                      />
+                      <Label htmlFor={`${day}-close`} className="text-sm text-[#999999]">
+                        Close
+                      </Label>
+                      <Input
+                        id={`${day}-close`}
+                        type="time"
+                        value={formData.operatingHours[day]?.close || "22:00"}
+                        onChange={(e) => handleOperatingHoursChange(day, "close", e.target.value)}
+                        disabled={!formData.operatingHours[day]?.isOpen}
+                        className="w-32 bg-[#1a1a1a] border-[#252525] text-white"
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveOperatingHours}
+                    disabled={loading || !hasUnsavedChanges}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] transition-colors disabled:opacity-50"
+                  >
+                    {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    Save Changes
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
 
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
-          <CardDescription>
-            Irreversible actions that affect your restaurant data
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-destructive/50 rounded-lg bg-destructive/5">
-            <div className="space-y-1">
-              <p className="font-medium">Delete Restaurant</p>
-              <p className="text-sm text-muted-foreground">
-                This will permanently delete your restaurant and all associated data. This action cannot be undone.
-              </p>
+      {/* Danger Zone */}
+      <div>
+        <Card className="bg-[#141414] border-[#ef4444]/50">
+          <CardHeader>
+            <CardTitle className="text-[#ef4444] flex items-center gap-2">
+              <AlertTriangle className="size-5" /> Danger Zone
+            </CardTitle>
+            <CardDescription className="text-[#999999]">
+              Irreversible actions that affect your restaurant data
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 border border-[#ef4444]/50 rounded-xl bg-[#ef4444]/5">
+              <div className="space-y-1">
+                <p className="font-medium text-white">Delete Restaurant</p>
+                <p className="text-sm text-[#999999]">
+                  This will permanently delete your restaurant and all associated data. This action cannot be undone.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={loading}
+                className="px-4 py-2 rounded-lg bg-[#ef4444] text-white font-medium hover:bg-[#dc2626] transition-colors disabled:opacity-50"
+              >
+                Delete Restaurant
+              </button>
             </div>
-            <Button
-              variant="destructive"
-              onClick={() => setShowDeleteDialog(true)}
-              disabled={loading}
-            >
-              Delete Restaurant
-            </Button>
-          </div>
 
-          {showDeleteDialog && (
-            <div className="space-y-4 p-4 border border-destructive rounded-lg bg-destructive/5">
-              <div className="space-y-2">
-                <Label htmlFor="delete-confirm">
-                  Type <span className="font-bold">{restaurant.name}</span> to confirm
-                </Label>
-                <Input
-                  id="delete-confirm"
-                  value={deleteConfirmText}
-                  onChange={(e) => setDeleteConfirmText(e.target.value)}
-                  placeholder="Restaurant name"
-                />
+            {showDeleteDialog && (
+              <div className="space-y-4 p-4 border border-[#ef4444] rounded-xl bg-[#ef4444]/5">
+                <div className="space-y-2">
+                  <Label htmlFor="delete-confirm" className="text-white">
+                    Type <span className="font-bold text-[#ef4444]">{restaurant.name}</span> to confirm
+                  </Label>
+                  <Input
+                    id="delete-confirm"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="Restaurant name"
+                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#ef4444]"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDeleteRestaurant}
+                    disabled={loading || deleteConfirmText !== restaurant.name}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#ef4444] text-white font-medium hover:bg-[#dc2626] transition-colors disabled:opacity-50"
+                  >
+                    {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    Confirm Delete
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteDialog(false)}
+                    className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="destructive"
-                  onClick={handleDeleteRestaurant}
-                  disabled={loading || deleteConfirmText !== restaurant.name}
-                >
-                  {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-                  Confirm Delete
-                </Button>
-                <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

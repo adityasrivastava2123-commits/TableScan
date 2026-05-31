@@ -3,11 +3,12 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { format } from "date-fns";
-import { Download, ChevronDown, ChevronUp } from "lucide-react";
+import { Download, ChevronDown, ChevronUp, Calendar, Filter, FileText, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -44,12 +45,12 @@ type Props = {
   restaurantId: string;
 };
 
-const statusBadgeMap: Record<OrderStatus, string> = {
-  NEW: "bg-blue-500/15 text-blue-700 border-blue-300",
-  PREPARING: "bg-orange-500/15 text-orange-700 border-orange-300",
-  READY: "bg-green-500/15 text-green-700 border-green-300",
-  DONE: "bg-slate-500/15 text-slate-700 border-slate-300",
-  CANCELLED: "bg-red-500/15 text-red-700 border-red-300",
+const statusBadgeMap: Record<OrderStatus, { bg: string; text: string; border: string }> = {
+  NEW: { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20" },
+  PREPARING: { bg: "bg-[#f97316]/10", text: "text-[#f97316]", border: "border-[#f97316]/20" },
+  READY: { bg: "bg-[#22c55e]/10", text: "text-[#22c55e]", border: "border-[#22c55e]/20" },
+  DONE: { bg: "bg-[#999999]/10", text: "text-[#999999]", border: "border-[#999999]/20" },
+  CANCELLED: { bg: "bg-[#ef4444]/10", text: "text-[#ef4444]", border: "border-[#ef4444]/20" },
 };
 
 const inr = new Intl.NumberFormat("en-IN", {
@@ -147,164 +148,207 @@ export function OrderHistoryTable({ restaurantId }: Props) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Status</p>
-            <Select
-              value={status}
-              onValueChange={(value) => {
-                setStatus(value);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-[170px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All</SelectItem>
-                <SelectItem value="NEW">NEW</SelectItem>
-                <SelectItem value="PREPARING">PREPARING</SelectItem>
-                <SelectItem value="READY">READY</SelectItem>
-                <SelectItem value="DONE">DONE</SelectItem>
-                <SelectItem value="CANCELLED">CANCELLED</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea6c0a]">
+            <FileText className="size-6 text-white" />
           </div>
-
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">From</p>
-            <Input
-              type="date"
-              value={from}
-              onChange={(e) => {
-                setFrom(e.target.value);
-                setPage(1);
-              }}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">To</p>
-            <Input
-              type="date"
-              value={to}
-              onChange={(e) => {
-                setTo(e.target.value);
-                setPage(1);
-              }}
-            />
+          <div>
+            <h1 className="text-3xl font-bold text-white">Order History</h1>
+            <p className="text-sm text-[#999999]">View and filter past orders</p>
           </div>
         </div>
-
-        <Button onClick={() => void exportCsv()} disabled={exporting}>
-          <Download className="mr-1 h-4 w-4" />
-          {exporting ? "Exporting..." : "Export CSV"}
-        </Button>
       </div>
 
-      <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Order #</th>
-                <th className="px-4 py-3">Table</th>
-                <th className="px-4 py-3">Items</th>
-                <th className="px-4 py-3">Amount</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
+      {/* Filters */}
+      <div>
+        <Card className="bg-[#141414] border-[#252525]">
+          <div className="p-6">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div className="flex flex-wrap items-end gap-4">
+                <div className="space-y-2">
+                  <Label className="text-white text-sm font-medium flex items-center gap-2">
+                    <Filter className="size-4" /> Status
+                  </Label>
+                  <Select
+                    value={status}
+                    onValueChange={(value) => {
+                      setStatus(value);
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="w-[170px] bg-[#1a1a1a] border-[#252525] text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#141414] border-[#252525]">
+                      <SelectItem value="ALL" className="text-white">All</SelectItem>
+                      <SelectItem value="NEW" className="text-white">NEW</SelectItem>
+                      <SelectItem value="PREPARING" className="text-white">PREPARING</SelectItem>
+                      <SelectItem value="READY" className="text-white">READY</SelectItem>
+                      <SelectItem value="DONE" className="text-white">DONE</SelectItem>
+                      <SelectItem value="CANCELLED" className="text-white">CANCELLED</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-white text-sm font-medium flex items-center gap-2">
+                    <Calendar className="size-4" /> From
+                  </Label>
+                  <Input
+                    type="date"
+                    value={from}
+                    onChange={(e) => {
+                      setFrom(e.target.value);
+                      setPage(1);
+                    }}
+                    className="bg-[#1a1a1a] border-[#252525] text-white"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-white text-sm font-medium flex items-center gap-2">
+                    <Calendar className="size-4" /> To
+                  </Label>
+                  <Input
+                    type="date"
+                    value={to}
+                    onChange={(e) => {
+                      setTo(e.target.value);
+                      setPage(1);
+                    }}
+                    className="bg-[#1a1a1a] border-[#252525] text-white"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={() => void exportCsv()}
+                disabled={exporting}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] shadow-lg shadow-[#f97316]/20 transition-all disabled:opacity-50"
+              >
+                <Download className="size-5" />
+                {exporting ? "Exporting..." : "Export CSV"}
+              </button>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Table */}
+      <div>
+        <Card className="overflow-hidden bg-[#141414] border-[#252525]">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-[#1e1e1e] text-left text-xs uppercase tracking-wide text-[#999999]">
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    Loading history...
-                  </td>
+                  <th className="px-6 py-4">Order #</th>
+                  <th className="px-6 py-4">Table</th>
+                  <th className="px-6 py-4">Items</th>
+                  <th className="px-6 py-4">Amount</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Time</th>
                 </tr>
-              ) : orders.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    No orders in this period
-                  </td>
-                </tr>
-              ) : (
-                orders.map((order) => {
-                  const isExpanded = expandedId === order.id;
-                  return (
-                    <Fragment key={order.id}>
-                      <tr
-                        className="cursor-pointer border-t transition hover:bg-muted/20"
-                        onClick={() => setExpandedId(isExpanded ? null : order.id)}
-                      >
-                        <td className="px-4 py-3 font-medium">
-                          <div className="flex items-center gap-2">
-                            {order.orderNumber}
-                            {isExpanded ? (
-                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">{order.table.name}</td>
-                        <td className="px-4 py-3 text-sm text-muted-foreground">
-                          {order.items.length} items
-                        </td>
-                        <td className="px-4 py-3">{inr.format(order.totalAmount)}</td>
-                        <td className="px-4 py-3">
-                          <Badge className={statusBadgeMap[order.status]} variant="outline">
-                            {order.status}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          {format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a")}
-                        </td>
-                      </tr>
-                      {isExpanded ? (
-                        <tr className="border-t bg-muted/10">
-                          <td colSpan={6} className="px-4 py-3">
-                            <div className="space-y-1">
-                              {order.items.map((item) => (
-                                <p key={item.id} className="text-sm">
-                                  <span className="font-medium">{item.quantity}x</span>{" "}
-                                  {item.menuItem.name} — {inr.format(item.price * item.quantity)}
-                                </p>
-                              ))}
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center text-[#999999]">
+                      Loading history...
+                    </td>
+                  </tr>
+                ) : orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center text-[#555555]">
+                      No orders in this period
+                    </td>
+                  </tr>
+                ) : (
+                  orders.map((order, idx) => {
+                    const isExpanded = expandedId === order.id;
+                    return (
+                      <Fragment key={order.id}>
+                        <tr
+                          className="cursor-pointer border-t border-[#252525] transition hover:bg-[#1e1e1e]"
+                          onClick={() => setExpandedId(isExpanded ? null : order.id)}
+                        >
+                          <td className="px-6 py-4 font-medium">
+                            <div className="flex items-center gap-2 text-white">
+                              {order.orderNumber}
+                              <div className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}>
+                                <ChevronDown className="size-4 text-[#999999]" />
+                              </div>
                             </div>
                           </td>
+                          <td className="px-6 py-4 text-[#999999]">{order.table.name}</td>
+                          <td className="px-6 py-4 text-sm text-[#999999]">
+                            {order.items.length} items
+                          </td>
+                          <td className="px-6 py-4 text-white font-semibold tabular-nums">
+                            {inr.format(order.totalAmount)}
+                          </td>
+                          <td className="px-6 py-4">
+                            <Badge
+                              className={`${statusBadgeMap[order.status].bg} ${statusBadgeMap[order.status].text} ${statusBadgeMap[order.status].border} border-0`}
+                            >
+                              {order.status}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#999999]">
+                            {format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a")}
+                          </td>
                         </tr>
-                      ) : null}
-                    </Fragment>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+                        {isExpanded ? (
+                          <tr className="border-t border-[#252525] bg-[#1e1e1e]">
+                            <td colSpan={6} className="px-6 py-4">
+                              <div className="space-y-2">
+                                {order.items.map((item) => (
+                                  <div key={item.id} className="flex items-center justify-between p-3 bg-[#141414] rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                      <span className="font-bold text-white">{item.quantity}x</span>
+                                      <span className="text-[#999999]">{item.menuItem.name}</span>
+                                    </div>
+                                    <span className="text-white font-semibold tabular-nums">
+                                      {inr.format(item.price * item.quantity)}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        ) : null}
+                      </Fragment>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
 
+      {/* Pagination */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-[#999999]">
           {total} total orders • Page {page} of {pages}
         </p>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
+          <button
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page === 1}
+            className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
-          </Button>
-          <Button
-            variant="outline"
+          </button>
+          <button
             onClick={() => setPage((prev) => Math.min(pages, prev + 1))}
             disabled={page === pages}
+            className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
-          </Button>
+          </button>
         </div>
       </div>
     </div>

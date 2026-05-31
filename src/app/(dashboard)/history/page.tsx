@@ -33,8 +33,8 @@ export default async function HistoryPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold">Order History</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-2xl font-semibold text-white">Order History</h1>
+        <p className="text-sm text-[#999999]">
           Browse, filter, and export past orders.
         </p>
       </div>

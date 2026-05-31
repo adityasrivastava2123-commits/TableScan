@@ -33,8 +33,8 @@ export default async function ReportsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold">Reports</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-2xl font-semibold text-white">Reports</h1>
+        <p className="text-sm text-[#999999]">
           Revenue and order performance insights.
         </p>
       </div>

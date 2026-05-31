@@ -47,7 +47,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-[#0a0a0a]">
       <Sidebar
         restaurant={restaurant}
         restaurantOpen={restaurantOpen}

@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Clock, ChefHat, Package, Check, X, MoreVertical } from "lucide-react";
 import toast from "react-hot-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,26 +38,30 @@ type BoardOrder = {
 
 const boardStatuses: BoardStatus[] = ["NEW", "PREPARING", "READY", "DONE"];
 
-const columnStyles: Record<BoardStatus, { bg: string; text: string; label: string }> = {
+const columnStyles: Record<BoardStatus, { bg: string; text: string; label: string; icon: React.ReactNode }> = {
   NEW: {
-    bg: "bg-orange-100",
-    text: "text-orange-700",
+    bg: "bg-blue-500/10",
+    text: "text-blue-500",
     label: "NEW",
+    icon: <Clock className="size-4" />,
   },
   PREPARING: {
-    bg: "bg-amber-100",
-    text: "text-amber-700",
+    bg: "bg-[#f97316]/10",
+    text: "text-[#f97316]",
     label: "PREPARING",
+    icon: <ChefHat className="size-4" />,
   },
   READY: {
-    bg: "bg-green-100",
-    text: "text-green-700",
+    bg: "bg-[#22c55e]/10",
+    text: "text-[#22c55e]",
     label: "READY",
+    icon: <Package className="size-4" />,
   },
   DONE: {
-    bg: "bg-slate-100",
-    text: "text-slate-700",
+    bg: "bg-[#999999]/10",
+    text: "text-[#999999]",
     label: "DONE",
+    icon: <Check className="size-4" />,
   },
 };
 
@@ -220,128 +225,176 @@ export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatsCard label="Total orders today" value={stats.totalOrdersToday.toString()} />
-        <StatsCard label="Pending orders" value={stats.pendingOrders.toString()} />
-        <StatsCard label="Revenue today" value={`₹${stats.revenueToday.toFixed(2)}`} />
-        <StatsCard
-          label="Average order value"
-          value={`₹${stats.averageOrderValue.toFixed(2)}`}
-        />
-      </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-4 mb-6"
+      >
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#f97316] to-transparent" />
+        <p className="text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#f97316]">OPERATIONS</p>
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#f97316] to-transparent" />
+      </motion.div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-4 overflow-x-auto pb-2 -mx-4 px-4">
-        {boardStatuses.map((status) => (
-          <div key={status} className="flex min-h-[500px] w-80 flex-shrink-0 flex-col rounded-lg border bg-muted/20">
-            <div
-              className={`sticky top-0 z-10 flex items-center justify-between rounded-t-lg px-4 py-3 ${columnStyles[status].bg}`}
-            >
-              <h3 className={`text-sm font-semibold ${columnStyles[status].text}`}>
-                {columnStyles[status].label}
-              </h3>
-              <Badge variant="secondary">{groupedOrders[status].length}</Badge>
-            </div>
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <h1 className="text-4xl font-extrabold tracking-tight text-white">
+          All <span className="text-[#999999] italic">orders.</span>
+        </h1>
+        <p className="text-[#999999] mt-2">{orders.length} orders · streaming in real time</p>
+      </motion.div>
 
-            <div className="flex-1 space-y-3 overflow-y-auto p-3">
-              {groupedOrders[status].length === 0 ? (
-                <div className="flex h-40 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
-                  No orders
-                </div>
-              ) : (
-                groupedOrders[status].map((order) => (
-                  <Card
-                    key={order.id}
-                    className="space-y-3 p-4 shadow-sm transition hover:shadow-md"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-sm font-semibold">{order.orderNumber}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Table: {order.table.name}
-                        </p>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(order.createdAt), {
-                          addSuffix: true,
-                        })}
-                      </p>
-                    </div>
-
-                    <div className="space-y-1 rounded-md bg-muted/30 p-2">
-                      {order.items.map((item) => (
-                        <p key={item.id} className="text-xs">
-                          {item.quantity}x {item.menuItem.name}
-                        </p>
-                      ))}
-                    </div>
-
-                    <div className="space-y-1">
-                      {order.customerName ? (
-                        <p className="text-xs text-muted-foreground">
-                          Customer: {order.customerName}
-                        </p>
-                      ) : null}
-                      <p className="text-sm font-semibold">
-                        Total: ₹{order.totalAmount.toFixed(2)}
-                      </p>
-                    </div>
-
-                    {order.status === "DONE" ? (
-                      <div className="flex items-center gap-2 text-sm text-green-700">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Completed
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {order.status === "NEW" ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700"
-                            disabled={updatingOrderId === order.id}
-                            onClick={() => void updateOrderStatus(order.id, "CANCELLED")}
-                          >
-                            Cancel
-                          </Button>
-                        ) : null}
-
-                        {order.status in nextStatusAction ? (
-                          <Button
-                            size="sm"
-                            disabled={updatingOrderId === order.id}
-                            onClick={() =>
-                              void updateOrderStatus(
-                                order.id,
-                                nextStatusAction[order.status as keyof typeof nextStatusAction]
-                                  .status,
-                              )
-                            }
-                          >
-                            {
-                              nextStatusAction[order.status as keyof typeof nextStatusAction]
-                                .label
-                            }
-                          </Button>
-                        ) : null}
-                      </div>
-                    )}
-                  </Card>
-                ))
-              )}
-            </div>
-          </div>
+      {/* Filter Tabs */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="flex gap-2"
+      >
+        {["All", "Pending", "Preparing", "Ready", "Done", "Cancelled"].map((filter) => (
+          <motion.button
+            key={filter}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover-lift ${
+              filter === "All"
+                ? "bg-[#f97316] text-white"
+                : "bg-[#141414] text-[#999999] border border-[#252525] hover:bg-[#1e1e1e]"
+            }`}
+          >
+            {filter}
+          </motion.button>
         ))}
-      </div>
-    </div>
+      </motion.div>
+
+      {/* Kanban Board */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        {boardStatuses.map((status) => {
+          const columnOrders = groupedOrders[status];
+          const style = columnStyles[status];
+
+          return (
+            <div key={status} className="bg-[#141414] border border-[#252525] rounded-xl overflow-hidden">
+              {/* Column Header */}
+              <div className={`p-4 border-b border-[#252525] ${style.bg}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {style.icon}
+                    <h3 className={`font-semibold ${style.text}`}>{style.label}</h3>
+                  </div>
+                  <Badge className={`${style.bg} ${style.text} border-0`}>
+                    {columnOrders.length}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Column Content */}
+              <div className="p-3 space-y-3 min-h-[400px]">
+                <AnimatePresence mode="popLayout">
+                  {columnOrders.map((order) => (
+                    <motion.div
+                      key={order.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      className="bg-[#1e1e1e] border border-[#252525] rounded-lg p-4 hover-lift cursor-pointer"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <span className="text-white font-bold text-lg">#{order.orderNumber}</span>
+                          <p className="text-[#999999] text-sm">{order.table.name}</p>
+                        </div>
+                        <StatusBadge status={order.status} />
+                      </div>
+
+                      <div className="space-y-2 mb-3">
+                        {order.items.map((item) => (
+                          <div key={item.id} className="flex items-center justify-between text-sm">
+                            <span className="text-[#999999]">
+                              {item.quantity}x {item.menuItem.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-[#252525]">
+                        <span className="text-white font-semibold text-lg tabular-nums">
+                          ₹{order.totalAmount.toFixed(2)}
+                        </span>
+                        <span className="text-[#555555] text-xs">
+                          {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                        </span>
+                      </div>
+
+                      {status !== "DONE" && (
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => updateOrderStatus(order.id, nextStatusAction[status].status)}
+                          disabled={updatingOrderId === order.id}
+                          className="w-full mt-3 px-3 py-2 rounded-lg bg-[#f97316] text-white text-sm font-medium hover:bg-[#ea6c0a] transition-colors disabled:opacity-50"
+                        >
+                          {updatingOrderId === order.id ? "Updating..." : nextStatusAction[status].label}
+                        </motion.button>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {columnOrders.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-12 text-[#555555]">
+                    {style.icon}
+                    <p className="text-sm mt-2">No orders</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const statusConfig: Record<string, { color: string; label: string; bg: string }> = {
+    NEW: { color: "text-blue-500", label: "NEW", bg: "bg-blue-500/10" },
+    PREPARING: { color: "text-[#f97316]", label: "PREPARING", bg: "bg-[#f97316]/10" },
+    READY: { color: "text-[#22c55e]", label: "READY", bg: "bg-[#22c55e]/10" },
+    DONE: { color: "text-[#999999]", label: "DONE", bg: "bg-[#999999]/10" },
+    CANCELLED: { color: "text-[#ef4444]", label: "CANCELLED", bg: "bg-[#ef4444]/10" },
+  };
+
+  const config = statusConfig[status] || statusConfig.NEW;
+
+  return (
+    <Badge className={`${config.bg} ${config.color} border-0`}>
+      {config.label}
+    </Badge>
   );
 }
 
 function StatsCard({ label, value }: { label: string; value: string }) {
   return (
-    <Card className="p-4 shadow-sm">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-semibold">{value}</p>
+    <Card className="p-4 shadow-sm bg-[#141414] border-[#252525]">
+      <p className="text-sm text-[#999999]">{label}</p>
+      <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
     </Card>
   );
 }
@@ -349,24 +402,16 @@ function StatsCard({ label, value }: { label: string; value: string }) {
 function OrdersBoardSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="h-8 w-80 animate-pulse rounded-md bg-[#141414]" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="space-y-3 p-4">
-            <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-            <div className="h-7 w-24 animate-pulse rounded bg-muted" />
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-4 overflow-x-auto pb-2 -mx-4 px-4">
-        {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="min-h-[500px] w-80 flex-shrink-0 p-4">
-            <div className="h-5 w-20 animate-pulse rounded bg-muted" />
-            <div className="mt-4 space-y-3">
+          <Card key={idx} className="min-h-[500px] bg-[#141414] border-[#252525] overflow-hidden">
+            <div className="h-16 animate-pulse bg-[#1e1e1e]" />
+            <div className="p-3 space-y-3">
               {Array.from({ length: 3 }).map((__, cardIdx) => (
                 <div
                   key={cardIdx}
-                  className="h-24 animate-pulse rounded-md bg-muted/70"
+                  className="h-32 animate-pulse rounded-md bg-[#1e1e1e]/70"
                 />
               ))}
             </div>

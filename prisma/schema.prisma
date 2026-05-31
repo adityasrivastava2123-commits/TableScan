@@ -68,6 +68,18 @@ model Restaurant {
   orders            Order[]
   staff             Staff[]
   subscription      Subscription?
+  ingredients       Ingredient[]
+  suppliers         Supplier[]
+  shifts            Shift[]
+  schedules         Schedule[]
+  payrollRecords    PayrollRecord[]
+  reservations      Reservation[]
+  waitlist          Waitlist[]
+  orderPreparations OrderPreparation[]
+  tableServices     TableService[]
+  drivers           Driver[]
+  deliveries        Delivery[]
+  queueEntries      QueueEntry[]
 }
 
 model Location {
@@ -95,6 +107,8 @@ model Table {
   locationId   String
   location     Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
   orders       Order[]
+  reservations Reservation[]
+  tableService TableService[]
 }
 
 model Category {
@@ -129,6 +143,7 @@ model MenuItem {
   restaurant   Restaurant          @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   variants     MenuItemVariant[]
   orderItems   OrderItem[]
+  recipeIngredients RecipeIngredient[]
 }
 
 model MenuItemVariant {
@@ -157,6 +172,9 @@ model Order {
   restaurant      Restaurant  @relation(fields: [restaurantId], references: [id])
   items           OrderItem[]
   payment         Payment?
+  orderPreparations OrderPreparation[]
+  tableServices    TableService[]
+  deliveries       Delivery[]
 }
 
 model OrderItem {
@@ -204,6 +222,9 @@ model Staff {
   updatedAt    DateTime   @updatedAt
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  schedules    Schedule[]
+  payrollRecords PayrollRecord[]
+  tableService TableService[]
 }
 
 model Subscription {
@@ -218,4 +239,230 @@ model Subscription {
   updatedAt            DateTime           @updatedAt
   restaurantId         String             @unique
   restaurant           Restaurant         @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+// Inventory Management
+model Ingredient {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  unit        String   // kg, liters, pieces, etc.
+  category    String?  // vegetables, meat, dairy, etc.
+  minStock    Float    @default(0) // minimum stock threshold
+  currentStock Float   @default(0)
+  costPerUnit Float    @default(0)
+  supplierId  String?
+  supplier    Supplier? @relation(fields: [supplierId], references: [id])
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  stockMovements StockMovement[]
+  recipeIngredients RecipeIngredient[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Supplier {
+  id          String   @id @default(cuid())
+  name        String
+  contactName String?
+  email       String?
+  phone       String?
+  address     String?
+  leadTime    Int?     // days to deliver
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  ingredients Ingredient[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StockMovement {
+  id          String   @id @default(cuid())
+  type        String   // IN, OUT, ADJUSTMENT
+  quantity    Float
+  reason      String?
+  notes       String?
+  ingredientId String
+  ingredient  Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model RecipeIngredient {
+  id          String   @id @default(cuid())
+  quantity    Float
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  ingredientId String
+  ingredient  Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+// Staff Scheduling
+model Shift {
+  id          String   @id @default(cuid())
+  name        String   // Morning, Evening, etc.
+  startTime   String   // "09:00"
+  endTime     String   // "17:00"
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  schedules   Schedule[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Schedule {
+  id          String   @id @default(cuid())
+  date        DateTime
+  status      String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  notes       String?
+  shiftId     String
+  shift       Shift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  staffId     String
+  staff       Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PayrollRecord {
+  id          String   @id @default(cuid())
+  period      String   // "January 2024"
+  baseSalary  Float
+  overtime    Float    @default(0)
+  bonuses     Float    @default(0)
+  deductions  Float    @default(0)
+  totalPay    Float
+  status      String   @default("PENDING") // PENDING, PAID
+  staffId     String
+  staff       Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Reservation System
+model Reservation {
+  id          String   @id @default(cuid())
+  customerName String
+  customerPhone String
+  customerEmail String?
+  date        DateTime
+  partySize   Int
+  status      String   @default("CONFIRMED") // CONFIRMED, CANCELLED, COMPLETED, NO_SHOW
+  specialRequests String?
+  tableId     String?
+  table       Table?   @relation(fields: [tableId], references: [id])
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Waitlist {
+  id          String   @id @default(cuid())
+  customerName String
+  customerPhone String
+  partySize   Int
+  estimatedTime Int?   // minutes
+  status      String   @default("WAITING") // WAITING, SEATED, CANCELLED
+  notes       String?
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Kitchen Display System (KDS)
+model OrderPreparation {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  stage       String   @default("RECEIVED") // RECEIVED, PREPARING, READY, SERVED
+  startedAt   DateTime?
+  completedAt DateTime?
+  estimatedPrepTime Int? // minutes
+  actualPrepTime Int?    // minutes
+  priority    String   @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+  notes       String?
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Table Service Management
+model TableService {
+  id          String   @id @default(cuid())
+  tableId     String
+  table       Table    @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  status      String   @default("AVAILABLE") // AVAILABLE, OCCUPIED, RESERVED, DIRTY, MAINTENANCE
+  serverId    String?
+  server      Staff?   @relation(fields: [serverId], references: [id])
+  orderId     String?
+  order       Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  seatedAt    DateTime?
+  clearedAt   DateTime?
+  notes       String?
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Delivery Management
+model Driver {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  email       String?
+  vehicleInfo String?
+  isAvailable Boolean  @default(true)
+  rating      Float    @default(0)
+  totalDeliveries Int @default(0)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  deliveries  Delivery[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Delivery {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  driverId    String?
+  driver      Driver?  @relation(fields: [driverId], references: [id])
+  status      String   @default("PENDING") // PENDING, ASSIGNED, PICKED_UP, IN_TRANSIT, DELIVERED, CANCELLED
+  pickupAddress String
+  deliveryAddress String
+  pickupTime  DateTime?
+  deliveryTime DateTime?
+  estimatedTime Int? // minutes
+  distance    Float? // km
+  notes       String?
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Queue Management
+model QueueEntry {
+  id          String   @id @default(cuid())
+  customerName String
+  customerPhone String
+  partySize   Int
+  type        String   @default("DINE_IN") // DINE_IN, TAKEAWAY, DELIVERY
+  status      String   @default("WAITING") // WAITING, CALLED, SEATED, CANCELLED
+  estimatedWaitTime Int? // minutes
+  actualWaitTime Int?   // minutes
+  calledAt    DateTime?
+  seatedAt    DateTime?
+  notes       String?
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

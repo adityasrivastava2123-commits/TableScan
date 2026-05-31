@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
-import { Trash2, Plus, Loader2 } from "lucide-react";
+import { Trash2, Plus, Loader2, Users, Shield, UserCheck, UserX, Crown, Briefcase, Utensils, ChefHat, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,18 +43,18 @@ type StaffManagerProps = {
 
 const roleOptions: StaffRole[] = ["ADMIN", "MANAGER", "WAITER", "KITCHEN"];
 
-const roleBadgeMap: Record<StaffRole, string> = {
-  ADMIN: "bg-red-500/15 text-red-700 border-red-300",
-  MANAGER: "bg-purple-500/15 text-purple-700 border-purple-300",
-  WAITER: "bg-blue-500/15 text-blue-700 border-blue-300",
-  KITCHEN: "bg-orange-500/15 text-orange-700 border-orange-300",
+const roleBadgeMap: Record<StaffRole, { bg: string; text: string; border: string; icon: React.ReactNode }> = {
+  ADMIN: { bg: "bg-[#ef4444]/10", text: "text-[#ef4444]", border: "border-[#ef4444]/20", icon: <Crown className="size-3" /> },
+  MANAGER: { bg: "bg-purple-500/10", text: "text-purple-500", border: "border-purple-500/20", icon: <Briefcase className="size-3" /> },
+  WAITER: { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20", icon: <Utensils className="size-3" /> },
+  KITCHEN: { bg: "bg-[#f97316]/10", text: "text-[#f97316]", border: "border-[#f97316]/20", icon: <ChefHat className="size-3" /> },
 };
 
-const roleAvatarMap: Record<StaffRole, string> = {
-  ADMIN: "bg-red-100 text-red-700",
-  MANAGER: "bg-purple-100 text-purple-700",
-  WAITER: "bg-blue-100 text-blue-700",
-  KITCHEN: "bg-orange-100 text-orange-700",
+const roleAvatarMap: Record<StaffRole, { bg: string; text: string }> = {
+  ADMIN: { bg: "bg-[#ef4444]/10", text: "text-[#ef4444]" },
+  MANAGER: { bg: "bg-purple-500/10", text: "text-purple-500" },
+  WAITER: { bg: "bg-blue-500/10", text: "text-blue-500" },
+  KITCHEN: { bg: "bg-[#f97316]/10", text: "text-[#f97316]" },
 };
 
 export function StaffManager({ restaurantId }: StaffManagerProps) {
@@ -220,251 +220,288 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Staff Accounts</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage staff members and role-based responsibilities.
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea6c0a]">
+            <Users className="size-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Staff Accounts</h1>
+            <p className="text-sm text-[#999999]">Manage staff members and role-based responsibilities.</p>
+          </div>
         </div>
-        <Button onClick={() => setShowForm((prev) => !prev)} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
-          <Plus className="mr-1 h-4 w-4" />
-          Add Staff
-        </Button>
+        <button
+          onClick={() => setShowForm((prev) => !prev)}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] shadow-lg shadow-[#f97316]/20 transition-all"
+        >
+          <Plus className="size-5" /> Add Staff
+        </button>
       </div>
 
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <StatsCard label="Total Staff" value={stats.total} />
-        <StatsCard label="Active Staff" value={stats.active} />
-        <StatsCard label="Admins" value={stats.roleCounts.ADMIN} />
-        <StatsCard label="Managers" value={stats.roleCounts.MANAGER} />
-        <StatsCard label="Waiters" value={stats.roleCounts.WAITER} />
-        <StatsCard label="Kitchen" value={stats.roleCounts.KITCHEN} />
+        <StatsCard label="Total Staff" value={stats.total} icon={<Users className="size-4" />} color="blue" />
+        <StatsCard label="Active Staff" value={stats.active} icon={<UserCheck className="size-4" />} color="green" />
+        <StatsCard label="Admins" value={stats.roleCounts.ADMIN} icon={<Crown className="size-4" />} color="red" />
+        <StatsCard label="Managers" value={stats.roleCounts.MANAGER} icon={<Briefcase className="size-4" />} color="purple" />
+        <StatsCard label="Waiters" value={stats.roleCounts.WAITER} icon={<Utensils className="size-4" />} color="blue" />
+        <StatsCard label="Kitchen" value={stats.roleCounts.KITCHEN} icon={<ChefHat className="size-4" />} color="orange" />
       </div>
 
+      {/* Add Staff Form */}
       {showForm ? (
-        <Card className="space-y-4 p-5">
-          <h2 className="text-lg font-semibold">Add Staff Member</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="staff-name">Name *</Label>
-              <Input
-                id="staff-name"
-                value={form.name}
-                onChange={(e) => {
-                  setForm((prev) => ({ ...prev, name: e.target.value }));
-                  setFormErrors((prev) => ({ ...prev, name: undefined }));
-                }}
-                placeholder="Rahul Sharma"
-              />
-              {formErrors.name ? (
-                <p className="text-xs text-destructive">{formErrors.name}</p>
-              ) : null}
-            </div>
+        <div>
+          <Card className="space-y-6 p-6 bg-[#141414] border-[#252525]">
+              <h2 className="text-xl font-semibold text-white">Add Staff Member</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="staff-name" className="text-white text-sm font-medium">Name *</Label>
+                  <Input
+                    id="staff-name"
+                    value={form.name}
+                    onChange={(e) => {
+                      setForm((prev) => ({ ...prev, name: e.target.value }));
+                      setFormErrors((prev) => ({ ...prev, name: undefined }));
+                    }}
+                    placeholder="Rahul Sharma"
+                    className="h-11 bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                  />
+                  {formErrors.name ? (
+                    <p className="text-xs text-[#ef4444]">{formErrors.name}</p>
+                  ) : null}
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="staff-email">Email *</Label>
-              <Input
-                id="staff-email"
-                type="email"
-                value={form.email}
-                onChange={(e) => {
-                  setForm((prev) => ({ ...prev, email: e.target.value }));
-                  setFormErrors((prev) => ({ ...prev, email: undefined }));
-                }}
-                placeholder="rahul@example.com"
-              />
-              {formErrors.email ? (
-                <p className="text-xs text-destructive">{formErrors.email}</p>
-              ) : null}
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="staff-email" className="text-white text-sm font-medium">Email *</Label>
+                  <Input
+                    id="staff-email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => {
+                      setForm((prev) => ({ ...prev, email: e.target.value }));
+                      setFormErrors((prev) => ({ ...prev, email: undefined }));
+                    }}
+                    placeholder="rahul@example.com"
+                    className="h-11 bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                  />
+                  {formErrors.email ? (
+                    <p className="text-xs text-[#ef4444]">{formErrors.email}</p>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="max-w-xs space-y-2">
+                <Label className="text-white text-sm font-medium">Role *</Label>
+                <Select
+                  value={form.role}
+                  onValueChange={(value) => {
+                    setForm((prev) => ({ ...prev, role: value as StaffRole }));
+                    setFormErrors((prev) => ({ ...prev, role: undefined }));
+                  }}
+                >
+                  <SelectTrigger className="w-full bg-[#1a1a1a] border-[#252525] text-white">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#141414] border-[#252525]">
+                    {roleOptions.map((role) => (
+                      <SelectItem key={role} value={role} className="text-white">
+                        {role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formErrors.role ? (
+                  <p className="text-xs text-[#ef4444]">{formErrors.role}</p>
+                ) : null}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => void createStaff()}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] transition-colors disabled:opacity-50"
+                >
+                  {saving ? <Loader2 className="size-4 animate-spin" /> : null}
+                  Save
+                </button>
+                <button
+                  onClick={() => {
+                    setShowForm(false);
+                    setFormErrors({});
+                  }}
+                  disabled={saving}
+                  className="px-6 py-2.5 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </Card>
           </div>
+        ) : null}
+      )}
 
-          <div className="max-w-xs space-y-2">
-            <Label>Role *</Label>
-            <Select
-              value={form.role}
-              onValueChange={(value) => {
-                setForm((prev) => ({ ...prev, role: value as StaffRole }));
-                setFormErrors((prev) => ({ ...prev, role: undefined }));
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                {roleOptions.map((role) => (
-                  <SelectItem key={role} value={role}>
-                    {role}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {formErrors.role ? (
-              <p className="text-xs text-destructive">{formErrors.role}</p>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button onClick={() => void createStaff()} disabled={saving} className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
-              {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
-              Save
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowForm(false);
-                setFormErrors({});
-              }}
-              disabled={saving}
-            >
-              Cancel
-            </Button>
-          </div>
-        </Card>
-      ) : null}
-
-      <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
+      {/* Staff Table */}
+      <div>
+        <Card className="overflow-hidden bg-[#141414] border-[#252525]">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-[#1e1e1e] text-left text-xs uppercase tracking-wide text-[#999999]">
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-muted-foreground">
-                    Loading staff...
-                  </td>
+                  <th className="px-6 py-4">Name</th>
+                  <th className="px-6 py-4">Email</th>
+                  <th className="px-6 py-4">Role</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Actions</th>
                 </tr>
-              ) : staff.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-muted-foreground">
-                    No staff yet — add your first staff member
-                  </td>
-                </tr>
-              ) : (
-                staff.map((member) => (
-                  <tr key={member.id} className="border-t transition hover:bg-muted/20">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold",
-                            roleAvatarMap[member.role],
-                          )}
-                        >
-                          {member.name
-                            .split(" ")
-                            .slice(0, 2)
-                            .map((word) => word[0]?.toUpperCase())
-                            .join("")}
-                        </div>
-                        <div>
-                          <p className="font-medium">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">{member.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-sm">{member.email}</td>
-                    <td className="px-4 py-3">
-                      <Badge
-                        variant="outline"
-                        className={cn("border", roleBadgeMap[member.role])}
-                      >
-                        {member.role}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Button
-                        variant={member.isActive ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => void toggleActive(member)}
-                        disabled={updatingId === member.id}
-                        className={member.isActive ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600" : ""}
-                      >
-                        {updatingId === member.id ? (
-                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                        ) : null}
-                        {member.isActive ? "Active" : "Inactive"}
-                      </Button>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <Select
-                          value={member.role}
-                          onValueChange={(value) =>
-                            void updateRole(member, value as StaffRole)
-                          }
-                          disabled={updatingId === member.id}
-                        >
-                          <SelectTrigger size="sm" className="w-[140px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {roleOptions.map((role) => (
-                              <SelectItem key={role} value={role}>
-                                {role}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-
-                        <Button
-                          variant="destructive"
-                          size="icon-sm"
-                          onClick={() => setDeleteCandidate(member)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-[#999999]">
+                      Loading staff...
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+                ) : staff.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-[#555555]">
+                      No staff yet — add your first staff member
+                    </td>
+                  </tr>
+                ) : (
+                  staff.map((member) => (
+                    <tr
+                      key={member.id}
+                      className="border-t border-[#252525] transition hover:bg-[#1e1e1e]"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={cn(
+                              "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold",
+                              roleAvatarMap[member.role].bg,
+                              roleAvatarMap[member.role].text,
+                            )}
+                          >
+                            {member.name
+                              .split(" ")
+                              .slice(0, 2)
+                              .map((word) => word[0]?.toUpperCase())
+                              .join("")}
+                          </div>
+                          <div>
+                            <p className="font-medium text-white">{member.name}</p>
+                            <p className="text-xs text-[#999999]">{member.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#999999]">{member.email}</td>
+                      <td className="px-6 py-4">
+                        <Badge
+                          variant="outline"
+                          className={cn("border flex items-center gap-1.5", roleBadgeMap[member.role].bg, roleBadgeMap[member.role].text, roleBadgeMap[member.role].border)}
+                        >
+                          {roleBadgeMap[member.role].icon}
+                          {member.role}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => void toggleActive(member)}
+                          disabled={updatingId === member.id}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
+                            member.isActive
+                              ? "bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20"
+                              : "bg-[#555555]/10 text-[#999999] border border-[#252525]"
+                          }`}
+                        >
+                          {updatingId === member.id ? (
+                            <Loader2 className="size-3 animate-spin" />
+                          ) : member.isActive ? (
+                            <UserCheck className="size-3" />
+                          ) : (
+                            <UserX className="size-3" />
+                          )}
+                          {member.isActive ? "Active" : "Inactive"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Select
+                            value={member.role}
+                            onValueChange={(value) =>
+                              void updateRole(member, value as StaffRole)
+                            }
+                            disabled={updatingId === member.id}
+                          >
+                            <SelectTrigger size="sm" className="w-[140px] bg-[#1a1a1a] border-[#252525] text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#141414] border-[#252525]">
+                              {roleOptions.map((role) => (
+                                <SelectItem key={role} value={role} className="text-white">
+                                  {role}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
 
-      <Card className="space-y-3 p-5">
-        <h3 className="text-lg font-semibold">Role Permissions</h3>
-        <ul className="space-y-2 text-sm text-muted-foreground">
-          <li>
-            <span className="font-medium text-foreground">ADMIN:</span> Full access to
-            everything
-          </li>
-          <li>
-            <span className="font-medium text-foreground">MANAGER:</span> Orders, menu,
-            reports (no billing)
-          </li>
-          <li>
-            <span className="font-medium text-foreground">WAITER:</span> View orders, call
-            status updates
-          </li>
-          <li>
-            <span className="font-medium text-foreground">KITCHEN:</span> Kitchen display
-            only
-          </li>
-        </ul>
-      </Card>
+                          <button
+                            onClick={() => setDeleteCandidate(member)}
+                            className="flex items-center justify-center h-8 w-8 rounded-lg bg-[#ef4444] hover:bg-[#dc2626] transition-colors"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
 
+      {/* Role Permissions Card */}
+      <div>
+        <Card className="space-y-4 p-6 bg-[#141414] border-[#252525]">
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Shield className="size-5 text-[#f97316]" />
+            Role Permissions
+          </h3>
+          <ul className="space-y-3 text-sm text-[#999999]">
+            <li className="flex items-start gap-2">
+              <Crown className="size-4 text-[#ef4444] mt-0.5 flex-shrink-0" />
+              <span><span className="font-medium text-white">ADMIN:</span> Full access to everything</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Briefcase className="size-4 text-purple-500 mt-0.5 flex-shrink-0" />
+              <span><span className="font-medium text-white">MANAGER:</span> Orders, menu, reports (no billing)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Utensils className="size-4 text-blue-500 mt-0.5 flex-shrink-0" />
+              <span><span className="font-medium text-white">WAITER:</span> View orders, call status updates</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <ChefHat className="size-4 text-[#f97316] mt-0.5 flex-shrink-0" />
+              <span><span className="font-medium text-white">KITCHEN:</span> Kitchen display only</span>
+            </li>
+          </ul>
+        </Card>
+      </div>
+
+      {/* Delete Dialog */}
       <Dialog
         open={Boolean(deleteCandidate)}
         onOpenChange={(open) => {
           if (!open) setDeleteCandidate(null);
         }}
       >
-        <DialogContent>
+        <DialogContent className="bg-[#141414] border-[#252525]">
           <DialogHeader>
-            <DialogTitle>Delete staff member?</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Delete staff member?</DialogTitle>
+            <DialogDescription className="text-[#999999]">
               This action cannot be undone. {deleteCandidate?.name} will be removed from
               your staff list.
             </DialogDescription>
@@ -474,6 +511,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
               variant="outline"
               onClick={() => setDeleteCandidate(null)}
               disabled={Boolean(deletingId)}
+              className="bg-[#141414] border-[#252525] text-white hover:bg-[#1e1e1e]"
             >
               Cancel
             </Button>
@@ -484,6 +522,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                 if (!deleteCandidate) return;
                 void deleteStaff(deleteCandidate);
               }}
+              className="bg-[#ef4444] hover:bg-[#dc2626]"
             >
               {deletingId && deleteCandidate?.id === deletingId ? (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
@@ -497,12 +536,23 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
   );
 }
 
-function StatsCard({ label, value }: { label: string; value: number }) {
+function StatsCard({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: string }) {
+  const colorClasses = {
+    blue: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    green: "bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20",
+    red: "bg-[#ef4444]/10 text-[#ef4444] border-[#ef4444]/20",
+    purple: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+    orange: "bg-[#f97316]/10 text-[#f97316] border-[#f97316]/20",
+  };
+
   return (
-    <Card className="p-4">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-semibold">{value}</p>
-    </Card>
+    <div className="bg-[#141414] border border-[#252525] rounded-xl p-4">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs uppercase tracking-wide text-[#999999]">{label}</p>
+        <div className={`p-2 rounded-lg ${colorClasses[color as keyof typeof colorClasses]}`}>{icon}</div>
+      </div>
+      <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
+    </div>
   );
 }
 

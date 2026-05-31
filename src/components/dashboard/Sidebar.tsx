@@ -16,10 +16,15 @@ import {
   LogOut,
   Menu,
   X,
+  Star,
+  ArrowRight,
+  Package,
+  Calendar,
+  CalendarCheck,
+  Truck,
+  Monitor,
+  UsersRound,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import type { Restaurant } from "@prisma/client";
 
 interface SidebarProps {
@@ -35,20 +40,35 @@ interface SidebarItem {
   path: string;
   icon: React.ReactNode;
   external?: boolean;
+  section: "overview" | "operations" | "catalog" | "account";
 }
 
 const sidebarItems: SidebarItem[] = [
-  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard className="size-4" /> },
-  { label: "Orders", path: "/orders", icon: <ShoppingBag className="size-4" /> },
-  { label: "Menu", path: "/menu", icon: <UtensilsCrossed className="size-4" /> },
-  { label: "Tables", path: "/tables", icon: <QrCode className="size-4" /> },
-  { label: "Kitchen", path: "/kitchen", icon: <ChefHat className="size-4" />, external: true },
-  { label: "Reports", path: "/reports", icon: <BarChart2 className="size-4" /> },
-  { label: "History", path: "/history", icon: <Clock className="size-4" /> },
-  { label: "Staff", path: "/staff", icon: <Users className="size-4" /> },
-  { label: "Settings", path: "/settings", icon: <Settings className="size-4" /> },
-  { label: "Billing", path: "/billing", icon: <CreditCard className="size-4" /> },
+  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard className="size-4" />, section: "overview" },
+  { label: "Reports", path: "/reports", icon: <BarChart2 className="size-4" />, section: "overview" },
+  { label: "History", path: "/history", icon: <Clock className="size-4" />, section: "overview" },
+  { label: "Orders", path: "/orders", icon: <ShoppingBag className="size-4" />, section: "operations" },
+  { label: "Kitchen", path: "/kitchen", icon: <ChefHat className="size-4" />, external: true, section: "operations" },
+  { label: "KDS", path: "/kds", icon: <Monitor className="size-4" />, section: "operations" },
+  { label: "Menu", path: "/menu", icon: <UtensilsCrossed className="size-4" />, section: "catalog" },
+  { label: "Tables", path: "/tables", icon: <QrCode className="size-4" />, section: "catalog" },
+  { label: "Inventory", path: "/inventory", icon: <Package className="size-4" />, section: "catalog" },
+  { label: "Reservations", path: "/reservations", icon: <CalendarCheck className="size-4" />, section: "catalog" },
+  { label: "Table Service", path: "/table-service", icon: <UsersRound className="size-4" />, section: "catalog" },
+  { label: "Queue", path: "/queue", icon: <UsersRound className="size-4" />, section: "catalog" },
+  { label: "Staff", path: "/staff", icon: <Users className="size-4" />, section: "account" },
+  { label: "Schedule", path: "/schedule", icon: <Calendar className="size-4" />, section: "account" },
+  { label: "Delivery", path: "/delivery", icon: <Truck className="size-4" />, section: "account" },
+  { label: "Settings", path: "/settings", icon: <Settings className="size-4" />, section: "account" },
+  { label: "Billing", path: "/billing", icon: <CreditCard className="size-4" />, section: "account" },
 ];
+
+const sectionLabels: Record<string, string> = {
+  overview: "Overview",
+  operations: "Operations",
+  catalog: "Catalog",
+  account: "Account",
+};
 
 export default function Sidebar({ restaurant, restaurantOpen, userName, userImageUrl, userEmail }: SidebarProps) {
   const router = useRouter();
@@ -61,7 +81,7 @@ export default function Sidebar({ restaurant, restaurantOpen, userName, userImag
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2);
+      .slice(0, 1);
   };
 
   const isActive = (path: string) => {
@@ -78,113 +98,116 @@ export default function Sidebar({ restaurant, restaurantOpen, userName, userImag
     setMobileOpen(false);
   };
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      {/* Restaurant Header */}
-      <div className="p-4 border-b">
-        <div className="flex items-center gap-3">
-          {restaurant.logo ? (
-            <Avatar className="size-10">
-              <AvatarImage src={restaurant.logo} alt={restaurant.name} />
-              <AvatarFallback>{getInitials(restaurant.name)}</AvatarFallback>
-            </Avatar>
-          ) : (
-            <Avatar className="size-10">
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {getInitials(restaurant.name)}
-              </AvatarFallback>
-            </Avatar>
-          )}
-          <div className="flex-1 min-w-0">
-            <h2 className="font-semibold truncate">{restaurant.name}</h2>
-            <Badge variant={restaurantOpen ? "default" : "secondary"} className="text-xs">
-              {restaurantOpen ? "Open" : "Closed"}
-            </Badge>
+  const SidebarContent = () => {
+    return (
+      <div className="flex flex-col h-full bg-[#0e0e0e]">
+        {/* Brand Section */}
+        <div className="p-5 border-b border-[rgba(255,255,255,0.07)]">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f97316]">
+              <span className="text-sm font-bold text-white">{getInitials(restaurant.name)}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base font-bold text-[#f0ece4] tracking-tight">{restaurant.name}</h2>
+              <p className="text-[9px] tracking-wider text-[#5a5650] uppercase">Restaurant OS</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Navigation Items */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {sidebarItems.map((item) => (
-          <button
-            key={item.path}
-            onClick={() => handleNavigation(item)}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isActive(item.path)
-                ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/25"
-                : "text-muted-foreground hover:bg-orange-50 hover:text-foreground"
-            }`}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
+        {/* Navigation Items */}
+        <nav className="flex-1 p-2.5 overflow-y-auto">
+          {Object.entries(sectionLabels).map(([section, label]) => {
+            const sectionItems = sidebarItems.filter((item) => item.section === section);
 
-      {/* User Section */}
-      <div className="p-4 border-t">
-        <div className="flex items-center gap-3 mb-3">
-          <Avatar>
-            <AvatarImage src={userImageUrl} alt={userName} />
-            <AvatarFallback>
+            return (
+              <div key={section} className="mb-1">
+                <div className="px-2 py-3 text-[9px] tracking-wider uppercase text-[#5a5650] font-medium">
+                  {label}
+                </div>
+                <div className="space-y-1">
+                  {sectionItems.map((item) => (
+                    <button
+                      key={item.path}
+                      onClick={() => handleNavigation(item)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all relative ${
+                        isActive(item.path)
+                          ? "bg-[rgba(249,115,22,0.12)] text-[#f97316]"
+                          : "text-[#9a9488] hover:bg-[#181818] hover:text-[#f0ece4]"
+                      }`}
+                    >
+                      {isActive(item.path) && (
+                        <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-[3px] h-4 bg-[#f97316] rounded-l-[2px]" />
+                      )}
+                      <span className="text-[15px]">{item.icon}</span>
+                      <span>{item.label}</span>
+                      {isActive(item.path) && (
+                        <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-[#f97316]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Upgrade Card */}
+        <div className="p-2.5">
+          <div className="bg-gradient-to-br from-[rgba(249,115,22,0.1)] to-[rgba(249,115,22,0.05)] border border-[rgba(249,115,22,0.2)] rounded-xl p-3.5">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Star className="size-3 text-[#f97316]" />
+              <h3 className="text-[12px] font-semibold text-[#f0ece4]">Upgrade to Pro</h3>
+            </div>
+            <p className="text-[10px] text-[#9a9488] leading-relaxed mb-2.5">Unlock advanced features and analytics</p>
+            <button className="w-full py-2 bg-transparent border border-[#f97316] rounded-lg text-[#f97316] text-[11px] font-semibold tracking-wider hover:bg-[#f97316] hover:text-white transition-all">
+              UPGRADE →
+            </button>
+          </div>
+        </div>
+
+        {/* User Section */}
+        <div className="p-3.5 border-t border-[rgba(255,255,255,0.07)]">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-[30px] h-[30px] rounded-full bg-[#222222] flex items-center justify-center text-[11px] font-semibold text-[#f97316] border border-[rgba(249,115,22,0.3)]">
               {userName?.[0] || userEmail?.[0] || "U"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{userName}</p>
-            <p className="text-xs text-muted-foreground truncate">Owner</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold text-[#f0ece4] truncate">{userName}</p>
+              <p className="text-[10px] text-[#5a5650]">Owner</p>
+            </div>
           </div>
+          <button
+            className="w-full flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-[#5a5650] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.07)] transition-all"
+            onClick={() => router.push("/sign-out")}
+          >
+            → Sign Out
+          </button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          onClick={() => router.push("/sign-out")}
-        >
-          <LogOut className="size-4 mr-2" />
-          Sign Out
-        </Button>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 h-full bg-white border-r">
+      <aside className="hidden md:flex flex-col w-[220px] min-h-screen bg-[#0e0e0e] border-r border-[rgba(255,255,255,0.07)] flex-shrink-0 sticky top-0 h-screen overflow-hidden">
         <SidebarContent />
       </aside>
 
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b bg-white">
-        <div className="flex items-center gap-3">
-          {restaurant.logo ? (
-            <Avatar className="size-8">
-              <AvatarImage src={restaurant.logo} alt={restaurant.name} />
-              <AvatarFallback>{getInitials(restaurant.name)}</AvatarFallback>
-            </Avatar>
-          ) : (
-            <Avatar className="size-8">
-              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                {getInitials(restaurant.name)}
-              </AvatarFallback>
-            </Avatar>
-          )}
-          <span className="font-semibold text-sm">{restaurant.name}</span>
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-[rgba(255,255,255,0.07)] bg-[#0e0e0e]">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f97316]">
+            <span className="text-xs font-bold text-white">{getInitials(restaurant.name)}</span>
+          </div>
+          <span className="font-semibold text-sm text-[#f0ece4]">{restaurant.name}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={restaurantOpen ? "default" : "secondary"} className="text-xs">
-            {restaurantOpen ? "Open" : "Closed"}
-          </Badge>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileOpen(true)}
-          >
-            <Menu className="size-5" />
-          </Button>
-        </div>
+        <button
+          className="p-2 rounded-lg text-[#f0ece4] hover:bg-[#181818] transition-colors"
+          onClick={() => setMobileOpen(true)}
+        >
+          <Menu className="size-5" />
+        </button>
       </div>
 
       {/* Mobile Drawer */}
@@ -194,16 +217,15 @@ export default function Sidebar({ restaurant, restaurantOpen, userName, userImag
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="fixed inset-y-0 left-0 w-64 bg-white z-50 md:hidden">
-            <div className="flex items-center justify-between p-4 border-b">
-              <span className="font-semibold">Menu</span>
-              <Button
-                variant="ghost"
-                size="icon"
+          <div className="fixed inset-y-0 left-0 w-[220px] bg-[#0e0e0e] z-50 md:hidden">
+            <div className="flex items-center justify-between p-4 border-b border-[rgba(255,255,255,0.07)]">
+              <span className="font-semibold text-[#f0ece4]">Menu</span>
+              <button
+                className="p-2 rounded-lg text-[#f0ece4] hover:bg-[#181818] transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 <X className="size-5" />
-              </Button>
+              </button>
             </div>
             <SidebarContent />
           </div>
