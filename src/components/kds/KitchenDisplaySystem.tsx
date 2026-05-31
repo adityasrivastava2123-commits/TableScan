@@ -212,8 +212,8 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
           <ChefHat className="size-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-[#f0ece4] tracking-tight">Kitchen Screen</h1>
-          <p className="text-[12px] text-neutral-400 dark:text-[#9a9488]">Touch-optimized real-time chef display</p>
+          <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-[#f0ece4] tracking-tight">Kitchen Display System (KDS)</h1>
+          <p className="text-[12px] text-neutral-500 dark:text-[#9a9488]">Real-time kitchen order preparation and status tracking</p>
         </div>
         <div className="ml-auto flex gap-2">
           {["all", "RECEIVED", "PREPARING", "READY"].map((f) => (

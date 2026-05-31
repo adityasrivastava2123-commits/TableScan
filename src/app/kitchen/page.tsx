@@ -1,17 +1,17 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { KitchenDisplay } from "@/components/orders/KitchenDisplay";
 
 export default async function KitchenPage() {
-  const user = await currentUser();
+  const { userId } = await auth();
 
-  if (!user) {
+  if (!userId) {
     redirect("/sign-in");
   }
 
   const dbUser = await prisma.user.findUnique({
-    where: { clerkId: user.id },
+    where: { clerkId: userId },
     include: {
       restaurants: {
         orderBy: { createdAt: "asc" },
