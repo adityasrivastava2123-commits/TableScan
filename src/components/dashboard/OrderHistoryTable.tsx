@@ -156,20 +156,20 @@ export function OrderHistoryTable({ restaurantId }: Props) {
             <FileText className="size-6 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white">Order History</h1>
-            <p className="text-sm text-[#999999]">View and filter past orders</p>
+            <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Order History</h1>
+            <p className="text-sm text-neutral-500 dark:text-[#999999]">View and filter past orders</p>
           </div>
         </div>
       </div>
 
       {/* Filters */}
       <div>
-        <Card className="bg-[#141414] border-[#252525]">
+        <Card className="bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
           <div className="p-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="flex flex-wrap items-end gap-4">
                 <div className="space-y-2">
-                  <Label className="text-white text-sm font-medium flex items-center gap-2">
+                  <Label className="text-neutral-700 dark:text-white text-sm font-medium flex items-center gap-2">
                     <Filter className="size-4" /> Status
                   </Label>
                   <Select
@@ -179,22 +179,22 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                       setPage(1);
                     }}
                   >
-                    <SelectTrigger className="w-[170px] bg-[#1a1a1a] border-[#252525] text-white">
+                    <SelectTrigger className="w-[170px] bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#141414] border-[#252525]">
-                      <SelectItem value="ALL" className="text-white">All</SelectItem>
-                      <SelectItem value="NEW" className="text-white">NEW</SelectItem>
-                      <SelectItem value="PREPARING" className="text-white">PREPARING</SelectItem>
-                      <SelectItem value="READY" className="text-white">READY</SelectItem>
-                      <SelectItem value="DONE" className="text-white">DONE</SelectItem>
-                      <SelectItem value="CANCELLED" className="text-white">CANCELLED</SelectItem>
+                    <SelectContent className="bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
+                      <SelectItem value="ALL" className="text-neutral-800 dark:text-white">All</SelectItem>
+                      <SelectItem value="NEW" className="text-neutral-800 dark:text-white">NEW</SelectItem>
+                      <SelectItem value="PREPARING" className="text-neutral-800 dark:text-white">PREPARING</SelectItem>
+                      <SelectItem value="READY" className="text-neutral-800 dark:text-white">READY</SelectItem>
+                      <SelectItem value="DONE" className="text-neutral-800 dark:text-white">DONE</SelectItem>
+                      <SelectItem value="CANCELLED" className="text-neutral-800 dark:text-white">CANCELLED</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-white text-sm font-medium flex items-center gap-2">
+                  <Label className="text-neutral-700 dark:text-white text-sm font-medium flex items-center gap-2">
                     <Calendar className="size-4" /> From
                   </Label>
                   <Input
@@ -204,12 +204,12 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                       setFrom(e.target.value);
                       setPage(1);
                     }}
-                    className="bg-[#1a1a1a] border-[#252525] text-white"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-white text-sm font-medium flex items-center gap-2">
+                  <Label className="text-neutral-700 dark:text-white text-sm font-medium flex items-center gap-2">
                     <Calendar className="size-4" /> To
                   </Label>
                   <Input
@@ -219,7 +219,7 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                       setTo(e.target.value);
                       setPage(1);
                     }}
-                    className="bg-[#1a1a1a] border-[#252525] text-white"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white"
                   />
                 </div>
               </div>
@@ -239,10 +239,10 @@ export function OrderHistoryTable({ restaurantId }: Props) {
 
       {/* Table */}
       <div>
-        <Card className="overflow-hidden bg-[#141414] border-[#252525]">
+        <Card className="overflow-hidden bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-[#1e1e1e] text-left text-xs uppercase tracking-wide text-[#999999]">
+              <thead className="bg-neutral-50 dark:bg-[#1e1e1e] text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-[#999999]">
                 <tr>
                   <th className="px-6 py-4">Order #</th>
                   <th className="px-6 py-4">Table</th>
@@ -271,22 +271,22 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                     return (
                       <Fragment key={order.id}>
                         <tr
-                          className="cursor-pointer border-t border-[#252525] transition hover:bg-[#1e1e1e]"
+                          className="cursor-pointer border-t border-neutral-100 dark:border-[#252525] transition hover:bg-neutral-50 dark:hover:bg-[#1e1e1e]"
                           onClick={() => setExpandedId(isExpanded ? null : order.id)}
                         >
                           <td className="px-6 py-4 font-medium">
-                            <div className="flex items-center gap-2 text-white">
+                            <div className="flex items-center gap-2 text-neutral-800 dark:text-white">
                               {order.orderNumber}
                               <div className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}>
-                                <ChevronDown className="size-4 text-[#999999]" />
+                                <ChevronDown className="size-4 text-neutral-400 dark:text-[#999999]" />
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-[#999999]">{order.table.name}</td>
-                          <td className="px-6 py-4 text-sm text-[#999999]">
+                          <td className="px-6 py-4 text-neutral-500 dark:text-[#999999]">{order.table.name}</td>
+                          <td className="px-6 py-4 text-sm text-neutral-500 dark:text-[#999999]">
                             {order.items.length} {order.items.length === 1 ? "item" : "items"}
                           </td>
-                          <td className="px-6 py-4 text-white font-semibold tabular-nums">
+                          <td className="px-6 py-4 text-neutral-800 dark:text-white font-semibold tabular-nums">
                             {inr.format(order.totalAmount)}
                           </td>
                           <td className="px-6 py-4">
@@ -296,21 +296,21 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                               {order.status}
                             </Badge>
                           </td>
-                          <td className="px-6 py-4 text-sm text-[#999999]">
+                          <td className="px-6 py-4 text-sm text-neutral-500 dark:text-[#999999]">
                             {format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a")}
                           </td>
                         </tr>
                         {isExpanded ? (
-                          <tr className="border-t border-[#252525] bg-[#1e1e1e]">
+                          <tr className="border-t border-neutral-100 dark:border-[#252525] bg-neutral-50 dark:bg-[#1e1e1e]">
                             <td colSpan={6} className="px-6 py-4">
                               <div className="space-y-2">
                                 {order.items.map((item) => (
-                                  <div key={item.id} className="flex items-center justify-between p-3 bg-[#141414] rounded-lg">
+                                  <div key={item.id} className="flex items-center justify-between p-3 bg-white dark:bg-[#141414] border border-neutral-100 dark:border-[#252525] rounded-lg">
                                     <div className="flex items-center gap-3">
-                                      <span className="font-bold text-white">{item.quantity}x</span>
-                                      <span className="text-[#999999]">{item.menuItem.name}</span>
+                                      <span className="font-bold text-neutral-800 dark:text-white">{item.quantity}x</span>
+                                      <span className="text-neutral-500 dark:text-[#999999]">{item.menuItem.name}</span>
                                     </div>
-                                    <span className="text-white font-semibold tabular-nums">
+                                    <span className="text-neutral-800 dark:text-white font-semibold tabular-nums">
                                       {inr.format(item.price * item.quantity)}
                                     </span>
                                   </div>
@@ -331,21 +331,21 @@ export function OrderHistoryTable({ restaurantId }: Props) {
 
       {/* Pagination */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-[#999999]">
+        <p className="text-sm text-neutral-500 dark:text-[#999999]">
           {total} total orders • Page {page} of {pages}
         </p>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page === 1}
-            className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white hover:bg-neutral-50 dark:hover:bg-[#1e1e1e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             Previous
           </button>
           <button
             onClick={() => setPage((prev) => Math.min(pages, prev + 1))}
             disabled={page === pages}
-            className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white hover:bg-neutral-50 dark:hover:bg-[#1e1e1e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             Next
           </button>

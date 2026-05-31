@@ -98,14 +98,14 @@ function getImpactColor(impact: string) {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-xl p-3 shadow-xl text-[12px]">
-      <p className="text-[#9a9488] mb-2 font-medium">{label}</p>
+    <div className="bg-white dark:bg-[#1a1a1a] border border-neutral-200 dark:border-[rgba(255,255,255,0.1)] rounded-xl p-3 shadow-xl text-[12px]">
+      <p className="text-neutral-500 dark:text-[#9a9488] mb-2 font-medium">{label}</p>
       {payload.map((entry: any, i: number) => (
         entry.value !== null && entry.value !== undefined && (
           <div key={i} className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
-            <span className="text-[#9a9488]">{entry.name === "actual" ? "Actual" : entry.name === "forecast" ? "Forecast" : entry.name}:</span>
-            <span className="text-[#f0ece4] font-semibold">
+            <span className="text-neutral-500 dark:text-[#9a9488]">{entry.name === "actual" ? "Actual" : entry.name === "forecast" ? "Forecast" : entry.name}:</span>
+            <span className="text-neutral-800 dark:text-[#f0ece4] font-semibold">
               {typeof entry.value === "number" && entry.name !== "orders" && entry.name !== "forecastHigh" && entry.name !== "forecastLow"
                 ? inr.format(entry.value)
                 : entry.value}
@@ -119,7 +119,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 function SkeletonCard({ className = "" }: { className?: string }) {
   return (
-    <div className={`bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl animate-pulse ${className}`} />
+    <div className={`bg-neutral-100 dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl animate-pulse ${className}`} />
   );
 }
 
@@ -204,19 +204,19 @@ export default function ForecastingDashboard({ restaurant }: Props) {
             <Brain className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#f0ece4] tracking-tight">AI Forecasting</h1>
-            <p className="text-[13px] text-[#9a9488]">Predictive intelligence for your restaurant</p>
+            <h1 className="text-2xl font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight">AI Forecasting</h1>
+            <p className="text-[13px] text-neutral-500 dark:text-[#9a9488]">Predictive intelligence for your restaurant</p>
           </div>
         </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-2xl p-12 text-center">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-2xl p-12 text-center shadow-sm">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[rgba(249,115,22,0.15)] to-[rgba(249,115,22,0.05)] border border-[rgba(249,115,22,0.2)] flex items-center justify-center mx-auto mb-5">
             <Brain className="w-8 h-8 text-[#f97316]" />
           </div>
-          <h2 className="text-xl font-bold text-[#f0ece4] mb-3">Not enough data yet</h2>
-          <p className="text-[#9a9488] text-sm max-w-md mx-auto leading-relaxed mb-2">
+          <h2 className="text-xl font-bold text-neutral-800 dark:text-[#f0ece4] mb-3">Not enough data yet</h2>
+          <p className="text-neutral-600 dark:text-[#9a9488] text-sm max-w-md mx-auto leading-relaxed mb-2">
             AI forecasting needs at least 5 orders to start detecting patterns. Right now you have <span className="text-[#f97316] font-semibold">{data.totalOrdersAnalyzed} order{data.totalOrdersAnalyzed !== 1 ? "s" : ""}</span>.
           </p>
-          <p className="text-[#5a5650] text-xs">As your restaurant takes more orders, the AI will start predicting revenue, demand peaks, and smart recommendations.</p>
+          <p className="text-neutral-400 dark:text-[#5a5650] text-xs">As your restaurant takes more orders, the AI will start predicting revenue, demand peaks, and smart recommendations.</p>
         </div>
       </div>
     );
@@ -237,20 +237,20 @@ export default function ForecastingDashboard({ restaurant }: Props) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-[#f0ece4] tracking-tight">AI Forecasting</h1>
+              <h1 className="text-2xl font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight">AI Forecasting</h1>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-gradient-to-r from-[rgba(249,115,22,0.15)] to-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.25)] rounded-full text-[10px] font-bold tracking-wider text-[#f97316]">
                 <Sparkles className="w-2.5 h-2.5" />
                 AI POWERED
               </span>
             </div>
-            <p className="text-[13px] text-[#9a9488] mt-0.5">
+            <p className="text-[13px] text-neutral-500 dark:text-[#9a9488] mt-0.5">
               Based on {data.totalOrdersAnalyzed} orders · Updated {lastUpdated?.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) || "just now"}
             </p>
           </div>
         </div>
         <button
           onClick={fetchForecast}
-          className="flex items-center gap-2 px-4 py-2.5 border border-[rgba(255,255,255,0.12)] rounded-lg bg-transparent text-[#f0ece4] text-[12px] font-medium hover:border-[#f97316] hover:text-[#f97316] transition-all self-start"
+          className="flex items-center gap-2 px-4 py-2.5 border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] rounded-lg bg-transparent text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium hover:border-[#f97316] hover:text-[#f97316] transition-all self-start"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Refresh Forecast
@@ -296,11 +296,11 @@ export default function ForecastingDashboard({ restaurant }: Props) {
       {/* ── Demand Forecast Chart + Heatmap ────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] gap-3.5">
         {/* Forecast Chart */}
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <span className="text-[14px]">♦</span>
-              <span className="text-[14px] font-semibold text-[#f0ece4]">Revenue Forecast</span>
+              <span className="text-[14px] text-[#f97316]">♦</span>
+              <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">Revenue Forecast</span>
             </div>
             <div className="flex items-center gap-4 text-[10px]">
               <span className="flex items-center gap-1.5">
@@ -381,12 +381,12 @@ export default function ForecastingDashboard({ restaurant }: Props) {
         </div>
 
         {/* Peak Hours Heatmap */}
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[14px]">🔥</span>
-            <span className="text-[14px] font-semibold text-[#f0ece4]">Peak Hours Map</span>
+            <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">Peak Hours Map</span>
           </div>
-          <p className="text-[11px] text-[#5a5650] mb-4">Order density by day & hour</p>
+          <p className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">Order density by day & hour</p>
 
           <div className="overflow-x-auto">
             {/* Hour labels — only show a subset to avoid crowding */}
@@ -436,12 +436,12 @@ export default function ForecastingDashboard({ restaurant }: Props) {
       {/* ── Top Items + Recommendations ───────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
         {/* Top Item Demand */}
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[14px]">🍽️</span>
-            <span className="text-[14px] font-semibold text-[#f0ece4]">Item Demand Forecast</span>
+            <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">Item Demand Forecast</span>
           </div>
-          <p className="text-[11px] text-[#5a5650] mb-4">Top items with predicted demand & trend vs. last 7 days</p>
+          <p className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">Top items with predicted demand & trend vs. last 7 days</p>
 
           <div className="space-y-0">
             {topItems.slice(0, 5).map((item, idx) => {
@@ -494,12 +494,12 @@ export default function ForecastingDashboard({ restaurant }: Props) {
         </div>
 
         {/* AI Recommendations */}
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[14px]">✦</span>
-            <span className="text-[14px] font-semibold text-[#f0ece4]">AI Recommendations</span>
+            <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">AI Recommendations</span>
           </div>
-          <p className="text-[11px] text-[#5a5650] mb-4">Actionable insights from your data patterns</p>
+          <p className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">Actionable insights from your data patterns</p>
 
           <div className="space-y-3">
             {recommendations.slice(0, 4).map((rec, idx) => {
@@ -552,7 +552,7 @@ function ForecastKPICard({
 }) {
   return (
     <div
-      className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-[18px_20px] relative overflow-hidden hover:border-[rgba(255,255,255,0.13)] transition-all group"
+      className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-[18px_20px] relative overflow-hidden hover:border-neutral-300 dark:hover:border-[rgba(255,255,255,0.13)] shadow-sm transition-all group"
       style={{ animationDelay: delay }}
     >
       {/* Glow background on hover */}
@@ -568,11 +568,11 @@ function ForecastKPICard({
             style={{ background: accentColor, boxShadow: `0 0 6px ${accentColor}` }}
           />
         </div>
-        <p className="text-[10px] tracking-wider uppercase text-[#5a5650] mb-1.5">{label}</p>
-        <p className="text-[24px] font-bold text-[#f0ece4] tracking-tight leading-none mb-1.5">
+        <p className="text-[10px] tracking-wider uppercase text-neutral-400 dark:text-[#5a5650] mb-1.5">{label}</p>
+        <p className="text-[24px] font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight leading-none mb-1.5">
           {value}
         </p>
-        <p className="text-[11px] text-[#5a5650]">{sublabel}</p>
+        <p className="text-[11px] text-neutral-500 dark:text-[#5a5650]">{sublabel}</p>
       </div>
     </div>
   );

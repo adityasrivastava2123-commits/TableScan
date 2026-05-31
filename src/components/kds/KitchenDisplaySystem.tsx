@@ -151,8 +151,8 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
           <ChefHat className="size-5 text-white" />
         </div>
         <div>
-          <h1 className="text-[20px] font-bold text-[#f0ece4]">Kitchen Display System</h1>
-          <p className="text-[12px] text-[#9a9488]">Real-time order preparation tracking</p>
+          <h1 className="text-[20px] font-bold text-neutral-800 dark:text-[#f0ece4]">Kitchen Display System</h1>
+          <p className="text-[12px] text-neutral-500 dark:text-[#9a9488]">Real-time order preparation tracking</p>
         </div>
         <div className="ml-auto flex gap-2">
           {["all", "RECEIVED", "PREPARING", "READY"].map((f) => (
@@ -162,7 +162,7 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
               className={`px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
                 filter === f
                   ? "bg-[#f97316] text-white"
-                  : "bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] hover:border-[#f97316]"
+                  : "bg-white dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-700 dark:text-[#f0ece4] hover:border-[#f97316]"
               }`}
             >
               {f.charAt(0) + f.slice(1).toLowerCase()}
@@ -173,21 +173,21 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3.5">
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Received</div>
-          <div className="text-[26px] font-bold text-[#60a5fa]">{preparations.filter((p) => p.stage === "RECEIVED").length}</div>
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
+          <div className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-1 font-bold">Received</div>
+          <div className="text-[26px] font-bold text-blue-500 dark:text-[#60a5fa]">{preparations.filter((p) => p.stage === "RECEIVED").length}</div>
         </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Preparing</div>
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
+          <div className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-1 font-bold">Preparing</div>
           <div className="text-[26px] font-bold text-[#f97316]">{preparations.filter((p) => p.stage === "PREPARING").length}</div>
         </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Ready</div>
-          <div className="text-[26px] font-bold text-[#4ade80]">{preparations.filter((p) => p.stage === "READY").length}</div>
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
+          <div className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-1 font-bold">Ready</div>
+          <div className="text-[26px] font-bold text-green-500 dark:text-[#4ade80]">{preparations.filter((p) => p.stage === "READY").length}</div>
         </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Urgent</div>
-          <div className="text-[26px] font-bold text-[#f87171]">{preparations.filter((p) => p.priority === "URGENT").length}</div>
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
+          <div className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-1 font-bold">Urgent</div>
+          <div className="text-[26px] font-bold text-red-500 dark:text-[#f87171]">{preparations.filter((p) => p.priority === "URGENT").length}</div>
         </div>
       </div>
 
@@ -196,20 +196,20 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
         {filteredPreparations.map((preparation) => (
           <div
             key={preparation.id}
-            className={`bg-[#111111] border ${getStageColor(preparation.stage)} rounded-xl p-5 space-y-4`}
+            className={`bg-white dark:bg-[#111111] border ${getStageColor(preparation.stage)} rounded-xl p-5 space-y-4 shadow-sm`}
           >
             {/* Order Header */}
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[16px] font-bold text-[#f0ece4]">#{preparation.order.orderNumber}</span>
+                  <span className="text-[16px] font-bold text-neutral-800 dark:text-[#f0ece4]">#{preparation.order.orderNumber}</span>
                   {preparation.priority !== "NORMAL" && (
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${getPriorityColor(preparation.priority)}`}>
                       {preparation.priority}
                     </span>
                   )}
                 </div>
-                <div className="text-[11px] text-[#9a9488]">
+                <div className="text-[11px] text-neutral-500 dark:text-[#9a9488]">
                   {preparation.order.table?.name || "Takeaway"} · {new Date(preparation.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                 </div>
               </div>
@@ -222,7 +222,7 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
             <div className="space-y-2">
               {preparation.order.items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between text-[13px]">
-                  <span className="text-[#f0ece4]">{item.quantity}x {item.menuItem.name}</span>
+                  <span className="text-neutral-700 dark:text-[#f0ece4] font-semibold">{item.quantity}x {item.menuItem.name}</span>
                 </div>
               ))}
             </div>
@@ -258,7 +258,7 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
               {preparation.stage === "READY" && (
                 <button
                   onClick={() => updateStage(preparation.id, "SERVED")}
-                  className="flex-1 py-2 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[12px] font-semibold hover:bg-[#181818] transition-colors"
+                  className="flex-1 py-2 rounded-lg bg-neutral-100 dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-700 dark:text-[#f0ece4] text-[12px] font-semibold hover:bg-neutral-200 dark:hover:bg-[#181818] transition-colors"
                 >
                   Served
                 </button>
@@ -270,7 +270,7 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
                   const nextPriority = priorities[(currentIndex + 1) % priorities.length];
                   updatePriority(preparation.id, nextPriority);
                 }}
-                className="px-3 py-2 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] hover:bg-[#181818] transition-colors"
+                className="px-3 py-2 rounded-lg bg-neutral-100 dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-700 dark:text-[#f0ece4] hover:bg-neutral-200 dark:hover:bg-[#181818] transition-colors"
                 title="Change priority"
               >
                 <AlertTriangle className="size-4" />

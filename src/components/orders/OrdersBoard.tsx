@@ -248,10 +248,10 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <h1 className="text-4xl font-extrabold tracking-tight text-white">
-          All <span className="text-[#999999] italic">orders.</span>
+        <h1 className="text-4xl font-extrabold tracking-tight text-neutral-800 dark:text-white">
+          All <span className="text-neutral-500 dark:text-[#999999] italic">orders.</span>
         </h1>
-        <p className="text-[#999999] mt-2">{orders.length} orders · streaming in real time</p>
+        <p className="text-neutral-500 dark:text-[#999999] mt-2">{orders.length} orders · streaming in real time</p>
       </motion.div>
 
       {/* Filter Tabs */}
@@ -269,7 +269,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover-lift ${
               filter === "All"
                 ? "bg-[#f97316] text-white"
-                : "bg-[#141414] text-[#999999] border border-[#252525] hover:bg-[#1e1e1e]"
+                : "bg-white dark:bg-[#141414] text-neutral-600 dark:text-[#999999] border border-neutral-200 dark:border-[#252525] hover:bg-neutral-50 dark:hover:bg-[#1e1e1e]"
             }`}
           >
             {filter}
@@ -289,9 +289,9 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
           const style = columnStyles[status];
 
           return (
-            <div key={status} className="bg-[#141414] border border-[#252525] rounded-xl overflow-hidden">
+            <div key={status} className="bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] rounded-xl overflow-hidden shadow-sm">
               {/* Column Header */}
-              <div className={`p-4 border-b border-[#252525] ${style.bg}`}>
+              <div className={`p-4 border-b border-neutral-100 dark:border-[#252525] ${style.bg}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {style.icon}
@@ -314,12 +314,12 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       whileHover={{ scale: 1.02, y: -2 }}
-                      className="bg-[#1e1e1e] border border-[#252525] rounded-lg p-4 hover-lift cursor-pointer"
+                      className="bg-neutral-50 dark:bg-[#1e1e1e] border border-neutral-200 dark:border-[#252525] rounded-lg p-4 hover-lift cursor-pointer"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <span className="text-white font-bold text-lg">#{order.orderNumber}</span>
-                          <p className="text-[#999999] text-sm">{order.table.name}</p>
+                          <span className="text-neutral-800 dark:text-white font-bold text-lg">#{order.orderNumber}</span>
+                          <p className="text-neutral-500 dark:text-[#999999] text-sm">{order.table.name}</p>
                         </div>
                         <StatusBadge status={order.status} />
                       </div>
@@ -327,18 +327,18 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                       <div className="space-y-2 mb-3">
                         {order.items.map((item) => (
                           <div key={item.id} className="flex items-center justify-between text-sm">
-                            <span className="text-[#999999]">
+                            <span className="text-neutral-700 dark:text-[#999999]">
                               {item.quantity}x {item.menuItem.name}
                             </span>
                           </div>
                         ))}
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-[#252525]">
-                        <span className="text-white font-semibold text-lg tabular-nums">
+                      <div className="flex items-center justify-between pt-3 border-t border-neutral-200 dark:border-[#252525]">
+                        <span className="text-neutral-800 dark:text-white font-semibold text-lg tabular-nums">
                           ₹{order.totalAmount.toFixed(2)}
                         </span>
-                        <span className="text-[#555555] text-xs">
+                        <span className="text-neutral-400 dark:text-[#555555] text-xs">
                           {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
                         </span>
                       </div>
@@ -393,9 +393,9 @@ function StatusBadge({ status }: { status: string }) {
 
 function StatsCard({ label, value }: { label: string; value: string }) {
   return (
-    <Card className="p-4 shadow-sm bg-[#141414] border-[#252525]">
-      <p className="text-sm text-[#999999]">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
+    <Card className="p-4 shadow-sm bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
+      <p className="text-sm text-neutral-500 dark:text-[#999999]">{label}</p>
+      <p className="mt-1 text-2xl font-semibold text-neutral-800 dark:text-white">{value}</p>
     </Card>
   );
 }
@@ -403,16 +403,16 @@ function StatsCard({ label, value }: { label: string; value: string }) {
 function OrdersBoardSkeleton() {
   return (
     <div className="space-y-6">
-      <Skeleton className="h-8 w-80" />
+      <Skeleton className="h-8 w-80 bg-neutral-200 dark:bg-neutral-800" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="min-h-[500px] bg-[#141414] border-[#252525] overflow-hidden">
-            <Skeleton className="h-16" />
+          <Card key={idx} className="min-h-[500px] bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] overflow-hidden">
+            <Skeleton className="h-16 bg-neutral-200 dark:bg-neutral-800" />
             <div className="p-3 space-y-3">
               {Array.from({ length: 3 }).map((__, cardIdx) => (
                 <div
                   key={cardIdx}
-                  className="h-24 rounded-md bg-[#1e1e1e]"
+                  className="h-24 rounded-md bg-neutral-100 dark:bg-[#1e1e1e]"
                 />
               ))}
             </div>
