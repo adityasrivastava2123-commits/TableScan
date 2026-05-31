@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import MenuBuilder from "@/components/menu/MenuBuilder";
+import { MenuBuilder } from "@/components/menu/MenuBuilder";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
