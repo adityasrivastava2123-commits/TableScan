@@ -80,6 +80,8 @@ model Restaurant {
   drivers           Driver[]
   deliveries        Delivery[]
   queueEntries      QueueEntry[]
+
+  @@index([ownerId])
 }
 
 model Location {
@@ -94,6 +96,8 @@ model Location {
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   tables       Table[]
+
+  @@index([restaurantId])
 }
 
 model Table {
@@ -160,6 +164,8 @@ model MenuItemVariant {
   menuItemId String
   menuItem   MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
   orderItems OrderItemVariant[]
+
+  @@index([menuItemId])
 }
 
 model Order {
@@ -209,6 +215,9 @@ model OrderItemVariant {
   orderItem     OrderItem       @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   variantId     String
   variant       MenuItemVariant @relation(fields: [variantId], references: [id])
+
+  @@index([orderItemId])
+  @@index([variantId])
 }
 
 model Payment {
@@ -275,6 +284,9 @@ model Ingredient {
   recipeIngredients RecipeIngredient[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([supplierId])
 }
 
 model Supplier {
@@ -290,6 +302,8 @@ model Supplier {
   ingredients Ingredient[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
 }
 
 model StockMovement {
@@ -301,6 +315,8 @@ model StockMovement {
   ingredientId String
   ingredient  Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
+
+  @@index([ingredientId])
 }
 
 model RecipeIngredient {
@@ -311,6 +327,9 @@ model RecipeIngredient {
   ingredientId String
   ingredient  Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
+
+  @@index([menuItemId])
+  @@index([ingredientId])
 }
 
 // Staff Scheduling
@@ -324,6 +343,8 @@ model Shift {
   schedules   Schedule[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
 }
 
 model Schedule {
@@ -360,6 +381,9 @@ model PayrollRecord {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([staffId])
 }
 
 // Reservation System
@@ -396,6 +420,8 @@ model Waitlist {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
 }
 
 // Kitchen Display System (KDS)
@@ -414,6 +440,9 @@ model OrderPreparation {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([orderId])
 }
 
 // Table Service Management
@@ -454,6 +483,8 @@ model Driver {
   deliveries  Delivery[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
 }
 
 model Delivery {
@@ -474,6 +505,10 @@ model Delivery {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([orderId])
+  @@index([driverId])
 }
 
 // Queue Management
@@ -493,4 +528,6 @@ model QueueEntry {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
 }
