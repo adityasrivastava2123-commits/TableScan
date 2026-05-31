@@ -90,7 +90,8 @@ function nearestNeighborRoute(points: DeliveryPoint[]): DeliveryPoint[] {
       );
       
       // Adjust distance by priority (higher priority = lower effective distance)
-      const adjustedDistance = distance / unvisited[i].priority;
+      const priority = Number(unvisited[i].priority) || 1;
+      const adjustedDistance = distance / priority;
 
       if (adjustedDistance < minDistance) {
         minDistance = adjustedDistance;
