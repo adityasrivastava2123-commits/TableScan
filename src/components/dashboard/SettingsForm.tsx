@@ -244,21 +244,21 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
           <Settings className="size-6 text-white" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-white">Settings</h1>
-          <p className="text-sm text-[#999999]">Manage your restaurant preferences</p>
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Settings</h1>
+          <p className="text-sm text-neutral-500 dark:text-[#999999]">Manage your restaurant preferences</p>
         </div>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
         <div>
-          <TabsList className="bg-[#141414] border border-[#252525]">
-            <TabsTrigger value="general" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
+          <TabsList className="bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525]">
+            <TabsTrigger value="general" className="text-neutral-600 dark:text-[#9a9488] data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
               <Building2 className="size-4 mr-2" /> General
             </TabsTrigger>
-            <TabsTrigger value="tax-theme" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
+            <TabsTrigger value="tax-theme" className="text-neutral-600 dark:text-[#9a9488] data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
               <Palette className="size-4 mr-2" /> Tax & Theme
             </TabsTrigger>
-            <TabsTrigger value="hours" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
+            <TabsTrigger value="hours" className="text-neutral-600 dark:text-[#9a9488] data-[state=active]:bg-[#f97316] data-[state=active]:text-white">
               <Clock className="size-4 mr-2" /> Hours
             </TabsTrigger>
           </TabsList>
@@ -266,14 +266,14 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
 
         <TabsContent value="general" className="space-y-4">
           <div>
-            <Card className="bg-[#141414] border-[#252525]">
+            <Card className="bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
               <CardHeader>
-                <CardTitle className="text-white">General Settings</CardTitle>
-                <CardDescription className="text-[#999999]">Update your restaurant's basic information</CardDescription>
+                <CardTitle className="text-neutral-800 dark:text-white">General Settings</CardTitle>
+                <CardDescription className="text-neutral-500 dark:text-[#999999]">Update your restaurant's basic information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-white text-sm font-medium">Restaurant Name *</Label>
+                  <Label htmlFor="name" className="text-neutral-700 dark:text-white text-sm font-medium">Restaurant Name *</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -282,12 +282,12 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                       setHasUnsavedChanges(true);
                     }}
                     placeholder="Enter restaurant name"
-                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white placeholder-neutral-400 dark:placeholder-[#555555] focus:border-[#f97316]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-white text-sm font-medium">Description</Label>
+                  <Label htmlFor="description" className="text-neutral-700 dark:text-white text-sm font-medium">Description</Label>
                   <Input
                     id="description"
                     value={formData.description}
@@ -296,12 +296,12 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                       setHasUnsavedChanges(true);
                     }}
                     placeholder="Enter restaurant description"
-                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white placeholder-neutral-400 dark:placeholder-[#555555] focus:border-[#f97316]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-white text-sm font-medium">Phone Number</Label>
+                  <Label htmlFor="phone" className="text-neutral-700 dark:text-white text-sm font-medium">Phone Number</Label>
                   <Input
                     id="phone"
                     value={formData.phone}
@@ -310,12 +310,12 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                       setHasUnsavedChanges(true);
                     }}
                     placeholder="Enter phone number"
-                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white placeholder-neutral-400 dark:placeholder-[#555555] focus:border-[#f97316]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white text-sm font-medium">Email</Label>
+                  <Label htmlFor="email" className="text-neutral-700 dark:text-white text-sm font-medium">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -325,12 +325,12 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                       setHasUnsavedChanges(true);
                     }}
                     placeholder="Enter email address"
-                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white placeholder-neutral-400 dark:placeholder-[#555555] focus:border-[#f97316]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="notificationEmail" className="text-white text-sm font-medium">Notification Email</Label>
+                  <Label htmlFor="notificationEmail" className="text-neutral-700 dark:text-white text-sm font-medium">Notification Email</Label>
                   <Input
                     id="notificationEmail"
                     type="email"
@@ -340,18 +340,18 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                       setHasUnsavedChanges(true);
                     }}
                     placeholder="Enter email for order notifications (optional)"
-                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white placeholder-neutral-400 dark:placeholder-[#555555] focus:border-[#f97316]"
                   />
-                  <p className="text-xs text-[#999999]">
+                  <p className="text-xs text-neutral-400 dark:text-[#999999]">
                     Separate email for receiving new order alerts. If not set, your account email will be used.
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="logo" className="text-white text-sm font-medium">Logo</Label>
+                  <Label htmlFor="logo" className="text-neutral-700 dark:text-white text-sm font-medium">Logo</Label>
                   <div className="flex items-center gap-4">
                     {formData.logo && (
-                      <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-[#252525]">
+                      <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-neutral-200 dark:border-[#252525]">
                         <img src={formData.logo} alt="Logo" className="w-full h-full object-cover" />
                         <motion.button
                           whileHover={{ scale: 1.05 }}
@@ -370,7 +370,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                         type="file"
                         accept="image/*"
                         onChange={handleLogoUpload}
-                        className="bg-[#1a1a1a] border-[#252525] text-white cursor-pointer"
+                        className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-850 dark:text-white cursor-pointer"
                       />
                     </div>
                   </div>
@@ -393,14 +393,14 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
 
         <TabsContent value="tax-theme" className="space-y-4">
           <div>
-            <Card className="bg-[#141414] border-[#252525]">
+            <Card className="bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
               <CardHeader>
-                <CardTitle className="text-white">Tax & Theme</CardTitle>
-                <CardDescription className="text-[#999999]">Configure tax rate and visual theme</CardDescription>
+                <CardTitle className="text-neutral-800 dark:text-white">Tax & Theme</CardTitle>
+                <CardDescription className="text-neutral-500 dark:text-[#999999]">Configure tax rate and visual theme</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="taxPercent" className="text-white text-sm font-medium">Tax Percentage (0-30%)</Label>
+                  <Label htmlFor="taxPercent" className="text-neutral-700 dark:text-white text-sm font-medium">Tax Percentage (0-30%)</Label>
                   <Input
                     id="taxPercent"
                     type="number"
@@ -413,15 +413,15 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                       setFormData((prev) => ({ ...prev, taxPercent: value }));
                       setHasUnsavedChanges(true);
                     }}
-                    className="bg-[#1a1a1a] border-[#252525] text-white focus:border-[#f97316]"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-850 dark:text-white focus:border-[#f97316]"
                   />
-                  <p className="text-sm text-[#999999]">
+                  <p className="text-sm text-neutral-500 dark:text-[#999999]">
                     Live preview: ₹100 item → ₹{calculateTaxPreview(100)} after tax
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-white text-sm font-medium">Theme</Label>
+                  <Label className="text-neutral-700 dark:text-white text-sm font-medium">Theme</Label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {THEMES.map((theme) => (
                       <button
@@ -434,7 +434,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                         className={`p-4 rounded-xl border-2 transition-all ${
                           formData.theme === theme.value
                             ? "border-[#f97316] bg-[#f97316]/10"
-                            : "border-[#252525] hover:border-[#f97316]/50"
+                            : "border-neutral-200 dark:border-[#252525] hover:border-[#f97316]/50"
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-2">
@@ -447,7 +447,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                             style={{ backgroundColor: theme.colors[1] }}
                           />
                         </div>
-                        <p className="text-sm font-medium text-white">{theme.name}</p>
+                        <p className="text-sm font-medium text-neutral-800 dark:text-white">{theme.name}</p>
                       </button>
                     ))}
                   </div>
@@ -470,24 +470,24 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
 
         <TabsContent value="hours" className="space-y-4">
           <div>
-            <Card className="bg-[#141414] border-[#252525]">
+            <Card className="bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
               <CardHeader>
-                <CardTitle className="text-white">Operating Hours</CardTitle>
-                <CardDescription className="text-[#999999]">Set your restaurant's operating hours for each day</CardDescription>
+                <CardTitle className="text-neutral-800 dark:text-white">Operating Hours</CardTitle>
+                <CardDescription className="text-neutral-500 dark:text-[#999999]">Set your restaurant's operating hours for each day</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-end mb-4">
                   <button
                     onClick={handleApplyToAllDays}
-                    className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors text-sm"
+                    className="px-4 py-2 rounded-lg bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white hover:bg-neutral-50 dark:hover:bg-[#1e1e1e] transition-colors text-sm shadow-sm"
                   >
                     Apply Monday to All Days
                   </button>
                 </div>
 
                 {DAYS.map((day) => (
-                  <div key={day} className="flex items-center gap-4 p-4 border border-[#252525] rounded-xl bg-[#1e1e1e]">
-                    <div className="w-32 capitalize font-medium text-white">{day}</div>
+                  <div key={day} className="flex items-center gap-4 p-4 border border-neutral-200 dark:border-[#252525] rounded-xl bg-neutral-50 dark:bg-[#1e1e1e] shadow-sm">
+                    <div className="w-32 capitalize font-medium text-neutral-800 dark:text-white">{day}</div>
                     <Switch
                       checked={formData.operatingHours[day]?.isOpen || false}
                       onCheckedChange={(checked) =>
@@ -495,7 +495,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                       }
                     />
                     <div className="flex items-center gap-2 flex-1">
-                      <Label htmlFor={`${day}-open`} className="text-sm text-[#999999]">
+                      <Label htmlFor={`${day}-open`} className="text-sm text-neutral-400 dark:text-[#999999]">
                         Open
                       </Label>
                       <Input
@@ -504,9 +504,9 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                         value={formData.operatingHours[day]?.open || "09:00"}
                         onChange={(e) => handleOperatingHoursChange(day, "open", e.target.value)}
                         disabled={!formData.operatingHours[day]?.isOpen}
-                        className="w-32 bg-[#1a1a1a] border-[#252525] text-white"
+                        className="w-32 bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-850 dark:text-white"
                       />
-                      <Label htmlFor={`${day}-close`} className="text-sm text-[#999999]">
+                      <Label htmlFor={`${day}-close`} className="text-sm text-neutral-400 dark:text-[#999999]">
                         Close
                       </Label>
                       <Input
@@ -515,7 +515,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                         value={formData.operatingHours[day]?.close || "22:00"}
                         onChange={(e) => handleOperatingHoursChange(day, "close", e.target.value)}
                         disabled={!formData.operatingHours[day]?.isOpen}
-                        className="w-32 bg-[#1a1a1a] border-[#252525] text-white"
+                        className="w-32 bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-850 dark:text-white"
                       />
                     </div>
                   </div>
@@ -539,20 +539,20 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
 
       {/* Danger Zone */}
       <div>
-        <Card className="bg-[#141414] border-[#ef4444]/50">
+        <Card className="bg-white dark:bg-[#141414] border-[#ef4444]/50">
           <CardHeader>
             <CardTitle className="text-[#ef4444] flex items-center gap-2">
               <AlertTriangle className="size-5" /> Danger Zone
             </CardTitle>
-            <CardDescription className="text-[#999999]">
+            <CardDescription className="text-neutral-500 dark:text-[#999999]">
               Irreversible actions that affect your restaurant data
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-4 border border-[#ef4444]/50 rounded-xl bg-[#ef4444]/5">
               <div className="space-y-1">
-                <p className="font-medium text-white">Delete Restaurant</p>
-                <p className="text-sm text-[#999999]">
+                <p className="font-medium text-neutral-800 dark:text-white">Delete Restaurant</p>
+                <p className="text-sm text-neutral-500 dark:text-[#999999]">
                   This will permanently delete your restaurant and all associated data. This action cannot be undone.
                 </p>
               </div>
@@ -568,7 +568,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
             {showDeleteDialog && (
               <div className="space-y-4 p-4 border border-[#ef4444] rounded-xl bg-[#ef4444]/5">
                 <div className="space-y-2">
-                  <Label htmlFor="delete-confirm" className="text-white">
+                  <Label htmlFor="delete-confirm" className="text-neutral-700 dark:text-white">
                     Type <span className="font-bold text-[#ef4444]">{restaurant.name}</span> to confirm
                   </Label>
                   <Input
@@ -576,7 +576,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                     value={deleteConfirmText}
                     onChange={(e) => setDeleteConfirmText(e.target.value)}
                     placeholder="Restaurant name"
-                    className="bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#ef4444]"
+                    className="bg-white dark:bg-[#1a1a1a] border-neutral-200 dark:border-[#252525] text-neutral-850 dark:text-white placeholder-[#555555] focus:border-[#ef4444]"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -590,7 +590,7 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
                   </button>
                   <button
                     onClick={() => setShowDeleteDialog(false)}
-                    className="px-4 py-2 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors"
+                    className="px-4 py-2 rounded-lg bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white hover:bg-neutral-50 dark:hover:bg-[#1e1e1e] transition-colors"
                   >
                     Cancel
                   </button>

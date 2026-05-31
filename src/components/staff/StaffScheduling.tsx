@@ -185,13 +185,13 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
           <Calendar className="size-5 text-white" />
         </div>
         <div>
-          <h1 className="text-[20px] font-bold text-[#f0ece4]">Staff Scheduling</h1>
-          <p className="text-[12px] text-[#9a9488]">Manage shifts and staff assignments</p>
+          <h1 className="text-[20px] font-bold text-neutral-800 dark:text-[#f0ece4]">Staff Scheduling</h1>
+          <p className="text-[12px] text-neutral-500 dark:text-[#9a9488]">Manage shifts and staff assignments</p>
         </div>
         <div className="flex flex-wrap gap-2.5 w-full sm:w-auto sm:ml-auto">
           <button
             onClick={() => setAddingShift(true)}
-            className="px-4 py-2.5 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[12px] font-semibold hover:border-[#f97316] hover:text-[#f97316] transition-all flex-shrink-0"
+            className="px-4 py-2.5 rounded-lg bg-white dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-700 dark:text-[#f0ece4] text-[12px] font-semibold hover:border-[#f97316] hover:text-[#f97316] transition-all flex-shrink-0 shadow-sm"
           >
             + Add Shift
           </button>
@@ -206,33 +206,33 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
 
       {/* Add Shift Form */}
       {addingShift && (
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5 space-y-4">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 space-y-4 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Shift Name *</label>
+              <label className="text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium mb-1 block">Shift Name *</label>
               <input
                 value={newShift.name}
                 onChange={(e) => setNewShift({ ...newShift, name: e.target.value })}
                 placeholder="e.g. Morning, Evening"
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
+                className="w-full h-10 bg-white dark:bg-[#222222] border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
               />
             </div>
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Start Time *</label>
+              <label className="text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium mb-1 block">Start Time *</label>
               <input
                 type="time"
                 value={newShift.startTime}
                 onChange={(e) => setNewShift({ ...newShift, startTime: e.target.value })}
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
+                className="w-full h-10 bg-white dark:bg-[#222222] border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
               />
             </div>
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">End Time *</label>
+              <label className="text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium mb-1 block">End Time *</label>
               <input
                 type="time"
                 value={newShift.endTime}
                 onChange={(e) => setNewShift({ ...newShift, endTime: e.target.value })}
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
+                className="w-full h-10 bg-white dark:bg-[#222222] border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
               />
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
                 setAddingShift(false);
                 setNewShift({ name: "", startTime: "", endTime: "" });
               }}
-              className="px-4 py-2 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] hover:bg-[#181818] transition-colors text-[12px]"
+              className="px-4 py-2 rounded-lg bg-neutral-100 dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-700 dark:text-[#f0ece4] hover:bg-neutral-200 dark:hover:bg-[#181818] transition-colors text-[12px]"
             >
               Cancel
             </button>
@@ -258,42 +258,42 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
 
       {/* Add Schedule Form */}
       {addingSchedule && (
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5 space-y-4">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 space-y-4 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Date *</label>
+              <label className="text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium mb-1 block">Date *</label>
               <input
                 type="date"
                 value={newSchedule.date}
                 onChange={(e) => setNewSchedule({ ...newSchedule, date: e.target.value })}
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
+                className="w-full h-10 bg-white dark:bg-[#222222] border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-850 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
               />
             </div>
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Shift *</label>
+              <label className="text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium mb-1 block">Shift *</label>
               <select
                 value={newSchedule.shiftId}
                 onChange={(e) => setNewSchedule({ ...newSchedule, shiftId: e.target.value })}
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[13px] px-3 outline-none"
+                className="w-full h-10 bg-white dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-800 dark:text-[#f0ece4] text-[13px] px-3 outline-none"
               >
-                <option value="">Select shift</option>
+                <option value="" className="text-neutral-800 dark:text-white">Select shift</option>
                 {shifts.map((shift) => (
-                  <option key={shift.id} value={shift.id}>
+                  <option key={shift.id} value={shift.id} className="text-neutral-800 dark:text-white">
                     {shift.name} ({shift.startTime} - {shift.endTime})
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Staff *</label>
+              <label className="text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium mb-1 block">Staff *</label>
               <select
                 value={newSchedule.staffId}
                 onChange={(e) => setNewSchedule({ ...newSchedule, staffId: e.target.value })}
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[13px] px-3 outline-none"
+                className="w-full h-10 bg-white dark:bg-[#222222] border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-800 dark:text-[#f0ece4] text-[13px] px-3 outline-none"
               >
-                <option value="">Select staff</option>
+                <option value="" className="text-neutral-800 dark:text-white">Select staff</option>
                 {staff.map((person) => (
-                  <option key={person.id} value={person.id}>
+                  <option key={person.id} value={person.id} className="text-neutral-800 dark:text-white">
                     {person.name} ({person.role})
                   </option>
                 ))}
@@ -301,12 +301,12 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
             </div>
           </div>
           <div>
-            <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Notes</label>
+            <label className="text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium mb-1 block">Notes</label>
             <input
               value={newSchedule.notes}
               onChange={(e) => setNewSchedule({ ...newSchedule, notes: e.target.value })}
               placeholder="Optional notes"
-              className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
+              className="w-full h-10 bg-white dark:bg-[#222222] border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-850 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
             />
           </div>
           <div className="flex gap-2.5">
@@ -321,7 +321,7 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
                 setAddingSchedule(false);
                 setNewSchedule({ date: "", shiftId: "", staffId: "", notes: "" });
               }}
-              className="px-4 py-2 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] hover:bg-[#181818] transition-colors text-[12px]"
+              className="px-4 py-2 rounded-lg bg-neutral-100 dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] text-neutral-700 dark:text-[#f0ece4] hover:bg-neutral-200 dark:hover:bg-[#181818] transition-colors text-[12px]"
             >
               Cancel
             </button>
@@ -330,21 +330,22 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
       )}
 
       {/* Calendar */}
-      <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+      {/* Calendar */}
+      <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={goToPreviousMonth}
-            className="p-2 rounded-lg hover:bg-[#181818] transition-colors"
+            className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-[#181818] transition-colors"
           >
-            <ChevronLeft className="size-5 text-[#9a9488]" />
+            <ChevronLeft className="size-5 text-neutral-400 dark:text-[#9a9488]" />
           </button>
-          <h2 className="text-[16px] font-semibold text-[#f0ece4]">{monthName}</h2>
+          <h2 className="text-[16px] font-semibold text-neutral-800 dark:text-[#f0ece4]">{monthName}</h2>
           <button
             onClick={goToNextMonth}
-            className="p-2 rounded-lg hover:bg-[#181818] transition-colors"
+            className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-[#181818] transition-colors"
           >
-            <ChevronRight className="size-5 text-[#9a9488]" />
+            <ChevronRight className="size-5 text-neutral-400 dark:text-[#9a9488]" />
           </button>
         </div>
 
@@ -353,7 +354,7 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-1 mb-2">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                <div key={day} className="text-center text-[11px] text-[#5a5650] font-medium py-2">
+                <div key={day} className="text-center text-[11px] text-neutral-400 dark:text-[#5a5650] font-medium py-2">
                   {day}
                 </div>
               ))}
@@ -374,23 +375,23 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
                 return (
                   <div
                     key={day}
-                    className={`aspect-square border border-[rgba(255,255,255,0.07)] rounded-lg p-1.5 hover:border-[rgba(255,255,255,0.12)] transition-colors ${
+                    className={`aspect-square border border-neutral-150 dark:border-[rgba(255,255,255,0.07)] rounded-lg p-1.5 hover:border-neutral-300 dark:hover:border-[rgba(255,255,255,0.12)] transition-colors ${
                       isToday ? "bg-[rgba(249,115,22,0.1)] border-[#f97316]" : ""
                     }`}
                   >
-                    <div className="text-[11px] font-medium text-[#f0ece4] mb-1">{day}</div>
+                    <div className="text-[11px] font-medium text-neutral-800 dark:text-[#f0ece4] mb-1">{day}</div>
                     <div className="space-y-0.5">
                       {daySchedules.slice(0, 2).map((schedule) => (
                         <div
                           key={schedule.id}
-                          className="text-[9px] px-1 py-0.5 rounded bg-[#222222] text-[#9a9488] truncate"
+                          className="text-[9px] px-1 py-0.5 rounded bg-neutral-100 dark:bg-[#222222] text-neutral-600 dark:text-[#9a9488] truncate"
                           title={`${schedule.staff.name} - ${schedule.shift.name}`}
                         >
                           {schedule.staff.name}
                         </div>
                       ))}
                       {daySchedules.length > 2 && (
-                        <div className="text-[9px] text-[#5a5650]">+{daySchedules.length - 2}</div>
+                        <div className="text-[9px] text-neutral-400 dark:text-[#5a5650]">+{daySchedules.length - 2}</div>
                       )}
                     </div>
                   </div>
@@ -402,23 +403,23 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
       </div>
 
       {/* Shifts List */}
-      <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-        <h3 className="text-[14px] font-semibold text-[#f0ece4] mb-4">Available Shifts</h3>
+      <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
+        <h3 className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4] mb-4">Available Shifts</h3>
         {shifts.length === 0 ? (
           <div className="text-center py-8">
-            <Clock className="size-8 text-[#5a5650] mx-auto mb-3" />
-            <p className="text-[12px] text-[#5a5650]">No shifts configured yet</p>
-            <p className="text-[11px] text-[#5a5650] mt-1">Add shifts to start scheduling</p>
+            <Clock className="size-8 text-neutral-300 dark:text-[#5a5650] mx-auto mb-3" />
+            <p className="text-[12px] text-neutral-400 dark:text-[#5a5650]">No shifts configured yet</p>
+            <p className="text-[11px] text-neutral-400 dark:text-[#5a5650] mt-1">Add shifts to start scheduling</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {shifts.map((shift) => (
-              <div key={shift.id} className="bg-[#222222] border border-[rgba(255,255,255,0.07)] rounded-lg p-3">
+              <div key={shift.id} className="bg-neutral-50 dark:bg-[#222222] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-lg p-3 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="size-4 text-[#f97316]" />
-                  <span className="text-[13px] font-semibold text-[#f0ece4]">{shift.name}</span>
+                  <span className="text-[13px] font-semibold text-neutral-800 dark:text-[#f0ece4]">{shift.name}</span>
                 </div>
-                <div className="text-[11px] text-[#9a9488]">
+                <div className="text-[11px] text-neutral-500 dark:text-[#9a9488]">
                   {shift.startTime} - {shift.endTime}
                 </div>
               </div>
