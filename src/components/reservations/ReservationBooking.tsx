@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Calendar, Clock, Users, Plus, Phone, Mail, Check, X } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Table {
   id: string;
@@ -40,6 +41,7 @@ export default function ReservationBooking({ restaurantId, locationId }: { resta
   const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [addingReservation, setAddingReservation] = useState(false);
   const [addingWaitlist, setAddingWaitlist] = useState(false);
 
@@ -63,9 +65,27 @@ export default function ReservationBooking({ restaurantId, locationId }: { resta
   });
 
   useEffect(() => {
-    fetchReservations();
-    fetchWaitlist();
-    fetchTables();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchReservations(),
+          fetchWaitlist(),
+          fetchTables()
+        ]);
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
   }, [restaurantId, currentDate, locationId]);
 
   async function fetchReservations() {
@@ -75,8 +95,6 @@ export default function ReservationBooking({ restaurantId, locationId }: { resta
       setReservations(response.data);
     } catch (error) {
       console.error("Failed to load reservations");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -178,8 +196,27 @@ export default function ReservationBooking({ restaurantId, locationId }: { resta
   const monthName = currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   const todayReservations = reservations.filter((r) => new Date(r.date).toDateString() === new Date().toDateString());
 
-  if (loading) {
-    return <div className="text-center py-12 text-[#9a9488]">Loading reservations...</div>;
+  if (minLoading) {
+    return (
+      <div className="p-7 space-y-6">
+        <div className="flex items-center gap-3.5 flex-wrap">
+          <Skeleton className="w-[46px] h-[46px] rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-56" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -422,7 +459,11 @@ export default function ReservationBooking({ restaurantId, locationId }: { resta
       <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
         <h3 className="text-[14px] font-semibold text-[#f0ece4] mb-4">Today's Reservations</h3>
         {todayReservations.length === 0 ? (
-          <p className="text-[12px] text-[#5a5650]">No reservations for today</p>
+          <div className="text-center py-8">
+            <Calendar className="size-8 text-[#5a5650] mx-auto mb-3" />
+            <p className="text-[12px] text-[#5a5650]">No reservations for today</p>
+            <p className="text-[11px] text-[#5a5650] mt-1">Add a reservation to get started</p>
+          </div>
         ) : (
           <div className="space-y-2">
             {todayReservations.map((reservation) => (
@@ -478,7 +519,11 @@ export default function ReservationBooking({ restaurantId, locationId }: { resta
       <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
         <h3 className="text-[14px] font-semibold text-[#f0ece4] mb-4">Current Waitlist</h3>
         {waitlist.length === 0 ? (
-          <p className="text-[12px] text-[#5a5650]">No customers on waitlist</p>
+          <div className="text-center py-8">
+            <Clock className="size-8 text-[#5a5650] mx-auto mb-3" />
+            <p className="text-[12px] text-[#5a5650]">No customers on waitlist</p>
+            <p className="text-[11px] text-[#5a5650] mt-1">Add customers to waitlist as needed</p>
+          </div>
         ) : (
           <div className="space-y-2">
             {waitlist.map((entry) => (

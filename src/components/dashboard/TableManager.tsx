@@ -10,6 +10,7 @@ import { Plus, Trash2, Download, QrCode, Users, MapPin, Sparkles } from "lucide-
 import toast from "react-hot-toast";
 import axios from "axios";
 import QRCode from "qrcode";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Table {
   id: string;
@@ -28,6 +29,7 @@ export default function TableManager({
 }) {
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [newTable, setNewTable] = useState({ name: "", capacity: "" });
   const [qrUrls, setQrUrls] = useState<Record<string, string>>({});
@@ -39,13 +41,27 @@ export default function TableManager({
       generateQRCodes(res.data);
     } catch {
       toast.error("Failed to load tables");
-    } finally {
-      setLoading(false);
     }
   }, [locationId]);
 
   useEffect(() => {
-    fetchTables();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await fetchTables();
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
   }, [fetchTables]);
 
   async function generateQRCodes(tables: Table[]) {
@@ -97,10 +113,21 @@ export default function TableManager({
     link.click();
   }
 
-  if (loading)
+  if (minLoading)
     return (
-      <div className="flex justify-center p-12 text-[#999999]">
-        Loading tables...
+      <div className="p-7 space-y-6">
+        <div className="flex items-center gap-3.5 flex-wrap">
+          <Skeleton className="w-[46px] h-[46px] rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className="h-64 rounded-xl" />
+          ))}
+        </div>
       </div>
     );
 

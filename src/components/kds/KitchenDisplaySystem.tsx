@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Clock, ChefHat, CheckCircle, AlertTriangle, Play, Pause } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface OrderItem {
   id: string;
@@ -38,12 +39,33 @@ interface OrderPreparation {
 export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: string }) {
   const [preparations, setPreparations] = useState<OrderPreparation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, received, preparing, ready
 
   useEffect(() => {
-    fetchPreparations();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await fetchPreparations();
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
+
     const interval = setInterval(fetchPreparations, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [restaurantId, filter]);
 
   async function fetchPreparations() {
@@ -52,8 +74,6 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
       setPreparations(response.data);
     } catch (error) {
       console.error("Failed to load preparations");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -108,8 +128,23 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
     return p.stage === filter;
   });
 
-  if (loading) {
-    return <div className="text-center py-12 text-[#9a9488]">Loading kitchen display...</div>;
+  if (minLoading) {
+    return (
+      <div className="p-7 space-y-6">
+        <div className="flex items-center gap-3.5 flex-wrap">
+          <Skeleton className="w-[46px] h-[46px] rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className="h-64 rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -255,8 +290,10 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
       </div>
 
       {filteredPreparations.length === 0 && (
-        <div className="text-center py-12 text-[#5a5650] text-[13px]">
-          No orders in this stage
+        <div className="text-center py-16">
+          <ChefHat className="size-12 text-[#5a5650] mx-auto mb-4" />
+          <p className="text-[#5a5650] text-[13px]">No orders in this stage</p>
+          <p className="text-[#5a5650] text-[11px] mt-2">Orders will appear here when received</p>
         </div>
       )}
     </div>

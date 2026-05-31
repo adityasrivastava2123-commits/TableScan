@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Users, Clock, Phone, CheckCircle, XCircle, Bell, Plus, UtensilsCrossed, ShoppingBag } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface QueueEntry {
   id: string;
@@ -23,6 +24,7 @@ interface QueueEntry {
 export default function QueueManagement({ restaurantId }: { restaurantId: string }) {
   const [queueEntries, setQueueEntries] = useState<QueueEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, waiting, called, seated
   const [typeFilter, setTypeFilter] = useState("all"); // all, dine_in, takeaway, delivery
   const [addingEntry, setAddingEntry] = useState(false);
@@ -36,9 +38,29 @@ export default function QueueManagement({ restaurantId }: { restaurantId: string
   });
 
   useEffect(() => {
-    fetchQueueEntries();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await fetchQueueEntries();
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
+
     const interval = setInterval(fetchQueueEntries, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [restaurantId, filter, typeFilter]);
 
   async function fetchQueueEntries() {
@@ -47,8 +69,6 @@ export default function QueueManagement({ restaurantId }: { restaurantId: string
       setQueueEntries(response.data);
     } catch (error) {
       console.error("Failed to load queue entries");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -122,8 +142,27 @@ export default function QueueManagement({ restaurantId }: { restaurantId: string
     return e.status === filter && e.type === typeFilter;
   });
 
-  if (loading) {
-    return <div className="text-center py-12 text-[#9a9488]">Loading queue...</div>;
+  if (minLoading) {
+    return (
+      <div className="p-7 space-y-6">
+        <div className="flex items-center gap-3.5 flex-wrap">
+          <Skeleton className="w-[46px] h-[46px] rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3.5">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -384,8 +423,10 @@ export default function QueueManagement({ restaurantId }: { restaurantId: string
       </div>
 
       {filteredEntries.length === 0 && (
-        <div className="text-center py-12 text-[#5a5650] text-[13px]">
-          No entries in queue
+        <div className="text-center py-16">
+          <Users className="size-12 text-[#5a5650] mx-auto mb-4" />
+          <p className="text-[12px] text-[#5a5650]">No entries in queue</p>
+          <p className="text-[11px] text-[#5a5650] mt-1">Add customers to start managing the queue</p>
         </div>
       )}
     </div>

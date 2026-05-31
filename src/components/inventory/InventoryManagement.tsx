@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Package, AlertTriangle, TrendingUp, Search, Filter } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Ingredient {
   id: string;
@@ -32,6 +33,7 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [addingIngredient, setAddingIngredient] = useState(false);
@@ -58,8 +60,26 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
   });
 
   useEffect(() => {
-    fetchIngredients();
-    fetchSuppliers();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchIngredients(),
+          fetchSuppliers()
+        ]);
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
   }, [restaurantId]);
 
   async function fetchIngredients() {
@@ -68,8 +88,6 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
       setIngredients(response.data);
     } catch (error) {
       toast.error("Failed to load ingredients");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -147,8 +165,27 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
     return matchesSearch && matchesCategory;
   });
 
-  if (loading) {
-    return <div className="text-center py-12 text-[#9a9488]">Loading inventory...</div>;
+  if (minLoading) {
+    return (
+      <div className="p-7 space-y-6">
+        <div className="flex items-center gap-3.5 flex-wrap">
+          <Skeleton className="w-[46px] h-[46px] rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -436,7 +473,11 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
           <div className="col-span-1">Status</div>
         </div>
         {filteredIngredients.length === 0 ? (
-          <div className="text-center py-12 text-[#5a5650] text-[13px]">No ingredients found</div>
+          <div className="text-center py-16">
+            <Package className="size-12 text-[#5a5650] mx-auto mb-4" />
+            <p className="text-[12px] text-[#5a5650]">No ingredients found</p>
+            <p className="text-[11px] text-[#5a5650] mt-1">Add ingredients to start tracking inventory</p>
+          </div>
         ) : (
           <div className="divide-y divide-[rgba(255,255,255,0.07)]">
             {filteredIngredients.map((item) => (

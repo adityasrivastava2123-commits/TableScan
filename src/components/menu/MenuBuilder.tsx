@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, ChevronDown, Leaf, Drumstick, Search, Utensils, Sparkles, ImagePlus, X } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Variant { id: string; name: string; price: number; }
 interface MenuItem { id: string; name: string; description?: string; price: number; isVeg: boolean; isAvailable: boolean; tags: string[]; variants: Variant[]; image?: string; }
@@ -18,6 +19,7 @@ interface Category { id: string; name: string; description?: string; menuItems: 
 export default function MenuBuilder({ restaurantId }: { restaurantId: string }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -32,10 +34,27 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
       const res = await axios.get(`/api/menu/categories?restaurantId=${restaurantId}`);
       setCategories(res.data);
     } catch { toast.error("Failed to load menu"); }
-    finally { setLoading(false); }
   }, [restaurantId]);
 
-  useEffect(() => { fetchCategories(); }, [fetchCategories]);
+  useEffect(() => {
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await fetchCategories();
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
+  }, [fetchCategories]);
 
   async function addSampleData() {
     try {
@@ -186,14 +205,21 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
     } catch { toast.error("Failed to update item"); }
   }
 
-  if (loading) return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex justify-center p-12 text-[#999999]"
-    >
-      Loading menu...
-    </motion.div>
+  if (minLoading) return (
+    <div className="p-7 space-y-6">
+      <div className="flex items-center gap-3.5 flex-wrap">
+        <Skeleton className="w-[46px] h-[46px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-4 w-56" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-64 rounded-xl" />
+        ))}
+      </div>
+    </div>
   );
 
   return (

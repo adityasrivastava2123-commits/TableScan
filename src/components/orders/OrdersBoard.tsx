@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getPusherClient } from "@/lib/pusher-client";
 
 type BoardStatus = "NEW" | "PREPARING" | "READY" | "DONE";
@@ -81,6 +82,7 @@ type OrdersBoardProps = {
 export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
   const [orders, setOrders] = useState<BoardOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [usePollingFallback, setUsePollingFallback] = useState(false);
 
@@ -93,13 +95,27 @@ export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch orders.");
-    } finally {
-      setLoading(false);
     }
   }, [restaurantId]);
 
   useEffect(() => {
-    void fetchOrders();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await fetchOrders();
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
   }, [fetchOrders]);
 
   useEffect(() => {
@@ -220,7 +236,7 @@ export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
     }
   };
 
-  if (loading) {
+  if (minLoading) {
     return <OrdersBoardSkeleton />;
   }
 
@@ -402,16 +418,16 @@ function StatsCard({ label, value }: { label: string; value: string }) {
 function OrdersBoardSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="h-8 w-80 animate-pulse rounded-md bg-[#141414]" />
+      <Skeleton className="h-8 w-80" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, idx) => (
           <Card key={idx} className="min-h-[500px] bg-[#141414] border-[#252525] overflow-hidden">
-            <div className="h-16 animate-pulse bg-[#1e1e1e]" />
+            <Skeleton className="h-16" />
             <div className="p-3 space-y-3">
               {Array.from({ length: 3 }).map((__, cardIdx) => (
                 <div
                   key={cardIdx}
-                  className="h-32 animate-pulse rounded-md bg-[#1e1e1e]/70"
+                  className="h-24 rounded-md bg-[#1e1e1e]"
                 />
               ))}
             </div>

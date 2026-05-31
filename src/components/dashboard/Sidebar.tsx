@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -70,33 +70,33 @@ const sectionLabels: Record<string, string> = {
   account: "Account",
 };
 
-export default function Sidebar({ restaurant, restaurantOpen, userName, userImageUrl, userEmail }: SidebarProps) {
+function Sidebar({ restaurant, restaurantOpen, userName, userImageUrl, userEmail }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const getInitials = (name: string) => {
+  const getInitials = useCallback((name: string) => {
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
       .slice(0, 1);
-  };
+  }, []);
 
-  const isActive = (path: string) => {
+  const isActive = useCallback((path: string) => {
     if (path === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(path);
-  };
+  }, [pathname]);
 
-  const handleNavigation = (item: SidebarItem) => {
+  const handleNavigation = useCallback((item: SidebarItem) => {
     if (item.external) {
       window.open(item.path, "_blank");
     } else {
       router.push(item.path);
     }
     setMobileOpen(false);
-  };
+  }, [router]);
 
   const SidebarContent = () => {
     return (
@@ -234,3 +234,5 @@ export default function Sidebar({ restaurant, restaurantOpen, userName, userImag
     </>
   );
 }
+
+export default memo(Sidebar);

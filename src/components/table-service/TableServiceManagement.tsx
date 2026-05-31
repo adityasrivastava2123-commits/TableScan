@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, User, Clock, CheckCircle, XCircle, AlertCircle, Users } from "lucide-react";
+import { MapPin, User, Clock, CheckCircle, XCircle, AlertCircle, Users, Plus } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Table {
   id: string;
@@ -33,16 +34,40 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
   const [tables, setTables] = useState<Table[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, available, occupied, reserved, dirty
   const [addingTable, setAddingTable] = useState(false);
   const [newTable, setNewTable] = useState({ name: "", capacity: 4 });
 
   useEffect(() => {
-    fetchTableServices();
-    fetchTables();
-    fetchStaff();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchTableServices(),
+          fetchTables(),
+          fetchStaff()
+        ]);
+      } finally {
+        if (mounted) {
+          // Minimum 300ms display time for smooth transition
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
+
     const interval = setInterval(fetchTableServices, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [restaurantId, locationId, filter]);
 
   async function fetchTableServices() {
@@ -51,8 +76,6 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
       setTableServices(response.data);
     } catch (error) {
       console.error("Failed to load table services");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -223,32 +246,48 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Available</div>
-          <div className="text-[26px] font-bold text-[#4ade80]">{tableServices.filter((s) => s.status === "AVAILABLE").length}</div>
+      {minLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
         </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Occupied</div>
-          <div className="text-[26px] font-bold text-[#f97316]">{tableServices.filter((s) => s.status === "OCCUPIED").length}</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
+          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+            <div className="text-[11px] text-[#5a5650] mb-1">Available</div>
+            <div className="text-[26px] font-bold text-[#4ade80]">{tableServices.filter((s) => s.status === "AVAILABLE").length}</div>
+          </div>
+          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+            <div className="text-[11px] text-[#5a5650] mb-1">Occupied</div>
+            <div className="text-[26px] font-bold text-[#f97316]">{tableServices.filter((s) => s.status === "OCCUPIED").length}</div>
+          </div>
+          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+            <div className="text-[11px] text-[#5a5650] mb-1">Reserved</div>
+            <div className="text-[26px] font-bold text-[#60a5fa]">{tableServices.filter((s) => s.status === "RESERVED").length}</div>
+          </div>
+          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+            <div className="text-[11px] text-[#5a5650] mb-1">Dirty</div>
+            <div className="text-[26px] font-bold text-[#f87171]">{tableServices.filter((s) => s.status === "DIRTY").length}</div>
+          </div>
+          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+            <div className="text-[11px] text-[#5a5650] mb-1">Total Tables</div>
+            <div className="text-[26px] font-bold text-[#f0ece4]">{tables.length}</div>
+          </div>
         </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Reserved</div>
-          <div className="text-[26px] font-bold text-[#60a5fa]">{tableServices.filter((s) => s.status === "RESERVED").length}</div>
-        </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Dirty</div>
-          <div className="text-[26px] font-bold text-[#f87171]">{tableServices.filter((s) => s.status === "DIRTY").length}</div>
-        </div>
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-          <div className="text-[11px] text-[#5a5650] mb-1">Total Tables</div>
-          <div className="text-[26px] font-bold text-[#f0ece4]">{tables.length}</div>
-        </div>
-      </div>
+      )}
 
       {/* Tables Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredServices.map((service) => (
+      {minLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <Skeleton key={i} className="h-48 rounded-xl" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredServices.length > 0 ? (
+            filteredServices.map((service) => (
           <div
             key={service.id}
             className={`bg-[#111111] border ${getStatusColor(service.status)} rounded-xl p-5 space-y-4`}
@@ -348,12 +387,14 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
               <div className="text-[11px] text-[#9a9488] italic">{service.notes}</div>
             )}
           </div>
-        ))}
-      </div>
-
-      {filteredServices.length === 0 && (
-        <div className="text-center py-12 text-[#5a5650] text-[13px]">
-          No tables in this status
+        ))
+          ) : (
+            <div className="text-center py-16">
+              <MapPin className="size-12 text-[#5a5650] mx-auto mb-4" />
+              <p className="text-[#5a5650] text-[13px]">No tables in this status</p>
+              <p className="text-[#5a5650] text-[11px] mt-2">Add tables to get started</p>
+            </div>
+          )}
         </div>
       )}
     </div>

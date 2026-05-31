@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Calendar, Clock, User, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Shift {
   id: string;
@@ -34,6 +35,7 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
   const [staff, setStaff] = useState<Staff[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [minLoading, setMinLoading] = useState(true);
   const [addingShift, setAddingShift] = useState(false);
   const [addingSchedule, setAddingSchedule] = useState(false);
 
@@ -51,9 +53,27 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
   });
 
   useEffect(() => {
-    fetchShifts();
-    fetchStaff();
-    fetchSchedules();
+    let mounted = true;
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchShifts(),
+          fetchStaff(),
+          fetchSchedules()
+        ]);
+      } finally {
+        if (mounted) {
+          setTimeout(() => {
+            if (mounted) {
+              setLoading(false);
+              setMinLoading(false);
+            }
+          }, 300);
+        }
+      }
+    };
+
+    loadData();
   }, [restaurantId, currentDate]);
 
   async function fetchShifts() {
@@ -71,8 +91,6 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
       setStaff(response.data);
     } catch (error) {
       console.error("Failed to load staff");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -145,8 +163,22 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  if (loading) {
-    return <div className="text-center py-12 text-[#9a9488]">Loading schedule...</div>;
+  if (minLoading) {
+    return (
+      <div className="p-7 space-y-6">
+        <div className="flex items-center gap-3.5 flex-wrap">
+          <Skeleton className="w-[46px] h-[46px] rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -373,7 +405,11 @@ export default function StaffScheduling({ restaurantId }: { restaurantId: string
       <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
         <h3 className="text-[14px] font-semibold text-[#f0ece4] mb-4">Available Shifts</h3>
         {shifts.length === 0 ? (
-          <p className="text-[12px] text-[#5a5650]">No shifts configured yet</p>
+          <div className="text-center py-8">
+            <Clock className="size-8 text-[#5a5650] mx-auto mb-3" />
+            <p className="text-[12px] text-[#5a5650]">No shifts configured yet</p>
+            <p className="text-[11px] text-[#5a5650] mt-1">Add shifts to start scheduling</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {shifts.map((shift) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, memo } from "react";
 import { Plus, Minus, X, Search, ChevronRight, Star, Clock, MapPin, ArrowLeft, Users, Check, Flame } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useRouter } from "next/navigation";
@@ -234,7 +234,7 @@ export default function CustomerMenu({
       .reduce((s, i) => s + i.quantity, 0);
   }
 
-  function handleAddToCart() {
+  const handleAddToCart = useCallback(() => {
     if (!selectedItem) return;
     const hasSpice = selectedItem.tags.some((t) => ["spicy", "curry", "masala"].includes(t.toLowerCase()));
     const noteParts = [
@@ -256,7 +256,7 @@ export default function CustomerMenu({
       iconTheme: { primary: "#f97316", secondary: "#fff" },
     });
     setSelectedItem(null);
-  }
+  }, [selectedItem, spiceLevel, addOns, itemNote, selectedVariant, effectivePrice, itemQty, addItem]);
 
   // Split bill helpers
   function addSplitPerson() {
@@ -650,7 +650,7 @@ export default function CustomerMenu({
 }
 
 // ─── Menu Item Card ────────────────────────────────────────────────────────────
-function MenuItemCard({ item, qtyInCart, onSelect, language }: { item: MenuItem; qtyInCart: number; onSelect: () => void; language: "en" | "hi"; }) {
+const MenuItemCard = memo(function MenuItemCard({ item, qtyInCart, onSelect, language }: { item: MenuItem; qtyInCart: number; onSelect: () => void; language: "en" | "hi"; }) {
   const isBestseller = item.tags.some((t) => ["bestseller", "top"].includes(t.toLowerCase()));
   const t = translations[language];
   return (
@@ -704,4 +704,4 @@ function MenuItemCard({ item, qtyInCart, onSelect, language }: { item: MenuItem;
       )}
     </div>
   );
-}
+});
