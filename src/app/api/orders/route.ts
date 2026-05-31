@@ -17,6 +17,7 @@ const orderSchema = z.object({
   customerPhone: z.string().optional(),
   customerEmail: z.string().optional(),
   specialNote: z.string().optional(),
+  paymentMethod: z.enum(["ONLINE", "CASH"]).default("ONLINE"),
   items: z.array(z.object({
     menuItemId: z.string(),
     quantity: z.number(),
@@ -65,12 +66,17 @@ export async function POST(req: Request) {
     const taxAmount = (subtotal * (restaurant.taxPercent ?? 0)) / 100;
     const totalAmount = subtotal + taxAmount;
 
-    // Create Razorpay order
-    const razorpayOrder = await razorpay.orders.create({
-      amount: Math.round(totalAmount * 100), // paise
-      currency: "INR",
-      receipt: generateOrderNumber(),
-    });
+    let razorpayOrderId: string | null = null;
+
+    if (parsed.paymentMethod === "ONLINE") {
+      // Create Razorpay order
+      const razorpayOrder = await razorpay.orders.create({
+        amount: Math.round(totalAmount * 100), // paise
+        currency: "INR",
+        receipt: generateOrderNumber(),
+      });
+      razorpayOrderId = razorpayOrder.id;
+    }
 
     // Create order in DB
     const order = await prisma.order.create({
@@ -94,10 +100,11 @@ export async function POST(req: Request) {
         },
         payment: {
           create: {
-            razorpayOrderId: razorpayOrder.id,
+            razorpayOrderId,
             amount: totalAmount,
             currency: "INR",
             status: "PENDING",
+            method: parsed.paymentMethod,
           },
         },
       },
@@ -208,9 +215,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       orderId: order.id,
-      razorpayOrderId: razorpayOrder.id,
+      razorpayOrderId: razorpayOrderId,
       amount: Math.round(totalAmount * 100),
       currency: "INR",
+      paymentMethod: parsed.paymentMethod,
     });
   } catch (error) {
     console.error("Order creation error:", error);

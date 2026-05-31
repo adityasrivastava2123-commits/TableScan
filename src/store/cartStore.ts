@@ -21,6 +21,7 @@ interface CartStore {
   setTableInfo: (slug: string, tableToken: string) => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  updateNote: (id: string, note: string) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -69,6 +70,13 @@ export const useCartStore = create<CartStore>()(
 
       getTotalPrice: () =>
         get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+
+      updateNote: (id, note) =>
+        set({
+          items: get().items.map((i) =>
+            i.id === id ? { ...i, note } : i
+          ),
+        }),
     }),
     { name: "tablescan-cart" }
   )
