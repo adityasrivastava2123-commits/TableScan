@@ -29,14 +29,12 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import type { Restaurant } from "@prisma/client";
 
 interface SidebarProps {
   restaurant: Restaurant;
   restaurantOpen: boolean;
-  userName: string;
-  userImageUrl?: string;
-  userEmail?: string;
 }
 
 interface SidebarItem {
@@ -76,7 +74,12 @@ const sectionLabels: Record<string, string> = {
   account: "Account",
 };
 
-function Sidebar({ restaurant, restaurantOpen, userName, userImageUrl, userEmail }: SidebarProps) {
+function Sidebar({ restaurant, restaurantOpen }: SidebarProps) {
+  const { user } = useUser();
+  const userName = user?.firstName || user?.emailAddresses?.[0]?.emailAddress || "User";
+  const userImageUrl = user?.imageUrl;
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+
   const router = useRouter();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();

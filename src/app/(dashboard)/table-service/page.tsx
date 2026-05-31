@@ -1,16 +1,16 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import TableServiceManagement from "@/components/table-service/TableServiceManagement";
 
 export default async function TableServicePage() {
-  const user = await currentUser();
+  const { userId } = await auth();
 
-  if (!user) {
+  if (!userId) {
     return <div>Please sign in</div>;
   }
 
   const dbUser = await prisma.user.findUnique({
-    where: { clerkId: user.id },
+    where: { clerkId: userId },
     include: {
       restaurants: {
         include: {

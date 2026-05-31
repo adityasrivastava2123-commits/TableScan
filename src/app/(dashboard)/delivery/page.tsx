@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import DeliveryDashboard from "@/components/delivery/DeliveryDashboard";
 import type { Metadata } from "next";
@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default async function DeliveryPage() {
-  const user = await currentUser();
-  if (!user) redirect("/sign-in");
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
 
   const dbUser = await prisma.user.findUnique({
-    where: { clerkId: user.id },
+    where: { clerkId: userId },
     include: { restaurants: { orderBy: { createdAt: "asc" }, take: 1 } },
   });
 

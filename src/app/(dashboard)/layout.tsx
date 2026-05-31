@@ -1,19 +1,19 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import Sidebar from "@/components/dashboard/Sidebar";
 import Breadcrumbs from "@/components/dashboard/Breadcrumbs";
 import type { ReactNode } from "react";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const user = await currentUser();
+  const { userId } = await auth();
 
-  if (!user) {
+  if (!userId) {
     redirect("/sign-in");
   }
 
   const dbUser = await prisma.user.findUnique({
-    where: { clerkId: user.id },
+    where: { clerkId: userId },
     include: {
       restaurants: {
         orderBy: { createdAt: "asc" },
@@ -51,9 +51,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       <Sidebar
         restaurant={restaurant}
         restaurantOpen={restaurantOpen}
-        userName={user?.firstName || user?.emailAddresses?.[0]?.emailAddress || "User"}
-        userImageUrl={user?.imageUrl}
-        userEmail={user?.emailAddresses?.[0]?.emailAddress}
       />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <main className="flex-1 overflow-y-auto p-4 md:p-6">

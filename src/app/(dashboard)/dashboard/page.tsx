@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import type { Metadata } from "next";
@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const user = await currentUser();
+  const { userId } = await auth();
 
   const dbUser = await prisma.user.findUnique({
-    where: { clerkId: user?.id || "" },
+    where: { clerkId: userId || "" },
     include: {
       restaurants: {
         orderBy: { createdAt: "asc" },
@@ -30,7 +30,6 @@ export default async function DashboardPage() {
   return (
     <DashboardOverview
       restaurant={restaurant}
-      userName={user?.firstName || user?.emailAddresses?.[0]?.emailAddress || "User"}
     />
   );
 }

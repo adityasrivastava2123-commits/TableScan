@@ -59,9 +59,10 @@ interface DashboardData {
   restaurantOpen: boolean;
 }
 
+import { useUser } from "@clerk/nextjs";
+
 interface DashboardOverviewProps {
   restaurant: Restaurant;
-  userName: string;
 }
 
 function OrderStatusBadge({ status }: { status: string }) {
@@ -88,7 +89,10 @@ function OrderStatusBadge({ status }: { status: string }) {
   );
 }
 
-export default function DashboardOverview({ restaurant, userName }: DashboardOverviewProps) {
+export default function DashboardOverview({ restaurant }: DashboardOverviewProps) {
+  const { user } = useUser();
+  const userName = user?.firstName || user?.emailAddresses?.[0]?.emailAddress || "User";
+
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<DashboardData | null>(null);
