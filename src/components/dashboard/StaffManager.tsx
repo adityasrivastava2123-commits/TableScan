@@ -339,7 +339,6 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
             </Card>
           </div>
         ) : null}
-      )}
 
       {/* Staff Table */}
       <div>
