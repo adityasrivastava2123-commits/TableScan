@@ -152,12 +152,12 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
     if (!usePollingFallback) return;
 
     const interval = setInterval(() => {
-      // React Query will handle refetching automatically
-      void window.location.reload();
+      // React Query will handle refetching automatically and silently in the background
+      queryClient.invalidateQueries({ queryKey: ["orders", restaurantId] });
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [usePollingFallback]);
+  }, [usePollingFallback, restaurantId, queryClient]);
 
   const groupedOrders = useMemo(() => {
     return {

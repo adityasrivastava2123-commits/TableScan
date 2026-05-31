@@ -109,6 +109,8 @@ model Table {
   orders       Order[]
   reservations Reservation[]
   tableService TableService[]
+
+  @@index([locationId])
 }
 
 model Category {
@@ -123,6 +125,8 @@ model Category {
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   menuItems    MenuItem[]
+
+  @@index([restaurantId])
 }
 
 model MenuItem {
@@ -144,6 +148,9 @@ model MenuItem {
   variants     MenuItemVariant[]
   orderItems   OrderItem[]
   recipeIngredients RecipeIngredient[]
+
+  @@index([restaurantId])
+  @@index([categoryId])
 }
 
 model MenuItemVariant {
@@ -175,6 +182,10 @@ model Order {
   orderPreparations OrderPreparation[]
   tableServices    TableService[]
   deliveries       Delivery[]
+
+  @@index([restaurantId])
+  @@index([tableId])
+  @@index([createdAt])
 }
 
 model OrderItem {
@@ -187,6 +198,9 @@ model OrderItem {
   menuItemId String
   menuItem   MenuItem           @relation(fields: [menuItemId], references: [id])
   variants   OrderItemVariant[]
+
+  @@index([orderId])
+  @@index([menuItemId])
 }
 
 model OrderItemVariant {
@@ -225,6 +239,8 @@ model Staff {
   schedules    Schedule[]
   payrollRecords PayrollRecord[]
   tableService TableService[]
+
+  @@index([restaurantId])
 }
 
 model Subscription {
@@ -323,6 +339,10 @@ model Schedule {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([staffId])
+  @@index([date])
 }
 
 model PayrollRecord {
@@ -358,6 +378,10 @@ model Reservation {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([tableId])
+  @@index([date])
 }
 
 model Waitlist {
@@ -409,6 +433,10 @@ model TableService {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([tableId])
+  @@index([status])
 }
 
 // Delivery Management
