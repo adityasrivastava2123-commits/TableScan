@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,14 +11,14 @@ import { Plus, Trash2, ChevronDown, Leaf, Drumstick, Search, Utensils, Sparkles,
 import toast from "react-hot-toast";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Variant { id: string; name: string; price: number; }
 interface MenuItem { id: string; name: string; description?: string; price: number; isVeg: boolean; isAvailable: boolean; tags: string[]; variants: Variant[]; image?: string; }
 interface Category { id: string; name: string; description?: string; menuItems: MenuItem[]; }
 
-export default function MenuBuilder({ restaurantId }: { restaurantId: string }) {
+export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaurantId: string }) {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
   const [minLoading, setMinLoading] = useState(true);
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,33 +28,25 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
 
   const [addingItemTo, setAddingItemTo] = useState<string | null>(null);
   const [newItem, setNewItem] = useState({ name: "", price: "", description: "", isVeg: true, image: "" });
+  const queryClient = useQueryClient();
 
-  const fetchCategories = useCallback(async () => {
-    try {
+  const { data: categoriesData } = useQuery({
+    queryKey: ["menu-categories", restaurantId],
+    queryFn: async () => {
       const res = await axios.get(`/api/menu/categories?restaurantId=${restaurantId}`);
-      setCategories(res.data);
-    } catch { toast.error("Failed to load menu"); }
-  }, [restaurantId]);
+      return res.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
   useEffect(() => {
-    let mounted = true;
-    const loadData = async () => {
-      try {
-        await fetchCategories();
-      } finally {
-        if (mounted) {
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
-        }
-      }
-    };
-
-    loadData();
-  }, [fetchCategories]);
+    if (categoriesData) {
+      setCategories(categoriesData);
+      setTimeout(() => {
+        setMinLoading(false);
+      }, 300);
+    }
+  }, [categoriesData]);
 
   async function addSampleData() {
     try {
@@ -96,7 +88,7 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
         await axios.post("/api/menu/items", { ...item, restaurantId, tags: [] });
       }
 
-      await fetchCategories();
+      queryClient.invalidateQueries({ queryKey: ["menu-categories", restaurantId] });
       toast.dismiss();
       toast.success("Sample menu added!");
     } catch (error) {
@@ -111,7 +103,7 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
     cat.menuItems.some(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  async function addCategory() {
+  const addCategory = useCallback(async () => {
     if (!newCatName.trim()) return;
     try {
       const res = await axios.post("/api/menu/categories", { name: newCatName, restaurantId });
@@ -119,17 +111,19 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
       setNewCatName("");
       setAddingCat(false);
       toast.success("Category added!");
+      queryClient.invalidateQueries({ queryKey: ["menu-categories", restaurantId] });
     } catch { toast.error("Failed to add category"); }
-  }
+  }, [newCatName, restaurantId, categories, queryClient]);
 
-  async function deleteCategory(id: string) {
+  const deleteCategory = useCallback(async (id: string) => {
     if (!confirm("Delete this category and all its items?")) return;
     try {
       await axios.delete(`/api/menu/categories/${id}`);
       setCategories(categories.filter(c => c.id !== id));
       toast.success("Category deleted");
+      queryClient.invalidateQueries({ queryKey: ["menu-categories", restaurantId] });
     } catch { toast.error("Failed to delete category"); }
-  }
+  }, [categories, restaurantId, queryClient]);
 
   async function addItem(categoryId: string) {
     if (!newItem.name.trim() || !newItem.price) return;
@@ -589,4 +583,4 @@ export default function MenuBuilder({ restaurantId }: { restaurantId: string }) 
       </motion.div>
     </motion.div>
   );
-}
+});

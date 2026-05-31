@@ -48,6 +48,7 @@ export async function GET(request: Request) {
   const staff = await prisma.staff.findMany({
     where: { restaurantId },
     orderBy: { createdAt: "desc" },
+    take: 50,
   });
 
   return NextResponse.json(staff);

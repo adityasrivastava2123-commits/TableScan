@@ -24,6 +24,7 @@ export async function GET(req: Request) {
     const tables = await prisma.table.findMany({
       where: { locationId },
       orderBy: { createdAt: "asc" },
+      take: 50,
     });
 
     return NextResponse.json(tables);

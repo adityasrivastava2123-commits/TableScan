@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, memo } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPusherClient } from "@/lib/pusher-client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type BoardStatus = "NEW" | "PREPARING" | "READY" | "DONE";
 type UpdatableStatus = "PREPARING" | "READY" | "DONE" | "CANCELLED";
@@ -79,79 +80,37 @@ type OrdersBoardProps = {
   restaurantId: string;
 };
 
-export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
+export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoardProps) {
   const [orders, setOrders] = useState<BoardOrder[]>([]);
-  const [loading, setLoading] = useState(true);
   const [minLoading, setMinLoading] = useState(true);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [usePollingFallback, setUsePollingFallback] = useState(false);
+  const queryClient = useQueryClient();
 
-  const fetchOrders = useCallback(async () => {
-    try {
+  const { data: ordersData, isLoading } = useQuery({
+    queryKey: ["orders", restaurantId],
+    queryFn: async () => {
       const { data } = await axios.get<BoardOrder[]>(
         `/api/orders/restaurant/${restaurantId}`,
       );
-      setOrders(data);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to fetch orders.");
-    }
-  }, [restaurantId]);
+      return data;
+    },
+    staleTime: 1000 * 30, // 30 seconds
+  });
 
   useEffect(() => {
-    let mounted = true;
-    const loadData = async () => {
-      try {
-        await fetchOrders();
-      } finally {
-        if (mounted) {
-          setTimeout(() => {
-            if (mounted) {
-              setLoading(false);
-              setMinLoading(false);
-            }
-          }, 300);
-        }
-      }
-    };
-
-    loadData();
-  }, [fetchOrders]);
+    if (ordersData) {
+      setOrders(ordersData);
+      setTimeout(() => {
+        setMinLoading(false);
+      }, 300);
+    }
+  }, [ordersData]);
 
   useEffect(() => {
     const pusherClient = getPusherClient();
     const channelName = `restaurant-${restaurantId}`;
     const channel = pusherClient.subscribe(channelName);
-
-    const handleNewOrder = (payload: { order?: BoardOrder }) => {
-      if (!payload?.order) return;
-      setOrders((prev) => {
-        const exists = prev.some((order) => order.id === payload.order!.id);
-        if (exists) return prev;
-        return [payload.order!, ...prev];
-      });
-      toast.success("New order received!");
-    };
-
-    const handleOrderUpdated = (payload: { order?: BoardOrder }) => {
-      if (!payload?.order) return;
-      setOrders((prev) => {
-        const hasOrder = prev.some((order) => order.id === payload.order!.id);
-        if (!hasOrder && payload.order!.status !== "CANCELLED") {
-          return [payload.order!, ...prev];
-        }
-
-        return prev
-          .map((order) =>
-            order.id === payload.order!.id ? payload.order! : order,
-          )
-          .filter((order) => order.status !== "CANCELLED");
-      });
-    };
-
-    const handleConnectionError = () => {
-      setUsePollingFallback(true);
-    };
 
     channel.bind("new-order", handleNewOrder);
     channel.bind("order-updated", handleOrderUpdated);
@@ -165,17 +124,18 @@ export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
       pusherClient.connection.unbind("error", handleConnectionError);
       pusherClient.connection.unbind("unavailable", handleConnectionError);
     };
-  }, [restaurantId]);
+  }, [restaurantId, handleNewOrder, handleOrderUpdated, handleConnectionError]);
 
   useEffect(() => {
     if (!usePollingFallback) return;
 
     const interval = setInterval(() => {
-      void fetchOrders();
+      // React Query will handle refetching automatically
+      void window.location.reload();
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [fetchOrders, usePollingFallback]);
+  }, [usePollingFallback]);
 
   const groupedOrders = useMemo(() => {
     return {
@@ -216,7 +176,31 @@ export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
     };
   }, [orders]);
 
-  const updateOrderStatus = async (orderId: string, status: UpdatableStatus) => {
+  const handleNewOrder = useCallback((payload: { order?: BoardOrder }) => {
+    if (!payload?.order) return;
+    setOrders((prev) => {
+      const exists = prev.some((order) => order.id === payload.order!.id);
+      if (exists) return prev;
+      if (payload.order!.status === "CANCELLED") return prev;
+      return [payload.order!, ...prev];
+    });
+    toast.success("New order received!");
+  }, []);
+
+  const handleOrderUpdated = useCallback((payload: { order?: BoardOrder }) => {
+    if (!payload?.order) return;
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === payload.order!.id ? payload.order! : order,
+      ).filter((order) => order.status !== "CANCELLED"),
+    );
+  }, []);
+
+  const handleConnectionError = useCallback(() => {
+    setUsePollingFallback(true);
+  }, []);
+
+  const updateOrderStatus = useCallback(async (orderId: string, status: UpdatableStatus) => {
     try {
       setUpdatingOrderId(orderId);
       await axios.patch(`/api/orders/${orderId}/status`, { status });
@@ -228,13 +212,16 @@ export function OrdersBoard({ restaurantId }: OrdersBoardProps) {
           )
           .filter((order) => order.status !== "CANCELLED"),
       );
+      
+      // Invalidate cache to refetch data
+      queryClient.invalidateQueries({ queryKey: ["orders", restaurantId] });
     } catch (error) {
       console.error(error);
       toast.error("Failed to update order status.");
     } finally {
       setUpdatingOrderId(null);
     }
-  };
+  }, [restaurantId, queryClient]);
 
   if (minLoading) {
     return <OrdersBoardSkeleton />;
@@ -436,5 +423,5 @@ function OrdersBoardSkeleton() {
       </div>
     </div>
   );
-}
+});
 

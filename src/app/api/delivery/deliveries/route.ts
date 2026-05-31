@@ -24,14 +24,26 @@ export async function GET(request: NextRequest) {
           include: {
             items: {
               include: {
-                menuItem: true,
+                menuItem: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
         },
-        driver: true,
+        driver: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+            isAvailable: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
+      take: 50,
     });
 
     return NextResponse.json(deliveries);

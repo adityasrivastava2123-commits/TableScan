@@ -24,8 +24,19 @@ export async function GET(req: Request) {
 
     const categories = await prisma.category.findMany({
       where: { restaurantId },
-      include: { menuItems: true },
+      include: {
+        menuItems: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            isVeg: true,
+            isAvailable: true,
+          },
+        },
+      },
       orderBy: { sortOrder: "asc" },
+      take: 50,
     });
 
     return NextResponse.json(categories);

@@ -13,8 +13,16 @@ export async function GET(request: NextRequest) {
 
     const ingredients = await prisma.ingredient.findMany({
       where: { restaurantId },
-      include: { supplier: true },
+      include: {
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       orderBy: { name: "asc" },
+      take: 50,
     });
 
     return NextResponse.json(ingredients);

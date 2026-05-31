@@ -20,11 +20,29 @@ export async function GET(request: NextRequest) {
     const tableServices = await prisma.tableService.findMany({
       where,
       include: {
-        table: true,
-        server: true,
-        order: true,
+        table: {
+          select: {
+            id: true,
+            name: true,
+            capacity: true,
+          },
+        },
+        server: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        order: {
+          select: {
+            id: true,
+            orderNumber: true,
+            totalAmount: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
+      take: 50,
     });
 
     return NextResponse.json(tableServices);

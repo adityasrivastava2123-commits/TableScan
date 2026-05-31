@@ -24,13 +24,18 @@ export async function GET(request: NextRequest) {
           include: {
             items: {
               include: {
-                menuItem: true,
+                menuItem: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
         },
       },
       orderBy: { createdAt: "asc" },
+      take: 50,
     });
 
     return NextResponse.json(preparations);
