@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface Variant { id: string; name: string; price: number; }
@@ -798,7 +799,8 @@ export default function CustomerMenu({
               <div className="w-20 h-20 rounded-full flex-shrink-0 overflow-hidden bg-gray-50
                 border-2 border-white shadow-md flex items-center justify-center">
                 {spotlightItem.image ? (
-                  <img src={spotlightItem.image} alt={spotlightItem.name}
+                  <Image src={spotlightItem.image} alt={spotlightItem.name}
+                    width={80} height={80} quality={85} priority
                     className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-3xl">🍽️</span>
@@ -906,7 +908,8 @@ export default function CustomerMenu({
                       onClick={() => setSelectedItem(item)}
                     >
                       {item.image ? (
-                        <img src={item.image} alt={item.name}
+                        <Image src={item.image} alt={item.name}
+                          width={78} height={78} quality={80}
                           className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-3xl">🍽️</span>
@@ -1046,7 +1049,8 @@ export default function CustomerMenu({
                   <div className="w-44 h-44 rounded-full overflow-hidden bg-gray-50
                     border-4 border-white shadow-xl flex items-center justify-center">
                     {selectedItem.image ? (
-                      <img src={selectedItem.image} alt={selectedItem.name}
+                      <Image src={selectedItem.image} alt={selectedItem.name}
+                        width={176} height={176} quality={85}
                         className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-7xl">🍽️</span>
@@ -1633,7 +1637,9 @@ export default function CustomerMenu({
                         {/* Circular Image with nice fallback emoji */}
                         <div className="w-16 h-16 rounded-full overflow-hidden bg-white border-2 border-white shadow-md flex-shrink-0 flex items-center justify-center">
                           {item.image ? (
-                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                            <Image src={item.image} alt={item.name}
+                              width={64} height={64} quality={80}
+                              className="w-full h-full object-cover" />
                           ) : (
                             <span className="text-2xl">🥤</span>
                           )}

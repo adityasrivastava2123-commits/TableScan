@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default async function CustomerMenuPage({ params }: Props) {
-  const restaurant = await prisma.restaurant.findUnique({
+  const restaurantPromise = prisma.restaurant.findUnique({
     where: { slug: params.slug },
     include: {
       categories: {
@@ -27,14 +27,14 @@ export default async function CustomerMenuPage({ params }: Props) {
     },
   });
 
-  if (!restaurant) notFound();
-
-  const table = await prisma.table.findUnique({
+  const tablePromise = prisma.table.findUnique({
     where: { qrToken: params.tableToken },
     include: { location: true },
   });
 
-  if (!table) notFound();
+  const [restaurant, table] = await Promise.all([restaurantPromise, tablePromise]);
+
+  if (!restaurant || !table) notFound();
 
   // Fetch all active orders for this table (for status tracker)
   const activeOrders = await prisma.order.findMany({
