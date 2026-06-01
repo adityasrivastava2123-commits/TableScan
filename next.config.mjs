@@ -24,8 +24,13 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  silent: true,
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-});
+// Only apply Sentry config if environment variables are present
+const sentryConfig = process.env.SENTRY_ORG && process.env.SENTRY_PROJECT
+  ? {
+      silent: true,
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+    }
+  : {};
+
+export default withSentryConfig(nextConfig, sentryConfig);
