@@ -227,8 +227,8 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
             <Users className="size-6 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white">Staff Accounts</h1>
-            <p className="text-sm text-[#999999]">Manage staff members and role-based responsibilities.</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Staff Accounts</h1>
+            <p className="text-sm text-gray-500 dark:text-[#999999]">Manage staff members and role-based responsibilities.</p>
           </div>
         </div>
         <button
@@ -252,11 +252,11 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
       {/* Add Staff Form */}
       {showForm ? (
         <div>
-          <Card className="space-y-6 p-6 bg-[#141414] border-[#252525]">
-              <h2 className="text-xl font-semibold text-white">Add Staff Member</h2>
+          <Card className="space-y-6 p-6 bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Add Staff Member</h2>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="staff-name" className="text-white text-sm font-medium">Name *</Label>
+                  <Label htmlFor="staff-name" className="text-gray-700 dark:text-white text-sm font-medium">Name *</Label>
                   <Input
                     id="staff-name"
                     value={form.name}
@@ -265,7 +265,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                       setFormErrors((prev) => ({ ...prev, name: undefined }));
                     }}
                     placeholder="Rahul Sharma"
-                    className="h-11 bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                    className="h-11 bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-[#555555] focus:border-[#f97316]"
                   />
                   {formErrors.name ? (
                     <p className="text-xs text-[#ef4444]">{formErrors.name}</p>
@@ -273,7 +273,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="staff-email" className="text-white text-sm font-medium">Email *</Label>
+                  <Label htmlFor="staff-email" className="text-gray-700 dark:text-white text-sm font-medium">Email *</Label>
                   <Input
                     id="staff-email"
                     type="email"
@@ -283,7 +283,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                       setFormErrors((prev) => ({ ...prev, email: undefined }));
                     }}
                     placeholder="rahul@example.com"
-                    className="h-11 bg-[#1a1a1a] border-[#252525] text-white placeholder-[#555555] focus:border-[#f97316]"
+                    className="h-11 bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-[#555555] focus:border-[#f97316]"
                   />
                   {formErrors.email ? (
                     <p className="text-xs text-[#ef4444]">{formErrors.email}</p>
@@ -292,7 +292,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
               </div>
 
               <div className="max-w-xs space-y-2">
-                <Label className="text-white text-sm font-medium">Role *</Label>
+                <Label className="text-gray-700 dark:text-white text-sm font-medium">Role *</Label>
                 <Select
                   value={form.role}
                   onValueChange={(value) => {
@@ -300,12 +300,12 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                     setFormErrors((prev) => ({ ...prev, role: undefined }));
                   }}
                 >
-                  <SelectTrigger className="w-full bg-[#1a1a1a] border-[#252525] text-white">
+                  <SelectTrigger className="w-full bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white">
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#141414] border-[#252525]">
+                  <SelectContent className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
                     {roleOptions.map((role) => (
-                      <SelectItem key={role} value={role} className="text-white">
+                      <SelectItem key={role} value={role} className="text-gray-900 dark:text-white">
                         {role}
                       </SelectItem>
                     ))}
@@ -331,7 +331,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                     setFormErrors({});
                   }}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-lg bg-[#141414] border border-[#252525] text-white hover:bg-[#1e1e1e] transition-colors disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-lg bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#252525] text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1e1e1e] transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -342,10 +342,10 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
       {/* Staff Table */}
       <div>
-        <Card className="overflow-hidden bg-[#141414] border-[#252525]">
+        <Card className="overflow-hidden bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-[#1e1e1e] text-left text-xs uppercase tracking-wide text-[#999999]">
+              <thead className="bg-gray-50 dark:bg-[#1e1e1e] text-left text-xs uppercase tracking-wide text-gray-500 dark:text-[#999999]">
                 <tr>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
@@ -357,13 +357,13 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-[#999999]">
+                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-[#999999]">
                       Loading staff...
                     </td>
                   </tr>
                 ) : staff.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-[#555555]">
+                    <td colSpan={5} className="px-6 py-12 text-center text-gray-400 dark:text-[#555555]">
                       No staff yet — add your first staff member
                     </td>
                   </tr>
@@ -371,7 +371,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                   staff.map((member) => (
                     <tr
                       key={member.id}
-                      className="border-t border-[#252525] transition hover:bg-[#1e1e1e]"
+                      className="border-t border-gray-100 dark:border-[#252525] transition hover:bg-gray-50 dark:hover:bg-[#1e1e1e]"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -389,12 +389,12 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                               .join("")}
                           </div>
                           <div>
-                            <p className="font-medium text-white">{member.name}</p>
-                            <p className="text-xs text-[#999999]">{member.email}</p>
+                            <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-[#999999]">{member.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#999999]">{member.email}</td>
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-[#999999]">{member.email}</td>
                       <td className="px-6 py-4">
                         <Badge
                           variant="outline"
@@ -411,7 +411,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
                             member.isActive
                               ? "bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20"
-                              : "bg-[#555555]/10 text-[#999999] border border-[#252525]"
+                              : "bg-gray-100 dark:bg-[#555555]/10 text-gray-500 dark:text-[#999999] border border-gray-200 dark:border-[#252525]"
                           }`}
                         >
                           {updatingId === member.id ? (
@@ -433,12 +433,12 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                             }
                             disabled={updatingId === member.id}
                           >
-                            <SelectTrigger size="sm" className="w-[140px] bg-[#1a1a1a] border-[#252525] text-white">
+                            <SelectTrigger size="sm" className="w-[140px] bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-[#141414] border-[#252525]">
+                            <SelectContent className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
                               {roleOptions.map((role) => (
-                                <SelectItem key={role} value={role} className="text-white">
+                                <SelectItem key={role} value={role} className="text-gray-900 dark:text-white">
                                   {role}
                                 </SelectItem>
                               ))}
@@ -447,7 +447,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
                           <button
                             onClick={() => setDeleteCandidate(member)}
-                            className="flex items-center justify-center h-8 w-8 rounded-lg bg-[#ef4444] hover:bg-[#dc2626] transition-colors"
+                            className="flex items-center justify-center h-8 w-8 rounded-lg bg-[#ef4444] hover:bg-[#dc2626] transition-colors text-white"
                           >
                             <Trash2 className="size-4" />
                           </button>
@@ -464,27 +464,27 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
       {/* Role Permissions Card */}
       <div>
-        <Card className="space-y-4 p-6 bg-[#141414] border-[#252525]">
-          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+        <Card className="space-y-4 p-6 bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Shield className="size-5 text-[#f97316]" />
             Role Permissions
           </h3>
-          <ul className="space-y-3 text-sm text-[#999999]">
+          <ul className="space-y-3 text-sm text-gray-500 dark:text-[#999999]">
             <li className="flex items-start gap-2">
               <Crown className="size-4 text-[#ef4444] mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-white">ADMIN:</span> Full access to everything</span>
+              <span><span className="font-medium text-gray-900 dark:text-white">ADMIN:</span> Full access to everything</span>
             </li>
             <li className="flex items-start gap-2">
               <Briefcase className="size-4 text-purple-500 mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-white">MANAGER:</span> Orders, menu, reports (no billing)</span>
+              <span><span className="font-medium text-gray-900 dark:text-white">MANAGER:</span> Orders, menu, reports (no billing)</span>
             </li>
             <li className="flex items-start gap-2">
               <Utensils className="size-4 text-blue-500 mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-white">WAITER:</span> View orders, call status updates</span>
+              <span><span className="font-medium text-gray-900 dark:text-white">WAITER:</span> View orders, call status updates</span>
             </li>
             <li className="flex items-start gap-2">
               <ChefHat className="size-4 text-[#f97316] mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-white">KITCHEN:</span> Kitchen display only</span>
+              <span><span className="font-medium text-gray-900 dark:text-white">KITCHEN:</span> Kitchen display only</span>
             </li>
           </ul>
         </Card>
@@ -497,10 +497,10 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
           if (!open) setDeleteCandidate(null);
         }}
       >
-        <DialogContent className="bg-[#141414] border-[#252525]">
+        <DialogContent className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
           <DialogHeader>
-            <DialogTitle className="text-white">Delete staff member?</DialogTitle>
-            <DialogDescription className="text-[#999999]">
+            <DialogTitle className="text-gray-900 dark:text-white">Delete staff member?</DialogTitle>
+            <DialogDescription className="text-gray-500 dark:text-[#999999]">
               This action cannot be undone. {deleteCandidate?.name} will be removed from
               your staff list.
             </DialogDescription>
@@ -510,7 +510,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
               variant="outline"
               onClick={() => setDeleteCandidate(null)}
               disabled={Boolean(deletingId)}
-              className="bg-[#141414] border-[#252525] text-white hover:bg-[#1e1e1e]"
+              className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525] text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1e1e1e]"
             >
               Cancel
             </Button>
@@ -545,12 +545,12 @@ function StatsCard({ label, value, icon, color }: { label: string; value: number
   };
 
   return (
-    <div className="bg-[#141414] border border-[#252525] rounded-xl p-4">
+    <div className="bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#252525] rounded-xl p-4">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs uppercase tracking-wide text-[#999999]">{label}</p>
+        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-[#999999]">{label}</p>
         <div className={`p-2 rounded-lg ${colorClasses[color as keyof typeof colorClasses]}`}>{icon}</div>
       </div>
-      <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
+      <p className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{value}</p>
     </div>
   );
 }

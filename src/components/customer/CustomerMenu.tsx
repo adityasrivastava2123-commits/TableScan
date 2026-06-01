@@ -828,9 +828,9 @@ export default function CustomerMenu({
                 onClick={e => { e.stopPropagation(); handleQuickAdd(spotlightItem); }}
                 className="w-9 h-9 rounded-full flex items-center justify-center text-white flex-shrink-0
                   shadow-md active:scale-95 transition-transform"
-                style={{ background: "#111" }}
+                style={{ background: G }}
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 text-white" />
               </button>
             </div>
           </div>
@@ -936,9 +936,9 @@ export default function CustomerMenu({
                           onClick={() => handleQuickAdd(item)}
                           className="w-8 h-8 rounded-full text-white flex items-center justify-center
                             shadow-lg active:scale-95 transition-transform"
-                          style={{ background: "#111" }}
+                          style={{ background: G }}
                         >
-                          <Plus className="w-4 h-4" />
+                          <Plus className="w-4 h-4 text-white" />
                         </button>
                       )}
                     </div>
