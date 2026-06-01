@@ -6,6 +6,7 @@ import { getResend } from "@/lib/resend";
 import { z } from "zod";
 import OrderConfirmationEmail from "@/lib/emails/orderConfirmation";
 import NewOrderAlertEmail from "@/lib/emails/newOrderAlert";
+import { withRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
@@ -40,6 +41,12 @@ function canTriggerPusher() {
 }
 
 export async function POST(req: Request) {
+  // Rate limiting: 10 orders per minute per IP
+  const rateLimitResult = await withRateLimit(req, { windowMs: 60000, maxRequests: 10 });
+  if (!rateLimitResult.success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const parsed = orderSchema.parse(body);
@@ -120,6 +127,22 @@ export async function POST(req: Request) {
         payment: true,
       },
     });
+
+    // Create OrderPreparation for KDS
+    try {
+      await prisma.orderPreparation.create({
+        data: {
+          orderId: order.id,
+          restaurantId: parsed.restaurantId,
+          stage: "RECEIVED",
+          priority: "NORMAL",
+          estimatedPrepTime: 5 + (parsed.items.length * 2), // Base 5 min + 2 min per item
+        },
+      });
+    } catch (prepError) {
+      console.error("Failed to create OrderPreparation for KDS:", prepError);
+      // Don't fail the order if OrderPreparation creation fails
+    }
 
     // Send emails after order creation
     const emailPromises = [];

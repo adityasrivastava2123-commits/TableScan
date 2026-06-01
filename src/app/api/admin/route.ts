@@ -1,12 +1,23 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { Plan, SubscriptionStatus } from "@prisma/client";
+
+async function checkAuth() {
+  try {
+    const { userId } = await auth();
+    if (userId) return true;
+  } catch (error) {
+    // Ignore error if auth() is called outside dynamic/request scope
+  }
+  const cookieStore = await cookies();
+  return !!cookieStore.get("sa_token")?.value;
+}
 
 export async function GET() {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    if (!(await checkAuth())) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -89,8 +100,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    if (!(await checkAuth())) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

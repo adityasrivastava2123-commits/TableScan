@@ -14,6 +14,7 @@ interface OrderItem {
     name: string;
   };
   note?: string | null;
+  isCompleted?: boolean;
 }
 
 interface Order {
@@ -35,6 +36,7 @@ interface OrderPreparation {
   actualPrepTime?: number;
   priority: string;
   notes?: string;
+  assignedChef?: string | null;
   order: Order;
   createdAt: string;
 }
@@ -45,6 +47,7 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
   const [minLoading, setMinLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, RECEIVED, PREPARING, READY
   const [selectedPrep, setSelectedPrep] = useState<OrderPreparation | null>(null);
+  const [availableChefs] = useState<string[]>(["Chef A", "Chef B", "Chef C", "Chef D"]);
   
   // Track previous preparations count to play audio on new orders
   const prevCountRef = useRef<number>(0);
@@ -154,10 +157,70 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
     }
   }
 
+  async function assignChef(id: string, chef: string | null) {
+    try {
+      await axios.patch(`/api/kds/order-preparations/${id}`, { assignedChef: chef });
+      toast.success(chef ? `Assigned to ${chef}` : "Chef unassigned");
+      if (selectedPrep?.id === id) {
+        setSelectedPrep(prev => prev ? { ...prev, assignedChef: chef } : prev);
+      }
+      fetchPreparations(true);
+    } catch (error) {
+      toast.error("Failed to assign chef");
+    }
+  }
+
+  async function toggleItemCompletion(prepId: string, itemId: string, isCompleted: boolean) {
+    try {
+      await axios.patch(`/api/kds/order-preparations/${prepId}`, { 
+        completedItems: [{ itemId, isCompleted }] 
+      });
+      if (selectedPrep?.id === prepId) {
+        setSelectedPrep(prev => prev ? {
+          ...prev,
+          order: {
+            ...prev.order,
+            items: prev.order.items.map(item => 
+              item.id === itemId ? { ...item, isCompleted } : item
+            )
+          }
+        } : prev);
+      }
+      fetchPreparations(true);
+    } catch (error) {
+      toast.error("Failed to update item status");
+    }
+  }
+
   const getElapsedTime = (startedAt?: string) => {
     if (!startedAt) return 0;
     const elapsed = Math.floor((new Date().getTime() - new Date(startedAt).getTime()) / 60000); // minutes
     return elapsed;
+  };
+
+  const getEstimatedPrepTime = (prep: OrderPreparation): number => {
+    // Base time: 5 minutes per order
+    // Additional time: 2 minutes per item
+    // Complex items (with notes): +1 minute
+    const baseTime = 5;
+    const itemTime = prep.order.items.reduce((sum, item) => {
+      let time = 2;
+      if (item.note) time += 1;
+      return sum + time;
+    }, 0);
+    return baseTime + itemTime;
+  };
+
+  const getTimeRemaining = (prep: OrderPreparation): { elapsed: number; remaining: number; isDelayed: boolean } => {
+    const estimated = prep.estimatedPrepTime || getEstimatedPrepTime(prep);
+    const elapsed = prep.stage === "PREPARING" && prep.startedAt 
+      ? getElapsedTime(prep.startedAt) 
+      : prep.stage === "RECEIVED" 
+        ? getElapsedTime(prep.createdAt)
+        : 0;
+    const remaining = Math.max(0, estimated - elapsed);
+    const isDelayed = elapsed > estimated && prep.stage !== "SERVED" && prep.stage !== "READY";
+    return { elapsed, remaining, isDelayed };
   };
 
   const getStageStyle = (stage: string) => {
@@ -180,9 +243,41 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
     }
   };
 
+  const getPriorityWeight = (priority: string): number => {
+    switch (priority) {
+      case "URGENT": return 4;
+      case "HIGH": return 3;
+      case "NORMAL": return 2;
+      case "LOW": return 1;
+      default: return 0;
+    }
+  };
+
+  const getWaitTimeWeight = (prep: OrderPreparation): number => {
+    if (prep.stage === "RECEIVED") {
+      const waitMinutes = Math.floor((new Date().getTime() - new Date(prep.createdAt).getTime()) / 60000);
+      return Math.min(waitMinutes / 10, 3); // Max weight of 3 for waiting 10+ minutes
+    }
+    if (prep.stage === "PREPARING" && prep.startedAt) {
+      const cookMinutes = Math.floor((new Date().getTime() - new Date(prep.startedAt).getTime()) / 60000);
+      return cookMinutes / 5; // Weight increases as cooking time increases
+    }
+    return 0;
+  };
+
   const filteredPreparations = preparations.filter((p) => {
     if (filter === "all") return true;
     return p.stage === filter;
+  }).sort((a, b) => {
+    // Sort by priority first, then by wait time
+    const priorityDiff = getPriorityWeight(b.priority) - getPriorityWeight(a.priority);
+    if (priorityDiff !== 0) return priorityDiff;
+    
+    const waitTimeDiff = getWaitTimeWeight(b) - getWaitTimeWeight(a);
+    if (waitTimeDiff !== 0) return waitTimeDiff;
+    
+    // Finally sort by creation time (oldest first)
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
   });
 
   if (minLoading) {
@@ -211,7 +306,7 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
         <div className="w-[46px] h-[46px] rounded-xl bg-[#f97316] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#f97316]/20 animate-pulse">
           <ChefHat className="size-5 text-white" />
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-[#f0ece4] tracking-tight">Kitchen Display System (KDS)</h1>
           <p className="text-[12px] text-neutral-500 dark:text-[#9a9488]">Real-time kitchen order preparation and status tracking</p>
         </div>
@@ -230,6 +325,37 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Kitchen Load Indicator */}
+      <div className="bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl p-4 shadow-sm">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Kitchen Load</span>
+          <span className={`text-[11px] font-black ${
+            preparations.filter(p => p.stage === "PREPARING").length > 5 ? "text-rose-500" :
+            preparations.filter(p => p.stage === "PREPARING").length > 3 ? "text-[#f97316]" :
+            "text-emerald-500"
+          }`}>
+            {preparations.filter(p => p.stage === "PREPARING").length} orders cooking
+          </span>
+        </div>
+        <div className="w-full bg-neutral-100 dark:bg-[#1a1a1a] rounded-full h-2 overflow-hidden">
+          <motion.div
+            className={`h-2 rounded-full transition-all duration-500 ${
+              preparations.filter(p => p.stage === "PREPARING").length > 5 ? "bg-rose-500" :
+              preparations.filter(p => p.stage === "PREPARING").length > 3 ? "bg-[#f97316]" :
+              "bg-emerald-500"
+            }`}
+            initial={{ width: 0 }}
+            animate={{ width: `${Math.min((preparations.filter(p => p.stage === "PREPARING").length / 10) * 100, 100)}%` }}
+          />
+        </div>
+        <p className="text-[10px] text-neutral-400 mt-1.5">
+          {preparations.filter(p => p.stage === "PREPARING").length === 0 ? "Kitchen is idle" :
+           preparations.filter(p => p.stage === "PREPARING").length <= 3 ? "Normal load" :
+           preparations.filter(p => p.stage === "PREPARING").length <= 5 ? "Busy" :
+           "High load - prioritize urgent orders"}
+        </p>
       </div>
 
       {/* Grid Stats */}
@@ -274,12 +400,21 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
               initial={{ opacity: 0, y: 15, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between h-[300px] relative overflow-hidden group cursor-pointer"
+              className={`bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between h-[300px] relative overflow-hidden group cursor-pointer ${
+                getTimeRemaining(prep).isDelayed ? "border-rose-500/50 shadow-rose-500/10" : ""
+              }`}
               onClick={() => setSelectedPrep(prep)}
             >
               {/* Card Ribbon for Urgency */}
               {prep.priority === "URGENT" && (
                 <div className="absolute top-0 right-0 left-0 h-1.5 bg-rose-500" />
+              )}
+
+              {/* Delayed Warning Banner */}
+              {getTimeRemaining(prep).isDelayed && (
+                <div className="absolute top-0 right-0 bg-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-bl-lg z-10">
+                  ⚠️ DELAYED
+                </div>
               )}
 
               <div>
@@ -290,6 +425,11 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
                     <p className="text-[11px] font-bold text-neutral-400 uppercase mt-0.5">
                       Table: <span className="text-neutral-700 dark:text-[#f0ece4]">{prep.order.table?.name || "Takeaway"}</span>
                     </p>
+                    {prep.assignedChef && (
+                      <p className="text-[10px] font-bold text-[#f97316] mt-1">
+                        👨‍🍳 {prep.assignedChef}
+                      </p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1.5 items-end">
                     <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${getStageStyle(prep.stage)}`}>
@@ -323,9 +463,18 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
                 <div className="flex items-center justify-between text-[11px] text-neutral-400 font-bold border-t border-neutral-100 dark:border-[rgba(255,255,255,0.04)] pt-3 mt-3">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5 text-[#f97316]" />
-                    {prep.stage === "PREPARING" && prep.startedAt
-                      ? `${getElapsedTime(prep.startedAt)} min cooking`
-                      : `${new Date(prep.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`}
+                    {(() => {
+                      const { elapsed, remaining, isDelayed } = getTimeRemaining(prep);
+                      if (prep.stage === "RECEIVED") {
+                        return `Waited ${elapsed} min`;
+                      }
+                      if (prep.stage === "PREPARING") {
+                        return isDelayed 
+                          ? `⚠️ ${elapsed}/${prep.estimatedPrepTime || getEstimatedPrepTime(prep)} min (Delayed)`
+                          : `${elapsed}/${prep.estimatedPrepTime || getEstimatedPrepTime(prep)} min`;
+                      }
+                      return `${new Date(prep.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
+                    })()}
                   </span>
                   <Info className="w-4 h-4 text-neutral-300 hover:text-[#f97316]" />
                 </div>
@@ -412,9 +561,30 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
               {/* Items List */}
               <div className="space-y-3.5 mb-6 max-h-[300px] overflow-y-auto pr-1">
                 {selectedPrep.order.items.map((item) => (
-                  <div key={item.id} className="p-3 bg-neutral-50 dark:bg-[#1e1e1e] border border-neutral-200/50 dark:border-[rgba(255,255,255,0.04)] rounded-2xl flex flex-col gap-1.5">
+                  <div 
+                    key={item.id} 
+                    className={`p-3 border rounded-2xl flex flex-col gap-1.5 transition-all ${
+                      item.isCompleted 
+                        ? "bg-emerald-50 dark:bg-emerald-500/5 border-emerald-200 dark:border-emerald-500/20 opacity-70" 
+                        : "bg-neutral-50 dark:bg-[#1e1e1e] border-neutral-200/50 dark:border-[rgba(255,255,255,0.04)]"
+                    }`}
+                  >
                     <div className="flex justify-between items-center">
-                      <span className="text-[17px] font-black text-neutral-800 dark:text-white">{item.quantity}x {item.menuItem.name}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleItemCompletion(selectedPrep.id, item.id, !item.isCompleted)}
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                            item.isCompleted
+                              ? "bg-emerald-500 border-emerald-500 text-white"
+                              : "border-neutral-300 dark:border-neutral-600 hover:border-emerald-500"
+                          }`}
+                        >
+                          {item.isCompleted && <CheckCircle className="w-3.5 h-3.5" />}
+                        </button>
+                        <span className={`text-[17px] font-black ${item.isCompleted ? "line-through text-neutral-400" : "text-neutral-800 dark:text-white"}`}>
+                          {item.quantity}x {item.menuItem.name}
+                        </span>
+                      </div>
                       <Award className="w-5 h-5 text-[#f97316]/20" />
                     </div>
                     {item.note && (
@@ -433,6 +603,36 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
                   <p className="text-[13px] font-medium text-neutral-700 dark:text-[#9a9488] italic">&ldquo;{selectedPrep.order.specialNote}&rdquo;</p>
                 </div>
               )}
+
+              {/* Chef Assignment */}
+              <div className="mb-6">
+                <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Assign Chef</p>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => assignChef(selectedPrep.id, null)}
+                    className={`px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
+                      !selectedPrep.assignedChef
+                        ? "bg-[#f97316] text-white"
+                        : "bg-neutral-100 dark:bg-[#1a1a1a] text-neutral-600 dark:text-neutral-400"
+                    }`}
+                  >
+                    Unassigned
+                  </button>
+                  {availableChefs.map((chef) => (
+                    <button
+                      key={chef}
+                      onClick={() => assignChef(selectedPrep.id, chef)}
+                      className={`px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
+                        selectedPrep.assignedChef === chef
+                          ? "bg-[#f97316] text-white"
+                          : "bg-neutral-100 dark:bg-[#1a1a1a] text-neutral-600 dark:text-neutral-400"
+                      }`}
+                    >
+                      {chef}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* Action buttons */}
               <div className="grid grid-cols-2 gap-3">

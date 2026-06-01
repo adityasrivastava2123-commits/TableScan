@@ -28,6 +28,7 @@ import {
   Brain,
   Sun,
   Moon,
+  MessageSquare,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import type { Restaurant } from "@prisma/client";
@@ -53,6 +54,7 @@ const sidebarItems: SidebarItem[] = [
   { label: "Orders", path: "/orders", icon: <ShoppingBag className="size-4" />, section: "operations" },
   { label: "Customers", path: "/customers", icon: <UsersRound className="size-4" />, section: "operations" },
   { label: "Kitchen (KDS)", path: "/kds", icon: <ChefHat className="size-4" />, section: "operations" },
+  { label: "Support Chats", path: "/support-chats", icon: <MessageSquare className="size-4" />, section: "operations" },
   { label: "Menu", path: "/menu", icon: <UtensilsCrossed className="size-4" />, section: "catalog" },
   { label: "Tables", path: "/tables", icon: <QrCode className="size-4" />, section: "catalog" },
   { label: "Inventory", path: "/inventory", icon: <Package className="size-4" />, section: "catalog" },

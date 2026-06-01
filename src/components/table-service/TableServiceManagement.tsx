@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, User, Clock, CheckCircle, XCircle, AlertCircle, Users, Plus } from "lucide-react";
+import { MapPin, User, Clock, CheckCircle, XCircle, AlertCircle, Users, Plus, MessageSquare, Send, Check } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -66,6 +66,8 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
       clearInterval(interval);
     };
   }, [restaurantId, locationId, filter]);
+
+
 
   async function fetchTableServices() {
     try {
@@ -317,106 +319,106 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredServices.length > 0 ? (
             filteredServices.map((service) => (
-          <div
-            key={service.id}
-            className={`bg-[#111111] border ${getStatusColor(service.status)} rounded-xl p-5 space-y-4`}
-          >
-            {/* Table Header */}
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[18px] font-bold text-[#f0ece4]">{service.table.name}</span>
-                  {service.table.capacity && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(255,255,255,0.1)] text-[#9a9488]">
-                      {service.table.capacity} seats
-                    </span>
+              <div
+                key={service.id}
+                className={`bg-[#111111] border ${getStatusColor(service.status)} rounded-xl p-5 space-y-4`}
+              >
+                {/* Table Header */}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[18px] font-bold text-[#f0ece4]">{service.table.name}</span>
+                      {service.table.capacity && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(255,255,255,0.1)] text-[#9a9488]">
+                          {service.table.capacity} seats
+                        </span>
+                      )}
+                    </div>
+                    <div className={`text-[10px] px-2 py-1 rounded-lg font-medium ${getStatusColor(service.status)}`}>
+                      {service.status}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Server Assignment */}
+                {service.server ? (
+                  <div className="flex items-center gap-2 text-[12px] text-[#9a9488]">
+                    <User className="size-3" />
+                    <span>{service.server.name}</span>
+                  </div>
+                ) : (
+                  <select
+                    onChange={(e) => assignServer(service.id, e.target.value)}
+                    className="w-full h-8 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[11px] px-2 outline-none"
+                  >
+                    <option value="">Assign server</option>
+                    {staff.map((person) => (
+                      <option key={person.id} value={person.id}>
+                        {person.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {/* Time Info */}
+                {service.seatedAt && service.status === "OCCUPIED" && (
+                  <div className="flex items-center gap-2 text-[11px] text-[#9a9488]">
+                    <Clock className="size-3" />
+                    <span>Seated {getElapsedTime(service.seatedAt)} ago</span>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  {service.status === "AVAILABLE" && (
+                    <button
+                      onClick={() => updateTableService(service.id, "OCCUPIED")}
+                      className="flex-1 py-2 rounded-lg bg-[#f97316] text-white text-[11px] font-semibold hover:bg-[#ea6c0a] transition-colors"
+                    >
+                      Seat
+                    </button>
+                  )}
+                  {service.status === "OCCUPIED" && (
+                    <>
+                      <button
+                        onClick={() => updateTableService(service.id, "DIRTY")}
+                        className="flex-1 py-2 rounded-lg bg-[#f87171] text-white text-[11px] font-semibold hover:bg-[#ef4444] transition-colors"
+                      >
+                        Clear
+                      </button>
+                      <button
+                        onClick={() => updateTableService(service.id, "AVAILABLE")}
+                        className="flex-1 py-2 rounded-lg bg-[#4ade80] text-white text-[11px] font-semibold hover:bg-[#22c55e] transition-colors"
+                      >
+                        Free
+                      </button>
+                    </>
+                  )}
+                  {service.status === "DIRTY" && (
+                    <button
+                      onClick={() => updateTableService(service.id, "AVAILABLE")}
+                      className="flex-1 py-2 rounded-lg bg-[#4ade80] text-white text-[11px] font-semibold hover:bg-[#22c55e] transition-colors flex items-center justify-center gap-1"
+                    >
+                      <CheckCircle className="size-3" />
+                      Clean
+                    </button>
+                  )}
+                  {service.status === "RESERVED" && (
+                    <button
+                      onClick={() => updateTableService(service.id, "OCCUPIED")}
+                      className="flex-1 py-2 rounded-lg bg-[#f97316] text-white text-[11px] font-semibold hover:bg-[#ea6c0a] transition-colors"
+                    >
+                      Seat Guest
+                    </button>
                   )}
                 </div>
-                <div className={`text-[10px] px-2 py-1 rounded-lg font-medium ${getStatusColor(service.status)}`}>
-                  {service.status}
-                </div>
+
+                {/* Notes */}
+                {service.notes && (
+                  <div className="text-[11px] text-[#9a9488] italic">{service.notes}</div>
+                )}
               </div>
-            </div>
-
-            {/* Server Assignment */}
-            {service.server ? (
-              <div className="flex items-center gap-2 text-[12px] text-[#9a9488]">
-                <User className="size-3" />
-                <span>{service.server.name}</span>
-              </div>
-            ) : (
-              <select
-                onChange={(e) => assignServer(service.id, e.target.value)}
-                className="w-full h-8 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[11px] px-2 outline-none"
-              >
-                <option value="">Assign server</option>
-                {staff.map((person) => (
-                  <option key={person.id} value={person.id}>
-                    {person.name}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {/* Time Info */}
-            {service.seatedAt && service.status === "OCCUPIED" && (
-              <div className="flex items-center gap-2 text-[11px] text-[#9a9488]">
-                <Clock className="size-3" />
-                <span>Seated {getElapsedTime(service.seatedAt)} ago</span>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex gap-2">
-              {service.status === "AVAILABLE" && (
-                <button
-                  onClick={() => updateTableService(service.id, "OCCUPIED")}
-                  className="flex-1 py-2 rounded-lg bg-[#f97316] text-white text-[11px] font-semibold hover:bg-[#ea6c0a] transition-colors"
-                >
-                  Seat
-                </button>
-              )}
-              {service.status === "OCCUPIED" && (
-                <>
-                  <button
-                    onClick={() => updateTableService(service.id, "DIRTY")}
-                    className="flex-1 py-2 rounded-lg bg-[#f87171] text-white text-[11px] font-semibold hover:bg-[#ef4444] transition-colors"
-                  >
-                    Clear
-                  </button>
-                  <button
-                    onClick={() => updateTableService(service.id, "AVAILABLE")}
-                    className="flex-1 py-2 rounded-lg bg-[#4ade80] text-white text-[11px] font-semibold hover:bg-[#22c55e] transition-colors"
-                  >
-                    Free
-                  </button>
-                </>
-              )}
-              {service.status === "DIRTY" && (
-                <button
-                  onClick={() => updateTableService(service.id, "AVAILABLE")}
-                  className="flex-1 py-2 rounded-lg bg-[#4ade80] text-white text-[11px] font-semibold hover:bg-[#22c55e] transition-colors flex items-center justify-center gap-1"
-                >
-                  <CheckCircle className="size-3" />
-                  Clean
-                </button>
-              )}
-              {service.status === "RESERVED" && (
-                <button
-                  onClick={() => updateTableService(service.id, "OCCUPIED")}
-                  className="flex-1 py-2 rounded-lg bg-[#f97316] text-white text-[11px] font-semibold hover:bg-[#ea6c0a] transition-colors"
-                >
-                  Seat Guest
-                </button>
-              )}
-            </div>
-
-            {/* Notes */}
-            {service.notes && (
-              <div className="text-[11px] text-[#9a9488] italic">{service.notes}</div>
-            )}
-          </div>
-        ))
+            ))
           ) : (
             <div className="text-center py-16">
               <MapPin className="size-12 text-[#5a5650] mx-auto mb-4" />

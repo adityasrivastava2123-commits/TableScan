@@ -1,0 +1,80 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_APP_URL": {
+      "description": "Public URL of the application"
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL database connection string"
+    },
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": {
+      "description": "Clerk publishable key"
+    },
+    "CLERK_SECRET_KEY": {
+      "description": "Clerk secret key"
+    },
+    "NEXT_PUBLIC_SENTRY_DSN": {
+      "description": "Sentry DSN for error monitoring"
+    },
+    "SENTRY_ORG": {
+      "description": "Sentry organization slug"
+    },
+    "SENTRY_PROJECT": {
+      "description": "Sentry project slug"
+    },
+    "PUSHER_APP_ID": {
+      "description": "Pusher app ID for real-time updates"
+    },
+    "PUSHER_APP_KEY": {
+      "description": "Pusher app key"
+    },
+    "PUSHER_APP_SECRET": {
+      "description": "Pusher app secret"
+    },
+    "PUSHER_CLUSTER": {
+      "description": "Pusher cluster region"
+    },
+    "RESEND_API_KEY": {
+      "description": "Resend API key for emails"
+    },
+    "RAZORPAY_KEY_ID": {
+      "description": "Razorpay key ID"
+    },
+    "RAZORPAY_KEY_SECRET": {
+      "description": "Razorpay key secret"
+    },
+    "STRIPE_SECRET_KEY": {
+      "description": "Stripe secret key"
+    },
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": {
+      "description": "Stripe publishable key"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}

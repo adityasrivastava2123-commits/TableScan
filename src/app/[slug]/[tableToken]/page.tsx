@@ -36,8 +36,8 @@ export default async function CustomerMenuPage({ params }: Props) {
 
   if (!table) notFound();
 
-  // Fetch any active order for this table (for status tracker)
-  const activeOrder = await prisma.order.findFirst({
+  // Fetch all active orders for this table (for status tracker)
+  const activeOrders = await prisma.order.findMany({
     where: {
       tableId: table.id,
       status: { in: ["NEW", "PREPARING", "READY"] },
@@ -52,7 +52,7 @@ export default async function CustomerMenuPage({ params }: Props) {
       table={table}
       slug={params.slug}
       tableToken={params.tableToken}
-      activeOrder={activeOrder}
+      activeOrders={activeOrders}
     />
   );
 }

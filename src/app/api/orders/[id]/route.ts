@@ -15,6 +15,7 @@ export async function GET(
         items: { include: { menuItem: true } },
         payment: true,
         table: true,
+        restaurant: true,
       },
     });
 

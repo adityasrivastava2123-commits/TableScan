@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, memo } from "react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-import { formatDistanceToNow } from "date-fns";
-import { CheckCircle2, Clock, ChefHat, Package, Check, X, MoreVertical } from "lucide-react";
+import { formatDistanceToNow, format } from "date-fns";
+import { Search, Calendar, Download, Eye, Filter, ChevronDown, ArrowUpDown } from "lucide-react";
 import toast from "react-hot-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,15 +13,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getPusherClient } from "@/lib/pusher-client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-type BoardStatus = "NEW" | "PREPARING" | "READY" | "DONE";
-type UpdatableStatus = "PREPARING" | "READY" | "DONE" | "CANCELLED";
+type BoardStatus = "NEW" | "PREPARING" | "READY" | "DONE" | "CANCELLED";
 
 type BoardOrder = {
   id: string;
   orderNumber: string;
   status: "NEW" | "PREPARING" | "READY" | "DONE" | "CANCELLED";
   totalAmount: number;
+  taxAmount: number;
   customerName: string | null;
+  customerPhone: string | null;
   createdAt: string;
   table: {
     name: string;
@@ -29,51 +30,15 @@ type BoardOrder = {
   items: Array<{
     id: string;
     quantity: number;
+    price: number;
     menuItem: {
       name: string;
     };
   }>;
   payment: {
     status: string;
+    method: string;
   } | null;
-};
-
-const boardStatuses: BoardStatus[] = ["NEW", "PREPARING", "READY", "DONE"];
-
-const columnStyles: Record<BoardStatus, { bg: string; text: string; label: string; icon: React.ReactNode }> = {
-  NEW: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-500",
-    label: "NEW",
-    icon: <Clock className="size-4" />,
-  },
-  PREPARING: {
-    bg: "bg-[#f97316]/10",
-    text: "text-[#f97316]",
-    label: "PREPARING",
-    icon: <ChefHat className="size-4" />,
-  },
-  READY: {
-    bg: "bg-[#22c55e]/10",
-    text: "text-[#22c55e]",
-    label: "READY",
-    icon: <Package className="size-4" />,
-  },
-  DONE: {
-    bg: "bg-[#999999]/10",
-    text: "text-[#999999]",
-    label: "DONE",
-    icon: <Check className="size-4" />,
-  },
-};
-
-const nextStatusAction: Record<
-  "NEW" | "PREPARING" | "READY",
-  { status: UpdatableStatus; label: string }
-> = {
-  NEW: { status: "PREPARING", label: "Start Preparing" },
-  PREPARING: { status: "READY", label: "Mark Ready" },
-  READY: { status: "DONE", label: "Mark Done" },
 };
 
 type OrdersBoardProps = {
@@ -83,8 +48,13 @@ type OrdersBoardProps = {
 export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoardProps) {
   const [orders, setOrders] = useState<BoardOrder[]>([]);
   const [minLoading, setMinLoading] = useState(true);
-  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [usePollingFallback, setUsePollingFallback] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<BoardStatus | "ALL">("ALL");
+  const [dateFilter, setDateFilter] = useState<"today" | "week" | "month" | "all">("today");
+  const [sortBy, setSortBy] = useState<"createdAt" | "totalAmount">("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [selectedOrder, setSelectedOrder] = useState<BoardOrder | null>(null);
   const queryClient = useQueryClient();
 
   const { data: ordersData, isLoading } = useQuery({
@@ -110,7 +80,6 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
     setOrders((prev) => {
       const exists = prev.some((order) => order.id === payload.order!.id);
       if (exists) return prev;
-      if (payload.order!.status === "CANCELLED") return prev;
       return [payload.order!, ...prev];
     });
     toast.success("New order received!");
@@ -121,7 +90,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
     setOrders((prev) =>
       prev.map((order) =>
         order.id === payload.order!.id ? payload.order! : order,
-      ).filter((order) => order.status !== "CANCELLED"),
+      ),
     );
   }, []);
 
@@ -152,74 +121,92 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
     if (!usePollingFallback) return;
 
     const interval = setInterval(() => {
-      // React Query will handle refetching automatically and silently in the background
       queryClient.invalidateQueries({ queryKey: ["orders", restaurantId] });
     }, 10000);
 
     return () => clearInterval(interval);
   }, [usePollingFallback, restaurantId, queryClient]);
 
-  const groupedOrders = useMemo(() => {
-    return {
-      NEW: orders.filter((order) => order.status === "NEW"),
-      PREPARING: orders.filter((order) => order.status === "PREPARING"),
-      READY: orders.filter((order) => order.status === "READY"),
-      DONE: orders.filter((order) => order.status === "DONE"),
-    };
-  }, [orders]);
+  // Filter and sort orders
+  const filteredOrders = useMemo(() => {
+    let filtered = [...orders];
 
-  const stats = useMemo(() => {
-    const today = new Date();
-    const todaysOrders = orders.filter((order) => {
-      const createdAt = new Date(order.createdAt);
-      return (
-        createdAt.getDate() === today.getDate() &&
-        createdAt.getMonth() === today.getMonth() &&
-        createdAt.getFullYear() === today.getFullYear()
+    // Status filter
+    if (statusFilter !== "ALL") {
+      filtered = filtered.filter((order) => order.status === statusFilter);
+    }
+
+    // Date filter
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    if (dateFilter === "today") {
+      filtered = filtered.filter((order) => new Date(order.createdAt) >= today);
+    } else if (dateFilter === "week") {
+      filtered = filtered.filter((order) => new Date(order.createdAt) >= weekAgo);
+    } else if (dateFilter === "month") {
+      filtered = filtered.filter((order) => new Date(order.createdAt) >= monthAgo);
+    }
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (order) =>
+          order.orderNumber.toLowerCase().includes(query) ||
+          order.customerName?.toLowerCase().includes(query) ||
+          order.table.name.toLowerCase().includes(query),
       );
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === "totalAmount") {
+        const aValue = a.totalAmount;
+        const bValue = b.totalAmount;
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      } else {
+        const aDate = new Date(a.createdAt).getTime();
+        const bDate = new Date(b.createdAt).getTime();
+        return sortOrder === "asc" ? aDate - bDate : bDate - aDate;
+      }
     });
 
-    const pendingOrders = orders.filter(
-      (order) => order.status === "NEW" || order.status === "PREPARING",
-    ).length;
+    return filtered;
+  }, [orders, statusFilter, dateFilter, searchQuery, sortBy, sortOrder]);
 
-    const revenueToday = todaysOrders.reduce(
-      (sum, order) => sum + order.totalAmount,
-      0,
-    );
-    const averageOrderValue =
-      todaysOrders.length > 0 ? revenueToday / todaysOrders.length : 0;
-
+  // Analytics
+  const analytics = useMemo(() => {
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    const todaysOrders = orders.filter((order) => new Date(order.createdAt) >= todayStart);
+    const revenueToday = todaysOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const avgOrderValue = todaysOrders.length > 0 ? revenueToday / todaysOrders.length : 0;
+    
+    const pendingOrders = orders.filter((order) => order.status === "NEW" || order.status === "PREPARING").length;
+    const completedOrders = orders.filter((order) => order.status === "DONE").length;
+    
     return {
-      totalOrdersToday: todaysOrders.length,
-      pendingOrders,
+      totalOrders: orders.length,
+      todaysOrders: todaysOrders.length,
       revenueToday,
-      averageOrderValue,
+      avgOrderValue,
+      pendingOrders,
+      completedOrders,
     };
   }, [orders]);
 
-  const updateOrderStatus = useCallback(async (orderId: string, status: UpdatableStatus) => {
-    try {
-      setUpdatingOrderId(orderId);
-      await axios.patch(`/api/orders/${orderId}/status`, { status });
-
-      setOrders((prev) =>
-        prev
-          .map((order) =>
-            order.id === orderId ? { ...order, status } : order,
-          )
-          .filter((order) => order.status !== "CANCELLED"),
-      );
-      
-      // Invalidate cache to refetch data
-      queryClient.invalidateQueries({ queryKey: ["orders", restaurantId] });
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update order status.");
-    } finally {
-      setUpdatingOrderId(null);
+  const toggleSort = (field: "createdAt" | "totalAmount") => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("desc");
     }
-  }, [restaurantId, queryClient]);
+  };
 
   if (minLoading) {
     return <OrdersBoardSkeleton />;
@@ -232,154 +219,293 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
+      {/* Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <AnalyticsCard label="Today's Orders" value={analytics.todaysOrders} icon="📋" />
+        <AnalyticsCard label="Today's Revenue" value={`₹${analytics.revenueToday.toFixed(0)}`} icon="💰" />
+        <AnalyticsCard label="Avg Order Value" value={`₹${analytics.avgOrderValue.toFixed(0)}`} icon="📊" />
+        <AnalyticsCard label="Pending" value={analytics.pendingOrders} icon="⏳" />
+      </div>
+
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-4 mb-6"
-      >
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#f97316] to-transparent" />
-        <p className="text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#f97316]">OPERATIONS</p>
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#f97316] to-transparent" />
-      </motion.div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Order Management</h1>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1">
+            {filteredOrders.length} orders found
+          </p>
+        </div>
+        <Button variant="outline" size="sm">
+          <Download className="w-4 h-4 mr-2" />
+          Export
+        </Button>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <h1 className="text-4xl font-extrabold tracking-tight text-neutral-800 dark:text-white">
-          All <span className="text-neutral-500 dark:text-[#999999] italic">orders.</span>
-        </h1>
-        <p className="text-neutral-500 dark:text-[#999999] mt-2">{orders.length} orders · streaming in real time</p>
-      </motion.div>
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 items-center">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[200px] max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+          <input
+            type="text"
+            placeholder="Search orders..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#f97316]"
+          />
+        </div>
 
-      {/* Filter Tabs */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="flex gap-2"
-      >
-        {["All", "Pending", "Preparing", "Ready", "Done", "Cancelled"].map((filter) => (
-          <motion.button
-            key={filter}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover-lift ${
-              filter === "All"
-                ? "bg-[#f97316] text-white"
-                : "bg-white dark:bg-[#141414] text-neutral-600 dark:text-[#999999] border border-neutral-200 dark:border-[#252525] hover:bg-neutral-50 dark:hover:bg-[#1e1e1e]"
-            }`}
+        {/* Status Filter */}
+        <div className="relative">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as BoardStatus | "ALL")}
+            className="appearance-none px-4 py-2 pr-10 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#f97316]"
           >
-            {filter}
-          </motion.button>
-        ))}
-      </motion.div>
+            <option value="ALL">All Status</option>
+            <option value="NEW">New</option>
+            <option value="PREPARING">Preparing</option>
+            <option value="READY">Ready</option>
+            <option value="DONE">Done</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+        </div>
 
-      {/* Kanban Board */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-      >
-        {boardStatuses.map((status) => {
-          const columnOrders = groupedOrders[status];
-          const style = columnStyles[status];
+        {/* Date Filter */}
+        <div className="relative">
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value as "today" | "week" | "month" | "all")}
+            className="appearance-none px-4 py-2 pr-10 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#f97316]"
+          >
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="all">All Time</option>
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+        </div>
+      </div>
 
-          return (
-            <div key={status} className="bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] rounded-xl overflow-hidden shadow-sm">
-              {/* Column Header */}
-              <div className={`p-4 border-b border-neutral-100 dark:border-[#252525] ${style.bg}`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {style.icon}
-                    <h3 className={`font-semibold ${style.text}`}>{style.label}</h3>
+      {/* Orders Table */}
+      <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  Order
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  Customer
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  Table
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider cursor-pointer hover:text-[#f97316]"
+                  onClick={() => toggleSort("totalAmount")}
+                >
+                  <div className="flex items-center gap-1">
+                    Total
+                    <ArrowUpDown className="w-3 h-3" />
                   </div>
-                  <Badge className={`${style.bg} ${style.text} border-0`}>
-                    {columnOrders.length}
-                  </Badge>
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider cursor-pointer hover:text-[#f97316]"
+                  onClick={() => toggleSort("createdAt")}
+                >
+                  <div className="flex items-center gap-1">
+                    Date
+                    <ArrowUpDown className="w-3 h-3" />
+                  </div>
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
+              <AnimatePresence mode="popLayout">
+                {filteredOrders.map((order) => (
+                  <motion.tr
+                    key={order.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="font-semibold text-neutral-800 dark:text-white">{order.orderNumber}</p>
+                        <p className="text-xs text-neutral-500">{order.items.length} items</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-sm text-neutral-800 dark:text-white">
+                        {order.customerName || "Guest"}
+                      </p>
+                      {order.customerPhone && (
+                        <p className="text-xs text-neutral-500">{order.customerPhone}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-sm text-neutral-800 dark:text-white">{order.table.name}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={order.status} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-neutral-800 dark:text-white">
+                        ₹{order.totalAmount.toFixed(2)}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {format(new Date(order.createdAt), "MMM dd, yyyy")}
+                      </p>
+                      <p className="text-xs text-neutral-500">
+                        {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
+
+        {filteredOrders.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-neutral-500 dark:text-neutral-400">No orders found</p>
+          </div>
+        )}
+      </Card>
+
+      {/* Order Details Modal */}
+      <AnimatePresence>
+        {selectedOrder && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedOrder(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white dark:bg-neutral-800 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-neutral-800 dark:text-white">
+                  {selectedOrder.orderNumber}
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedOrder(null)}
+                >
+                  ✕
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-neutral-500">Customer</p>
+                    <p className="font-semibold text-neutral-800 dark:text-white">
+                      {selectedOrder.customerName || "Guest"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Table</p>
+                    <p className="font-semibold text-neutral-800 dark:text-white">
+                      {selectedOrder.table.name}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Status</p>
+                    <StatusBadge status={selectedOrder.status} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Payment</p>
+                    <p className="font-semibold text-neutral-800 dark:text-white">
+                      {selectedOrder.payment?.method || "N/A"} ({selectedOrder.payment?.status})
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-neutral-500 mb-2">Items</p>
+                  <div className="space-y-2">
+                    {selectedOrder.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex justify-between items-center p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg"
+                      >
+                        <div>
+                          <p className="font-medium text-neutral-800 dark:text-white">
+                            {item.quantity}x {item.menuItem.name}
+                          </p>
+                        </div>
+                        <p className="font-semibold text-neutral-800 dark:text-white">
+                          ₹{(item.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="border-t border-neutral-200 dark:border-neutral-700 pt-4">
+                  <div className="flex justify-between">
+                    <p className="text-neutral-600 dark:text-neutral-400">Subtotal</p>
+                    <p className="font-semibold text-neutral-800 dark:text-white">
+                      ₹{(selectedOrder.totalAmount - (selectedOrder.taxAmount || 0)).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p className="text-neutral-600 dark:text-neutral-400">Tax</p>
+                    <p className="font-semibold text-neutral-800 dark:text-white">
+                      ₹{(selectedOrder.taxAmount || 0).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="flex justify-between text-lg font-bold">
+                    <p className="text-neutral-800 dark:text-white">Total</p>
+                    <p className="text-neutral-800 dark:text-white">
+                      ₹{selectedOrder.totalAmount.toFixed(2)}
+                    </p>
+                  </div>
                 </div>
               </div>
-
-              {/* Column Content */}
-              <div className="p-3 space-y-3 min-h-[400px]">
-                <AnimatePresence mode="popLayout">
-                  {columnOrders.map((order) => (
-                    <motion.div
-                      key={order.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      className="bg-neutral-50 dark:bg-[#1e1e1e] border border-neutral-200 dark:border-[#252525] rounded-lg p-4 hover-lift cursor-pointer"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <span className="text-neutral-800 dark:text-white font-bold text-lg">#{order.orderNumber}</span>
-                          <p className="text-neutral-500 dark:text-[#999999] text-sm">{order.table.name}</p>
-                        </div>
-                        <StatusBadge status={order.status} />
-                      </div>
-
-                      <div className="space-y-2 mb-3">
-                        {order.items.map((item) => (
-                          <div key={item.id} className="flex items-center justify-between text-sm">
-                            <span className="text-neutral-700 dark:text-[#999999]">
-                              {item.quantity}x {item.menuItem.name}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center justify-between pt-3 border-t border-neutral-200 dark:border-[#252525]">
-                        <span className="text-neutral-800 dark:text-white font-semibold text-lg tabular-nums">
-                          ₹{order.totalAmount.toFixed(2)}
-                        </span>
-                        <span className="text-neutral-400 dark:text-[#555555] text-xs">
-                          {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
-                        </span>
-                      </div>
-
-                      {status !== "DONE" && (
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => updateOrderStatus(order.id, nextStatusAction[status].status)}
-                          disabled={updatingOrderId === order.id}
-                          className="w-full mt-3 px-3 py-2 rounded-lg bg-[#f97316] text-white text-sm font-medium hover:bg-[#ea6c0a] transition-colors disabled:opacity-50"
-                        >
-                          {updatingOrderId === order.id ? "Updating..." : nextStatusAction[status].label}
-                        </motion.button>
-                      )}
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-
-                {columnOrders.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-12 text-[#555555]">
-                    {style.icon}
-                    <p className="text-sm mt-2">No orders</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 });
 
 function StatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { color: string; label: string; bg: string }> = {
-    "NEW": { color: "text-blue-500", label: "NEW", bg: "bg-blue-500/10" },
-    "PREPARING": { color: "text-[#f97316]", label: "PREPARING", bg: "bg-[#f97316]/10" },
-    "READY": { color: "text-[#22c55e]", label: "READY", bg: "bg-[#22c55e]/10" },
-    "DONE": { color: "text-[#999999]", label: "DONE", bg: "bg-[#999999]/10" },
-    "CANCELLED": { color: "text-[#ef4444]", label: "CANCELLED", bg: "bg-[#ef4444]/10" },
+    "NEW": { color: "text-blue-500", label: "New", bg: "bg-blue-500/10" },
+    "PREPARING": { color: "text-[#f97316]", label: "Preparing", bg: "bg-[#f97316]/10" },
+    "READY": { color: "text-[#22c55e]", label: "Ready", bg: "bg-[#22c55e]/10" },
+    "DONE": { color: "text-[#999999]", label: "Done", bg: "bg-[#999999]/10" },
+    "CANCELLED": { color: "text-[#ef4444]", label: "Cancelled", bg: "bg-[#ef4444]/10" },
   };
 
   const config = statusConfig[status] || statusConfig["NEW"];
@@ -391,11 +517,16 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function StatsCard({ label, value }: { label: string; value: string }) {
+function AnalyticsCard({ label, value, icon }: { label: string; value: string | number; icon: string }) {
   return (
-    <Card className="p-4 shadow-sm bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525]">
-      <p className="text-sm text-neutral-500 dark:text-[#999999]">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-neutral-800 dark:text-white">{value}</p>
+    <Card className="p-4 bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">{label}</p>
+          <p className="text-2xl font-bold text-neutral-800 dark:text-white mt-1">{value}</p>
+        </div>
+        <span className="text-2xl">{icon}</span>
+      </div>
     </Card>
   );
 }
@@ -403,22 +534,23 @@ function StatsCard({ label, value }: { label: string; value: string }) {
 function OrdersBoardSkeleton() {
   return (
     <div className="space-y-6">
-      <Skeleton className="h-8 w-80 bg-neutral-200 dark:bg-neutral-800" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="min-h-[500px] bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] overflow-hidden">
-            <Skeleton className="h-16 bg-neutral-200 dark:bg-neutral-800" />
-            <div className="p-3 space-y-3">
-              {Array.from({ length: 3 }).map((__, cardIdx) => (
-                <div
-                  key={cardIdx}
-                  className="h-24 rounded-md bg-neutral-100 dark:bg-[#1e1e1e]"
-                />
-              ))}
-            </div>
+          <Card key={idx} className="p-4 bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
+            <Skeleton className="h-8 w-24 bg-neutral-200 dark:bg-neutral-700" />
+            <Skeleton className="h-6 w-16 mt-2 bg-neutral-200 dark:bg-neutral-700" />
           </Card>
         ))}
       </div>
+      <Skeleton className="h-12 w-80 bg-neutral-200 dark:bg-neutral-700" />
+      <Card className="min-h-[400px] bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
+        <Skeleton className="h-16 bg-neutral-200 dark:bg-neutral-700" />
+        <div className="p-4 space-y-3">
+          {Array.from({ length: 5 }).map((__, idx) => (
+            <div key={idx} className="h-16 bg-neutral-100 dark:bg-neutral-700 rounded-lg" />
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }

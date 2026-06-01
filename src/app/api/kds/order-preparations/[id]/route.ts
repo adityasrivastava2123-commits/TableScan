@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getPusherServer } from "@/lib/pusher";
+import { withRateLimit } from "@/lib/rate-limit";
 
 // PATCH update order preparation status
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Rate limiting: 60 updates per minute per IP
+  const rateLimitResult = await withRateLimit(request, { windowMs: 60000, maxRequests: 60 });
+  if (!rateLimitResult.success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
     const body = await request.json();
     const { stage, priority, notes } = body;
@@ -48,6 +56,36 @@ export async function PATCH(
         },
       },
     });
+
+    // Sync Order status based on OrderPreparation stage
+    if (stage) {
+      const stageToOrderStatus: Record<string, "NEW" | "PREPARING" | "READY" | "DONE" | "CANCELLED"> = {
+        "RECEIVED": "NEW",
+        "PREPARING": "PREPARING",
+        "READY": "READY",
+        "SERVED": "DONE",
+      };
+      
+      const orderStatus = stageToOrderStatus[stage];
+      if (orderStatus) {
+        await prisma.order.update({
+          where: { id: preparation.orderId },
+          data: { status: orderStatus },
+        });
+
+        // Trigger Pusher event for real-time customer updates
+        try {
+          const pusher = getPusherServer();
+          await pusher.trigger(`order-${preparation.orderId}`, "order-updated", {
+            status: orderStatus,
+            orderNumber: preparation.order.orderNumber,
+          });
+        } catch (pusherError) {
+          console.error("Pusher event trigger failed:", pusherError);
+          // Don't fail the update if Pusher fails
+        }
+      }
+    }
 
     return NextResponse.json(preparation);
   } catch (error) {
