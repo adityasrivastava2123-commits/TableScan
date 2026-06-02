@@ -45,7 +45,7 @@ async function callLLM(
     throw new Error("GEMINI_API_KEY environment variable is not configured.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
   // Build rolling history contents
   const contents = [];
