@@ -27,11 +27,13 @@ if (typeof global !== "undefined") {
   const cleanupInterval = 10 * 60 * 1000;
   setInterval(() => {
     const now = Date.now();
-    for (const [key, context] of globalSessionStore.entries()) {
+    const keysToDelete: string[] = [];
+    globalSessionStore.forEach((context, key) => {
       if (now - context.lastActive > 30 * 60 * 1000) { // 30 mins session timeout
-        globalSessionStore.delete(key);
+        keysToDelete.push(key);
       }
-    }
+    });
+    keysToDelete.forEach(key => globalSessionStore.delete(key));
   }, cleanupInterval);
 }
 
