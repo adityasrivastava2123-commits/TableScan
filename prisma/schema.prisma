@@ -147,6 +147,7 @@ model MenuItem {
   isAvailable  Boolean             @default(true)
   tags         String[]
   sortOrder    Int                 @default(0)
+  station      String?             // e.g., "Grill", "Tandoor", "Beverage", "Dessert", "Pizza", "Main Kitchen"
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
   categoryId   String
@@ -203,6 +204,7 @@ model OrderItem {
   quantity   Int
   price      Float
   note       String?
+  isCompleted Boolean            @default(false)
   orderId    String
   order      Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuItemId String

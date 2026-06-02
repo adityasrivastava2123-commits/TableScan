@@ -7,14 +7,22 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const restaurantId = searchParams.get("restaurantId");
     const status = searchParams.get("status");
+    const locationId = searchParams.get("locationId");
 
     if (!restaurantId) {
       return NextResponse.json({ error: "Restaurant ID is required" }, { status: 400 });
     }
 
     const where: any = { restaurantId };
-    if (status) {
+    if (status && status !== "all") {
       where.stage = status;
+    }
+    if (locationId && locationId !== "all") {
+      where.order = {
+        table: {
+          locationId: locationId
+        }
+      };
     }
 
     const preparations = await prisma.orderPreparation.findMany({
@@ -27,6 +35,7 @@ export async function GET(request: NextRequest) {
                 menuItem: {
                   select: {
                     name: true,
+                    station: true,
                   },
                 },
               },
@@ -38,7 +47,13 @@ export async function GET(request: NextRequest) {
       take: 50,
     });
 
-    return NextResponse.json(preparations);
+    // Also fetch locations for branch filtering
+    const locations = await prisma.location.findMany({
+      where: { restaurantId, isActive: true },
+      select: { id: true, name: true },
+    });
+
+    return NextResponse.json({ preparations, locations });
   } catch (error) {
     console.error("Error fetching order preparations:", error);
     return NextResponse.json({ error: "Failed to fetch order preparations" }, { status: 500 });

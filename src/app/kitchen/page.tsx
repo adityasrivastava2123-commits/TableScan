@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-import { KitchenDisplay } from "@/components/orders/KitchenDisplay";
+import KitchenDisplaySystem from "@/components/kds/KitchenDisplaySystem";
 
 export default async function KitchenPage() {
   const { userId } = await auth();
@@ -27,9 +27,8 @@ export default async function KitchenPage() {
   }
 
   return (
-    <KitchenDisplay
+    <KitchenDisplaySystem
       restaurantId={restaurant.id}
-      restaurantName={restaurant.name}
     />
   );
 }

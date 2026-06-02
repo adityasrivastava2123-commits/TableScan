@@ -16,7 +16,17 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { stage, priority, notes } = body;
+    const { stage, priority, notes, completedItems } = body;
+
+    // Update item-level completion status if provided
+    if (completedItems && Array.isArray(completedItems)) {
+      for (const item of completedItems) {
+        await prisma.orderItem.update({
+          where: { id: item.itemId },
+          data: { isCompleted: item.isCompleted },
+        });
+      }
+    }
 
     const updateData: any = {};
     if (stage) {
@@ -79,6 +89,11 @@ export async function PATCH(
           await pusher.trigger(`order-${preparation.orderId}`, "order-updated", {
             status: orderStatus,
             orderNumber: preparation.order.orderNumber,
+          });
+
+          // Also trigger restaurant channel for other kitchen/waiter panels
+          await pusher.trigger(`restaurant-${preparation.restaurantId}`, "order-updated", {
+            order: preparation.order,
           });
         } catch (pusherError) {
           console.error("Pusher event trigger failed:", pusherError);
