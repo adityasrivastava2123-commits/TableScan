@@ -482,9 +482,11 @@ export default function KitchenDisplaySystem({ restaurantId }: { restaurantId: s
   };
 
   // Drag and Drop implementation
-  const handleDragStart = (e: React.DragEvent, prepId: string) => {
-    e.dataTransfer.setData("text/plain", prepId);
-    e.dataTransfer.effectAllowed = "move";
+  const handleDragStart = (e: any, prepId: string) => {
+    if (e.dataTransfer) {
+      e.dataTransfer.setData("text/plain", prepId);
+      e.dataTransfer.effectAllowed = "move";
+    }
   };
 
   const handleDrop = (e: React.DragEvent, targetStage: string) => {
