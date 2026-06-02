@@ -33,59 +33,49 @@ const CRITICAL_ACTIONS: AgentAction[] = [
 ];
 
 /**
- * Direct REST API call to Google Gemini Model.
+ * Direct REST API call to OpenAI Model.
  */
 async function callLLM(
   systemInstruction: string,
   userPrompt: string,
   history: Array<{ role: "user" | "model"; text: string }> = []
 ): Promise<any> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY environment variable is not configured.");
+    throw new Error("OPENAI_API_KEY environment variable is not configured.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+  const url = "https://api.openai.com/v1/chat/completions";
 
-  // Build rolling history contents
-  const contents = [];
-  
-  // Add history
-  for (const turn of history) {
-    contents.push({
-      role: turn.role,
-      parts: [{ text: turn.text }]
-    });
-  }
-
-  // Add current prompt
-  contents.push({
-    role: "user",
-    parts: [{ text: userPrompt }]
-  });
+  // Build messages array
+  const messages = [
+    { role: "system", content: systemInstruction },
+    ...history.map(h => ({ role: h.role, content: h.text })),
+    { role: "user", content: userPrompt }
+  ];
 
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
     body: JSON.stringify({
-      contents,
-      systemInstruction: {
-        parts: [{ text: systemInstruction }]
-      },
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 2048
-      }
+      model: "gpt-4o-mini",
+      messages,
+      temperature: 0.7,
+      max_tokens: 2048,
+      response_format: { type: "json_object" }
     })
   });
 
   if (!response.ok) {
     const errText = await response.text();
-    throw new Error(`Gemini LLM Call failed: ${response.statusText} - ${errText}`);
+    throw new Error(`OpenAI LLM Call failed: ${response.statusText} - ${errText}`);
   }
 
   const data = await response.json();
-  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  const rawText = data.choices?.[0]?.message?.content;
   
   if (!rawText) {
     throw new Error("LLM did not return any content.");
@@ -216,7 +206,7 @@ Response MUST be a valid JSON matching this schema:
 
   // 4. Call LLM to classify and map intent
   let classificationResult;
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
 
   if (apiKey) {
     try {
@@ -670,6 +660,6 @@ function runFallbackParser(query: string, activeAgent: string): {
   return {
     routingAgent: activeAgent,
     action: { type: "SHOW_TOAST", payload: { message: "Command mapped to fallback" } },
-    responseText: `Command parsed: "${query}". (Configure GEMINI_API_KEY in your .env for full semantic reasoning).`
+    responseText: `Command parsed: "${query}". (Configure OPENAI_API_KEY in your .env for full semantic reasoning).`
   };
 }
