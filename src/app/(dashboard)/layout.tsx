@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import Sidebar from "@/components/dashboard/Sidebar";
+import AIAssistant from "@/components/dashboard/AIAssistant";
 import Breadcrumbs from "@/components/dashboard/Breadcrumbs";
 import BroadcastBanner from "@/components/dashboard/BroadcastBanner";
 import type { ReactNode } from "react";
@@ -53,6 +54,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         restaurant={restaurant}
         restaurantOpen={restaurantOpen}
       />
+      <AIAssistant restaurant={restaurant} />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <BroadcastBanner />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">

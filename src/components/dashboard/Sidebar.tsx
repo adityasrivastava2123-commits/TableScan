@@ -29,9 +29,11 @@ import {
   Sun,
   Moon,
   MessageSquare,
+  Sparkles,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import type { Restaurant } from "@prisma/client";
+import { useAIStore } from "@/store/aiStore";
 
 interface SidebarProps {
   restaurant: Restaurant;
@@ -80,6 +82,7 @@ function Sidebar({ restaurant, restaurantOpen }: SidebarProps) {
   const userName = user?.firstName || user?.emailAddresses?.[0]?.emailAddress || "User";
   const userImageUrl = user?.imageUrl;
   const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+  const { toggleOpen, isOpen } = useAIStore();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -172,6 +175,34 @@ function Sidebar({ restaurant, restaurantOpen }: SidebarProps) {
             );
           })}
         </nav>
+
+        {/* AI Commander Integration */}
+        <div className="px-3 mb-2">
+          <button
+            onClick={toggleOpen}
+            className={`w-full flex items-center justify-between p-2.5 rounded-xl border transition-all duration-300 shadow-sm relative overflow-hidden group ${
+              isOpen
+                ? "bg-gradient-to-tr from-[#f97316]/10 to-[#fb923c]/10 border-[#f97316] text-[#f97316]"
+                : "bg-white dark:bg-[#111] hover:bg-neutral-50 dark:hover:bg-[#141414] border-neutral-200 dark:border-[rgba(255,255,255,0.06)] text-neutral-700 dark:text-[#9a9488] hover:text-[#f97316] dark:hover:text-[#f0ece4]"
+            }`}
+          >
+            <div className="flex items-center gap-2 relative z-10">
+              <div className={`p-1.5 rounded-lg ${isOpen ? "bg-[#f97316] text-white" : "bg-[#f97316]/10 text-[#f97316] group-hover:bg-[#f97316] group-hover:text-white"} transition-colors`}>
+                <Sparkles className="size-3.5" />
+              </div>
+              <div className="text-left">
+                <span className="text-[12px] font-bold block leading-tight">AI Assistant</span>
+                <span className="text-[9px] opacity-70 block mt-0.5 font-medium">Voice & Command center</span>
+              </div>
+            </div>
+            
+            {/* Pulsing indicator */}
+            <span className="flex h-2 w-2 relative z-10">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOpen ? "bg-[#f97316]" : "bg-emerald-500"}`}></span>
+              <span className={`relative inline-flex rounded-full h-2 w-2 ${isOpen ? "bg-[#f97316]" : "bg-emerald-500"}`}></span>
+            </span>
+          </button>
+        </div>
 
         {/* Dynamic Light/Dark Switch Toggle */}
         <div className="p-3">

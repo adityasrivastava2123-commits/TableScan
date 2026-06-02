@@ -43,6 +43,9 @@ export function rateLimit(identifier: string, options: RateLimitOptions): { succ
   return { success: true, remaining: options.maxRequests - record.count };
 }
 
+// Attach store to function for testing access
+(rateLimit as any).rateLimitStore = rateLimitStore;
+
 // Get client identifier from request
 export function getClientIdentifier(request: Request): string {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 

@@ -80,6 +80,10 @@ model Restaurant {
   drivers           Driver[]
   deliveries        Delivery[]
   queueEntries      QueueEntry[]
+  coupons           Coupon[]
+  campaigns         Campaign[]
+  reviews           Review[]
+  auditLogs         AuditLog[]
 
   @@index([ownerId])
 }
@@ -528,6 +532,78 @@ model QueueEntry {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([restaurantId])
+}
+
+// Marketing Coupons
+model Coupon {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  discountType  String      // PERCENTAGE, FIXED
+  discountValue Float
+  maxUsage      Int?
+  currentUsage  Int         @default(0)
+  startDate     DateTime?
+  endDate       DateTime?
+  isActive      Boolean     @default(true)
+  restaurantId  String
+  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([restaurantId])
+}
+
+// Marketing Campaigns
+model Campaign {
+  id            String      @id @default(cuid())
+  name          String
+  type          String      // EMAIL, SMS, WHATSAPP, PUSH
+  status        String      @default("DRAFT") // DRAFT, SCHEDULED, ACTIVE, SENT, FAILED
+  subject       String?
+  content       String
+  scheduleTime  DateTime?
+  sentCount     Int         @default(0)
+  clickCount    Int         @default(0)
+  restaurantId  String
+  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([restaurantId])
+}
+
+// Customer Reviews & Feedback
+model Review {
+  id            String      @id @default(cuid())
+  rating        Int
+  comment       String?
+  customerName  String?
+  customerPhone String?
+  customerEmail String?
+  sentiment     String      @default("NEUTRAL") // POSITIVE, NEGATIVE, NEUTRAL
+  source        String      @default("DINE_IN") // DINE_IN, GOOGLE, etc.
+  restaurantId  String
+  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([restaurantId])
+}
+
+// AI Actions Audit Trail
+model AuditLog {
+  id            String      @id @default(cuid())
+  action        String
+  details       String
+  userId        String?
+  userRole      String?
+  userName      String?
+  ipAddress     String?
+  restaurantId  String
+  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
 
   @@index([restaurantId])
 }

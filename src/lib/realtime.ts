@@ -1,14 +1,4 @@
-import Pusher from "pusher";
-import PusherServer from "pusher";
-
-// Initialize Pusher for real-time updates
-const pusher = new PusherServer({
-  appId: process.env.NEXT_PUBLIC_PUSHER_APP_ID || "",
-  key: process.env.NEXT_PUBLIC_PUSHER_KEY || "",
-  secret: process.env.PUSHER_SECRET || "",
-  cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER || "mt1",
-  useTLS: true,
-});
+import { getPusherServer } from "./pusher";
 
 export interface RealtimeEvent {
   type: "ORDER_CREATED" | "ORDER_UPDATED" | "PREPARATION_STARTED" | "PREPARATION_READY" | "TABLE_STATUS_CHANGED" | "QUEUE_UPDATED" | "DELIVERY_ASSIGNED";
@@ -19,6 +9,7 @@ export interface RealtimeEvent {
 
 export async function triggerRealtimeEvent(event: RealtimeEvent) {
   try {
+    const pusher = getPusherServer();
     await pusher.trigger(`restaurant-${event.restaurantId}`, event.type, {
       ...event.data,
       timestamp: event.timestamp,
