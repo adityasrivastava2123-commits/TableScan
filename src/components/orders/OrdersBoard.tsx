@@ -57,8 +57,8 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
   const [selectedOrder, setSelectedOrder] = useState<BoardOrder | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: ordersData, isLoading } = useQuery({
-    key: ["orders", restaurantId],
+  const { data: ordersData, isLoading } = useQuery<BoardOrder[]>({
+    queryKey: ["orders", restaurantId],
     queryFn: async () => {
       const { data } = await axios.get<BoardOrder[]>(
         `/api/orders/restaurant/${restaurantId}`,
@@ -66,7 +66,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
       return data;
     },
     staleTime: 1000 * 30, // 30 seconds
-  } as any);
+  });
 
   useEffect(() => {
     if (ordersData) {
