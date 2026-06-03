@@ -36,8 +36,8 @@ interface ActiveOrder { id: string; orderNumber: string; status: string; }
 interface SplitPerson { id: string; name: string; itemIds: string[]; }
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
-const G = "#3D7A5A";        // Primary green
-const G_DARK = "#2d5e44";   // Darker green on press
+const G = "#f0a040";        // Primary dashboard saffron orange
+const G_DARK = "#e85a2a";   // Darker burnt orange
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 function getCategoryEmoji(name: string): string {
@@ -85,9 +85,9 @@ function VegBadge({ isVeg }: { isVeg: boolean }) {
   return (
     <span
       className={`inline-flex items-center justify-center w-4 h-4 rounded-sm border-[1.5px] flex-shrink-0
-        ${isVeg ? "border-[#3D7A5A]" : "border-red-500"}`}
+        ${isVeg ? "border-[#52d27a]" : "border-red-500"}`}
     >
-      <span className={`w-2 h-2 rounded-full ${isVeg ? "bg-[#3D7A5A]" : "bg-red-500"}`} />
+      <span className={`w-2 h-2 rounded-full ${isVeg ? "bg-[#52d27a]" : "bg-red-500"}`} />
     </span>
   );
 }
@@ -259,7 +259,9 @@ export default function CustomerMenu({
         setChatMessages(data.messages);
       }
     } catch {
-      toast.error("Failed to contact support desk.");
+      toast.error("Failed to contact support desk.", {
+        style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" }
+      });
     }
   };
 
@@ -345,8 +347,8 @@ export default function CustomerMenu({
       note,
     });
     toast.success(`${selectedItem.name} added!`, {
-      style: { background: G, color: "#fff", borderRadius: "16px", fontFamily: "inherit" },
-      iconTheme: { primary: "#fff", secondary: G },
+      style: { background: "#13110e", color: "#f5efe2", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)", fontFamily: "inherit" },
+      iconTheme: { primary: "#f0a040", secondary: "#13110e" },
     });
 
     // SMART UPSELL TRIGGER: check if item added is a main food item, then show pairings drawer
@@ -370,8 +372,8 @@ export default function CustomerMenu({
     if (needsModal) { setSelectedItem(item); return; }
     addItem({ id: item.id, name: item.name, price: item.price, quantity: 1, isVeg: item.isVeg });
     toast.success(`${item.name} added!`, {
-      style: { background: G, color: "#fff", borderRadius: "16px" },
-      iconTheme: { primary: "#fff", secondary: G },
+      style: { background: "#13110e", color: "#f5efe2", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)", fontFamily: "inherit" },
+      iconTheme: { primary: "#f0a040", secondary: "#13110e" },
     });
 
     // SMART UPSELL TRIGGER: check if item added is a main food item, then show pairings drawer
@@ -420,7 +422,9 @@ export default function CustomerMenu({
         // 2. Load Razorpay SDK
         const ok = await loadRazorpayScript();
         if (!ok) {
-          toast.error("Could not load Razorpay. Check your connection.");
+          toast.error("Could not load Razorpay. Check your connection.", {
+            style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" }
+          });
           setIsPlacing(false);
           return;
         }
@@ -461,10 +465,12 @@ export default function CustomerMenu({
               }
               clearCart(); setShowCartDrawer(false);
               toast.success("Payment successful! 🎉", {
-                style: { background: G, color: "#fff", borderRadius: "16px" },
+                style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" },
               });
             } catch {
-              toast.error("Payment verification failed. Contact staff.");
+              toast.error("Payment verification failed. Contact staff.", {
+                style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" }
+              });
             } finally {
               setIsPlacing(false);
             }
@@ -497,10 +503,12 @@ export default function CustomerMenu({
       }
       clearCart(); setShowCartDrawer(false);
       toast.success("Order placed! 🎉", {
-        style: { background: G, color: "#fff", borderRadius: "16px" },
+        style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" },
       });
     } catch (e) {
-      toast.error("Failed to place order. Please try again.");
+      toast.error("Failed to place order. Please try again.", {
+        style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" }
+      });
     } finally {
       setIsPlacing(false);
     }
@@ -519,8 +527,8 @@ export default function CustomerMenu({
     const currentStep = statusMap[trackOrder.status] ?? 0;
 
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-sm bg-white rounded-[28px] shadow-xl p-8 space-y-6">
+      <div className="min-h-screen bg-[#0b0a08] text-[#f5efe2] flex flex-col items-center justify-center p-6" style={{ fontFamily: "var(--font-poppins, 'Poppins', sans-serif)" }}>
+        <div className="w-full max-w-sm bg-[#13110e] border border-white/[0.08] rounded-[28px] shadow-2xl p-8 space-y-6">
           <motion.div
             initial={{ scale: 0 }} animate={{ scale: 1 }}
             transition={{ type: "spring", damping: 12, stiffness: 150 }}
@@ -530,8 +538,8 @@ export default function CustomerMenu({
             ✅
           </motion.div>
           <div className="text-center space-y-1">
-            <h2 className="text-xl font-bold text-gray-900">Order Confirmed!</h2>
-            <p className="text-xs font-semibold text-[#3D7A5A] bg-[#3D7A5A]/10 px-3 py-1 rounded-full w-fit mx-auto">
+            <h2 className="text-xl font-bold text-white">Order Confirmed!</h2>
+            <p className="text-xs font-semibold text-[#f0a040] bg-[#f0a040]/10 px-3 py-1 rounded-full w-fit mx-auto border border-[#f0a040]/20">
               #{trackOrder.orderNumber}
             </p>
           </div>
@@ -542,26 +550,26 @@ export default function CustomerMenu({
               return (
                 <div key={i} className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0
-                    ${done ? "bg-[#3D7A5A] text-white" : active ? "bg-[#3D7A5A]/15 border-2 border-[#3D7A5A]" : "bg-gray-100"}`}>
+                    ${done ? "bg-[#f0a040] text-[#0b0a08]" : active ? "bg-[#f0a040]/15 border-2 border-[#f0a040]" : "bg-[#181512] border border-white/[0.08]"}`}>
                     {done ? <Check className="w-4 h-4 stroke-[3]" /> : <span>{s.icon}</span>}
                   </div>
                   <div>
-                    <p className={`text-sm font-bold ${active ? "text-[#3D7A5A]" : done ? "text-gray-900" : "text-gray-400"}`}>
+                    <p className={`text-sm font-bold ${active ? "text-[#f0a040]" : done ? "text-[#f5efe2]" : "text-[#f5efe2]/40"}`}>
                       {s.label}
                     </p>
-                    <p className="text-xs text-gray-400">{s.desc}</p>
+                    <p className="text-xs text-[#f5efe2]/60">{s.desc}</p>
                   </div>
                 </div>
               );
             })}
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 text-center">
             {trackOrder.status === "DONE" && (
               <button
                 onClick={() => {
                   router.push(`/${slug}/${tableToken}/order-status?orderId=${trackOrder.id}&showReceipt=true`);
                 }}
-                className="w-full py-3.5 rounded-2xl text-white text-sm font-extrabold flex items-center justify-center gap-2 shadow-lg"
+                className="w-full py-3.5 rounded-2xl text-[#0b0a08] text-sm font-extrabold flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all"
                 style={{ background: G }}
               >
                 🧾 View Bill Receipt
@@ -576,10 +584,10 @@ export default function CustomerMenu({
                 setPlacedOrder(null);
                 setShowOrderBanner(true);
               }}
-              className={`w-full py-3.5 rounded-2xl text-sm font-bold ${
+              className={`w-full py-3.5 rounded-2xl text-sm font-bold active:scale-95 transition-all ${
                 trackOrder.status === "DONE"
-                  ? "bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold"
-                  : "text-white"
+                  ? "bg-white/5 border border-white/[0.08] hover:bg-white/10 text-[#f5efe2]"
+                  : "text-[#0b0a08]"
               }`}
               style={trackOrder.status === "DONE" ? {} : { background: G }}
             >
@@ -600,24 +608,24 @@ export default function CustomerMenu({
 
   // ── MAIN RENDER ──────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pb-32" style={{ fontFamily: "var(--font-poppins, 'Poppins', sans-serif)" }}>
+    <div className="min-h-screen bg-[#0b0a08] text-[#f5efe2] pb-32" style={{ fontFamily: "var(--font-poppins, 'Poppins', sans-serif)" }}>
 
       {/* ─── Header ──────────────────────────────────────────────────────── */}
-      <div className="bg-white px-5 pt-6 pb-4 sticky top-0 z-30 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+      <div className="bg-[#0b0a08]/90 backdrop-blur-md px-5 pt-6 pb-4 sticky top-0 z-30 border-b border-white/[0.06] shadow-lg">
         {/* Row 1: greeting + icons */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-xs text-gray-400 font-medium">Hi, Diner! 👋</p>
-            <h1 className="text-[22px] font-extrabold text-gray-900 leading-tight">
+            <p className="text-xs text-[#f5efe2]/60 font-medium">Hi, Diner! 👋</p>
+            <h1 className="text-[22px] font-extrabold text-white leading-tight">
               Find your best food<br />
-              <span className="text-[#3D7A5A]">Order & Eat</span> 😎
+              <span className="text-[#f0a040]">Order & Eat</span> 😎
             </h1>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowSearch(s => !s)}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all
-                ${showSearch ? "bg-[#3D7A5A] text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all border
+                ${showSearch ? "bg-[#f0a040] border-transparent text-[#0b0a08]" : "bg-[#13110e] border-white/[0.08] text-[#f5efe2]/60 hover:bg-[#181512]"}`}
             >
               <Search className="w-4 h-4" />
             </button>
@@ -625,7 +633,7 @@ export default function CustomerMenu({
             {/* Support Chat Button */}
             <button
               onClick={() => setShowChatDrawer(true)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all"
+              className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#13110e] border border-white/[0.08] text-[#f5efe2]/60 hover:bg-[#181512] transition-all"
               title="Support Chat"
             >
               <MessageSquare className="w-4 h-4" />
@@ -633,10 +641,10 @@ export default function CustomerMenu({
             {totalItems > 0 && (
               <button
                 onClick={() => setShowCartDrawer(true)}
-                className="relative w-9 h-9 rounded-xl flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-gray-200"
+                className="relative w-9 h-9 rounded-xl flex items-center justify-center bg-[#13110e] border border-white/[0.08] text-[#f5efe2]/60 hover:bg-[#181512]"
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[9px] font-black flex items-center justify-center"
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[#0b0a08] text-[9px] font-black flex items-center justify-center shadow-sm"
                   style={{ background: G }}>
                   {totalItems}
                 </span>
@@ -644,9 +652,9 @@ export default function CustomerMenu({
             )}
             <button
               onClick={() => toast.success(`Waiter called to Table ${table.name} 🔔`, {
-                style: { background: "#222", color: "#fff", borderRadius: "14px" }
+                style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" }
               })}
-              className="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-gray-200"
+              className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#13110e] border border-white/[0.08] text-[#f5efe2]/60 hover:bg-[#181512]"
             >
               <BellRing className="w-4 h-4" />
             </button>
@@ -655,7 +663,7 @@ export default function CustomerMenu({
 
         {/* Table badge */}
         <div className="flex items-center gap-1.5 mb-3">
-          <span className="text-xs font-bold px-3 py-1 rounded-full text-white" style={{ background: G }}>
+          <span className="text-xs font-bold px-3 py-1 rounded-full text-[#0b0a08] shadow-sm" style={{ background: G }}>
             Table #{table.name}
           </span>
         </div>
@@ -670,18 +678,18 @@ export default function CustomerMenu({
               className="overflow-hidden mb-3"
             >
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f5efe2]/60" />
                 <input
                   autoFocus
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search your food..."
-                  className="w-full bg-gray-100 rounded-2xl pl-9 pr-9 py-2.5 text-sm text-gray-800
-                    placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3D7A5A]/30"
+                  className="w-full bg-[#13110e] border border-white/[0.08] rounded-2xl pl-9 pr-9 py-2.5 text-sm text-[#f5efe2]
+                    placeholder-[#f5efe2]/20 focus:outline-none focus:ring-2 focus:ring-[#f0a040]/30"
                 />
                 {searchQuery && (
                   <button onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#f5efe2]/60">
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -698,8 +706,8 @@ export default function CustomerMenu({
               onClick={() => setActiveCategory(cat.id)}
               className={`whitespace-nowrap flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all
                 ${activeCategory === cat.id
-                  ? "text-white border-transparent shadow-sm"
-                  : "bg-white border-gray-200 text-gray-500 hover:border-[#3D7A5A]/40"}`}
+                  ? "text-[#0b0a08] border-transparent shadow-sm"
+                  : "bg-[#13110e] border-white/[0.08] text-[#f5efe2]/60 hover:border-[#f0a040]/40"}`}
               style={activeCategory === cat.id ? { background: G, borderColor: G } : {}}
             >
               {cat.name}
@@ -718,7 +726,7 @@ export default function CustomerMenu({
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="bg-[#3D7A5A] text-white rounded-2xl shadow-md overflow-hidden"
+              className="bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] rounded-2xl shadow-lg shadow-amber-950/20 overflow-hidden"
             >
               {/* Main banner - clickable to view order status */}
               <div
@@ -726,31 +734,31 @@ export default function CustomerMenu({
                   const targetId = selectedOrderId || sessionOrderIds[sessionOrderIds.length - 1];
                   router.push(`/${slug}/${tableToken}/order-status?orderId=${targetId}`);
                 }}
-                className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#3D7A5A]/95 transition-all duration-200"
+                className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:brightness-110 transition-all duration-200"
               >
-                <span className="text-lg">🍳</span>
+                <span className="text-lg animate-pulse">🍳</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold">
+                  <p className="text-xs font-black">
                     {activeOrders.length > 1 ? `${activeOrders.length} Active Orders!` : "Order in progress!"}
                   </p>
-                  <p className="text-[10px] opacity-80 truncate">
+                  <p className="text-[10px] opacity-90 truncate font-semibold">
                     {activeOrders.length > 1 
                       ? "Tap to trace all active dining orders"
                       : (() => {
                           const order = activeOrders.find(o => o.id === selectedOrderId) || activeOrders[0];
-                          return `#${order?.orderNumber || ""} · ${order?.status === "NEW" ? "Received" : order?.status === "PREPARING" ? "Being prepared" : "Almost ready"}`;
+                          return `#${order?.orderNumber || ""} · ${order?.status === "NEW" ? "Received" : order?.status === "PREPARING" ? "Chef cooking" : "Almost ready"}`;
                         })()}
                   </p>
                 </div>
-                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                  <ChevronRight className="w-4 h-4 text-white" />
+                <div className="w-7 h-7 rounded-full bg-[#0b0a08]/20 flex items-center justify-center flex-shrink-0">
+                  <ChevronRight className="w-4 h-4 text-[#0b0a08]" />
                 </div>
               </div>
 
               {/* Multiple orders selector - shown when there are multiple orders */}
               {activeOrders.length > 1 && (
-                <div className="px-4 pb-3 pt-1 border-t border-white/10">
-                  <p className="text-[9px] font-black opacity-70 uppercase tracking-widest mb-2">
+                <div className="px-4 pb-3 pt-1 border-t border-[#0b0a08]/10">
+                  <p className="text-[9px] font-black opacity-80 uppercase tracking-widest mb-2 text-[#0b0a08]/70">
                     Switch Order
                   </p>
                   <div className="flex gap-2 overflow-x-auto scrollbar-hide">
@@ -763,13 +771,13 @@ export default function CustomerMenu({
                         }}
                         className={`px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all duration-200 flex-shrink-0 flex items-center gap-1.5 border ${
                           selectedOrderId === order.id
-                            ? "bg-white text-[#3D7A5A] border-transparent shadow-sm"
-                            : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                            ? "bg-[#0b0a08] text-[#f0a040] border-transparent shadow-sm"
+                            : "bg-[#0b0a08]/10 text-[#0b0a08] border-[#0b0a08]/20 hover:bg-[#0b0a08]/20"
                         }`}
                       >
                         <span>#{order.orderNumber.substring(order.orderNumber.length - 4)}</span>
                         <span className={`w-1.5 h-1.5 rounded-full ${
-                          order.status === "DONE" ? "bg-emerald-400" : order.status === "CANCELLED" ? "bg-red-400" : "bg-orange-400 animate-pulse"
+                          order.status === "DONE" ? "bg-emerald-600" : order.status === "CANCELLED" ? "bg-red-600" : "bg-orange-600 animate-pulse"
                         }`} />
                       </button>
                     ))}
@@ -783,21 +791,21 @@ export default function CustomerMenu({
         {/* ── "Special for you" banner ──────────────────────────────────── */}
         {spotlightItem && !searchQuery && activeCategory === "all" && (
           <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+            <p className="text-xs font-bold text-[#f5efe2]/40 uppercase tracking-widest mb-3">
               Special for you
             </p>
             <div
-              className="bg-white rounded-[24px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.07)]
-                flex items-center gap-4 relative overflow-hidden cursor-pointer"
+              className="bg-[#13110e] border border-white/[0.08] rounded-[24px] p-4 shadow-[0_4px_24px_rgba(0,0,0,0.3)]
+                flex items-center gap-4 relative overflow-hidden cursor-pointer hover:border-[#f0a040]/20 transition-all duration-300"
               onClick={() => setSelectedItem(spotlightItem)}
             >
-              {/* Green decorative blob */}
-              <div className="absolute -right-4 -top-4 w-28 h-28 rounded-full opacity-5"
+              {/* Saffron decorative glow */}
+              <div className="absolute -right-4 -top-4 w-28 h-28 rounded-full opacity-10"
                 style={{ background: G }} />
 
               {/* Circular food image */}
-              <div className="w-20 h-20 rounded-full flex-shrink-0 overflow-hidden bg-gray-50
-                border-2 border-white shadow-md flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full flex-shrink-0 overflow-hidden bg-[#181512]
+                border-2 border-white/[0.08] shadow-md flex items-center justify-center">
                 {spotlightItem.image ? (
                   <Image src={spotlightItem.image} alt={spotlightItem.name}
                     width={80} height={80} quality={85} priority
@@ -808,15 +816,15 @@ export default function CustomerMenu({
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold text-red-500 mb-0.5">
+                <p className="text-[10px] font-bold text-[#f0a040] mb-0.5">
                   Only today 25% OFF!
                 </p>
-                <h3 className="text-sm font-bold text-gray-900 truncate">{spotlightItem.name}</h3>
-                <p className="text-xs text-gray-400 truncate mt-0.5">
+                <h3 className="text-sm font-bold text-white truncate">{spotlightItem.name}</h3>
+                <p className="text-xs text-[#f5efe2]/60 truncate mt-0.5">
                   {spotlightItem.description ?? "Chef's special pick"}
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-xs text-gray-300 line-through">
+                  <span className="text-xs text-[#f5efe2]/30 line-through">
                     ₹{(spotlightItem.price * 1.33).toFixed(0)}
                   </span>
                   <span className="text-sm font-extrabold" style={{ color: G }}>
@@ -828,11 +836,11 @@ export default function CustomerMenu({
               {/* Add button */}
               <button
                 onClick={e => { e.stopPropagation(); handleQuickAdd(spotlightItem); }}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-white flex-shrink-0
-                  shadow-md active:scale-95 transition-transform"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[#0b0a08] flex-shrink-0
+                  shadow-md active:scale-95 transition-all hover:brightness-110"
                 style={{ background: G }}
               >
-                <Plus className="w-4 h-4 text-white" />
+                <Plus className="w-4 h-4 text-[#0b0a08]" />
               </button>
             </div>
           </div>
@@ -841,7 +849,7 @@ export default function CustomerMenu({
         {/* ── Popular / Category items ───────────────────────────────────── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-base font-extrabold text-gray-900">
+            <p className="text-base font-extrabold text-white">
               {activeCategory === "all" ? "Popular" :
                activeCategory === "bestsellers" ? "Bestsellers" :
                restaurant.categories.find(c => c.id === activeCategory)?.name ?? "Menu"}
@@ -856,7 +864,7 @@ export default function CustomerMenu({
           </div>
 
           {displayItems.length === 0 && (
-            <div className="text-center py-16 text-gray-300">
+            <div className="text-center py-16 text-[#f5efe2]/40">
               <Utensils className="w-10 h-10 mx-auto mb-2" />
               <p className="text-sm font-semibold">No items found</p>
             </div>
@@ -872,8 +880,8 @@ export default function CustomerMenu({
               return (
                 <div
                   key={item.id}
-                  className="bg-white rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)]
-                    flex items-center gap-4"
+                  className="bg-[#13110e] border border-white/[0.08] rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.25)]
+                    flex items-center gap-4 hover:border-white/[0.12] transition-colors duration-200"
                 >
                   {/* Left: text */}
                   <div className="flex-1 min-w-0 space-y-1 cursor-pointer"
@@ -882,13 +890,13 @@ export default function CustomerMenu({
                       <VegBadge isVeg={item.isVeg} />
                       {popular && (
                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded
-                          bg-amber-50 text-amber-600 border border-amber-200">
+                          bg-[#f0a040]/10 text-[#f0a040] border border-[#f0a040]/20">
                           ⭐ Popular
                         </span>
                       )}
                     </div>
-                    <h4 className="text-sm font-bold text-gray-900 truncate">{item.name}</h4>
-                    <p className="text-[11px] text-gray-400 truncate">
+                    <h4 className="text-sm font-bold text-white truncate">{item.name}</h4>
+                    <p className="text-[11px] text-[#f5efe2]/60 truncate">
                       {item.description ?? "Freshly prepared just for you"}
                     </p>
                     <p className="text-[10px] font-semibold text-red-400 flex items-center gap-0.5">
@@ -903,8 +911,8 @@ export default function CustomerMenu({
                   {/* Right: circular image + add button */}
                   <div className="relative flex-shrink-0">
                     <div
-                      className="w-[78px] h-[78px] rounded-full overflow-hidden bg-gray-50
-                        border-2 border-white shadow-md flex items-center justify-center cursor-pointer"
+                      className="w-[78px] h-[78px] rounded-full overflow-hidden bg-[#181512]
+                        border-2 border-white/[0.08] shadow-md flex items-center justify-center cursor-pointer"
                       onClick={() => setSelectedItem(item)}
                     >
                       {item.image ? (
@@ -918,30 +926,30 @@ export default function CustomerMenu({
                     {/* Overlapping add / qty toggle */}
                     <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
                       {qty > 0 ? (
-                        <div className="flex items-center gap-1.5 bg-white border border-[#3D7A5A]/30
+                        <div className="flex items-center gap-1.5 bg-[#13110e] border border-[#f0a040]/35
                           rounded-2xl px-2 py-1 shadow-md">
                           <button onClick={() => updateQuantity(item.id, Math.max(0, qty - 1))}
-                            className="w-5 h-5 rounded-full flex items-center justify-center text-white"
+                            className="w-5 h-5 rounded-full flex items-center justify-center text-[#0b0a08] active:scale-90 transition-all hover:brightness-110"
                             style={{ background: G }}>
-                            <Minus className="w-3 h-3" />
+                            <Minus className="w-3 h-3 text-[#0b0a08]" />
                           </button>
-                          <span className="text-[11px] font-black text-gray-800 w-3 text-center">
+                          <span className="text-[11px] font-black text-white w-3 text-center">
                             {qty}
                           </span>
                           <button onClick={() => updateQuantity(item.id, qty + 1)}
-                            className="w-5 h-5 rounded-full flex items-center justify-center text-white"
+                            className="w-5 h-5 rounded-full flex items-center justify-center text-[#0b0a08] active:scale-90 transition-all hover:brightness-110"
                             style={{ background: G }}>
-                            <Plus className="w-3 h-3" />
+                            <Plus className="w-3 h-3 text-[#0b0a08]" />
                           </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => handleQuickAdd(item)}
-                          className="w-8 h-8 rounded-full text-white flex items-center justify-center
-                            shadow-lg active:scale-95 transition-transform"
+                          className="w-8 h-8 rounded-full text-[#0b0a08] flex items-center justify-center
+                            shadow-lg active:scale-95 transition-all hover:brightness-110"
                           style={{ background: G }}
                         >
-                          <Plus className="w-4 h-4 text-white" />
+                          <Plus className="w-4 h-4 text-[#0b0a08]" />
                         </button>
                       )}
                     </div>
@@ -964,16 +972,16 @@ export default function CustomerMenu({
           >
             <button
               onClick={() => setShowCartDrawer(true)}
-              className="flex items-center gap-3 pl-4 pr-5 py-3.5 rounded-2xl text-white shadow-xl
-                active:scale-95 transition-transform"
+              className="flex items-center gap-3 pl-4 pr-5 py-3.5 rounded-2xl text-[#0b0a08] shadow-lg shadow-[#f0a040]/20
+                active:scale-95 transition-transform hover:brightness-110"
               style={{ background: G }}
             >
-              <span className="w-6 h-6 rounded-xl bg-white/20 flex items-center justify-center
-                text-[11px] font-black">
+              <span className="w-6 h-6 rounded-xl bg-[#0b0a08]/15 flex items-center justify-center
+                text-[11px] font-black text-[#0b0a08]">
                 {totalItems}
               </span>
-              <span className="text-sm font-bold">View Cart</span>
-              <span className="text-sm font-bold ml-1">· ₹{subtotal.toFixed(0)}</span>
+              <span className="text-sm font-black tracking-wide uppercase">View Cart</span>
+              <span className="text-sm font-extrabold ml-1">· ₹{subtotal.toFixed(0)}</span>
             </button>
           </motion.div>
         )}
@@ -996,13 +1004,13 @@ export default function CustomerMenu({
                 const targetId = selectedOrderId || sessionOrderIds[sessionOrderIds.length - 1];
                 router.push(`/${slug}/${tableToken}/order-status?orderId=${targetId}`);
               }}
-              className="flex items-center gap-2 px-4 py-3.5 rounded-2xl text-white shadow-xl
+              className="flex items-center gap-2 px-4 py-3.5 rounded-2xl text-[#0b0a08] shadow-lg shadow-[#f0a040]/15
                 active:scale-95 transition-transform border border-white/10 font-bold text-xs"
               style={{ background: G }}
             >
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0b0a08] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0b0a08]"></span>
               </span>
               <span>
                 {sessionOrderIds.length > 1 
@@ -1019,35 +1027,35 @@ export default function CustomerMenu({
       <AnimatePresence>
         {selectedItem && (
           <div className="fixed inset-0 z-50 flex items-end" onClick={() => setSelectedItem(null)}>
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="relative w-full bg-[#FAFAFA] rounded-t-[32px] max-h-[92vh] flex flex-col overflow-hidden"
+              className="relative w-full bg-[#13110e] border-t border-white/[0.08] rounded-t-[32px] max-h-[92vh] flex flex-col overflow-hidden shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               {/* Header strip */}
-              <div className="bg-white px-5 py-4 flex items-center justify-between border-b border-gray-100">
+              <div className="bg-[#13110e] px-5 py-4 flex items-center justify-between border-b border-white/[0.08]">
                 <button onClick={() => setSelectedItem(null)}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <ArrowLeft className="w-4 h-4 text-gray-600" />
+                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#f5efe2] transition-colors">
+                  <ArrowLeft className="w-4 h-4" />
                 </button>
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#f5efe2]/60 uppercase tracking-wider">
                   Item Details
                 </span>
                 <button onClick={() => setIsFav(v => !v)}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Heart className={`w-4 h-4 ${isFav ? "fill-rose-500 text-rose-500" : "text-gray-400"}`} />
+                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+                  <Heart className={`w-4 h-4 ${isFav ? "fill-rose-500 text-rose-500" : "text-[#f5efe2]/60"}`} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto bg-[#0b0a08]">
                 {/* Large circular food image */}
-                <div className="bg-white pb-6 flex flex-col items-center pt-6 px-5">
-                  <div className="w-44 h-44 rounded-full overflow-hidden bg-gray-50
-                    border-4 border-white shadow-xl flex items-center justify-center">
+                <div className="bg-[#13110e] pb-6 flex flex-col items-center pt-6 px-5 border-b border-white/[0.08]">
+                  <div className="w-44 h-44 rounded-full overflow-hidden bg-[#181512]
+                    border-4 border-white/[0.08] shadow-xl flex items-center justify-center">
                     {selectedItem.image ? (
                       <Image src={selectedItem.image} alt={selectedItem.name}
                         width={176} height={176} quality={85}
@@ -1061,33 +1069,33 @@ export default function CustomerMenu({
                   <div className="text-center mt-5 space-y-1">
                     <div className="flex items-center justify-center gap-2">
                       <VegBadge isVeg={selectedItem.isVeg} />
-                      <h2 className="text-xl font-extrabold text-gray-900">{selectedItem.name}</h2>
+                      <h2 className="text-xl font-extrabold text-white">{selectedItem.name}</h2>
                     </div>
                     {selectedItem.description && (
-                      <p className="text-xs text-gray-400 max-w-xs mx-auto leading-relaxed">
+                      <p className="text-xs text-[#f5efe2]/60 max-w-xs mx-auto leading-relaxed">
                         {selectedItem.description}
                       </p>
                     )}
-                    <p className="text-2xl font-black mt-2" style={{ color: G }}>
+                    <p className="text-2xl font-black mt-2 font-mono-dashboard" style={{ color: G }}>
                       ₹{(effectivePrice * itemQty).toFixed(0)}
                     </p>
                   </div>
 
-                  {/* Qty stepper – green square buttons matching mockup */}
+                  {/* Qty stepper */}
                   <div className="flex items-center gap-4 mt-4">
                     <button
                       onClick={() => setItemQty(q => Math.max(1, q - 1))}
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-lg"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-[#0b0a08] font-black text-lg hover:brightness-110 active:scale-95 transition-all"
                       style={{ background: G }}
                     >
                       −
                     </button>
-                    <span className="text-xl font-black text-gray-900 w-6 text-center">
+                    <span className="text-xl font-black text-white w-6 text-center">
                       {itemQty}
                     </span>
                     <button
                       onClick={() => setItemQty(q => q + 1)}
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-lg"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-[#0b0a08] font-black text-lg hover:brightness-110 active:scale-95 transition-all"
                       style={{ background: G }}
                     >
                       +
@@ -1098,14 +1106,14 @@ export default function CustomerMenu({
                 <div className="px-5 py-4 space-y-5">
                   {/* Ingredients pills */}
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <p className="text-xs font-bold text-[#f5efe2]/60 uppercase tracking-wider">
                       Ingredients
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {getIngredients(selectedItem).map(ing => (
                         <span key={ing.name}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-2xl
-                            border border-gray-100 shadow-sm text-xs font-semibold text-gray-700">
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181512] rounded-2xl
+                            border border-white/[0.08] shadow-sm text-xs font-semibold text-[#f5efe2]">
                           {ing.emoji} {ing.name}
                         </span>
                       ))}
@@ -1115,7 +1123,7 @@ export default function CustomerMenu({
                   {/* Variants */}
                   {selectedItem.variants.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      <p className="text-xs font-bold text-[#f5efe2]/60 uppercase tracking-wider">
                         Size / Option
                       </p>
                       <div className="grid grid-cols-2 gap-2">
@@ -1123,13 +1131,13 @@ export default function CustomerMenu({
                           <button key={v.id} onClick={() => setSelectedVariant(v)}
                             className={`px-4 py-3 rounded-2xl border text-sm transition-all text-left
                               ${selectedVariant?.id === v.id
-                                ? "border-transparent text-white font-bold"
-                                : "bg-white border-gray-200 text-gray-600"}`}
+                                ? "border-transparent text-[#0b0a08] font-black"
+                                : "bg-[#181512] border-white/[0.08] text-[#f5efe2]/60 hover:border-[#f0a040]/20"}`}
                             style={selectedVariant?.id === v.id
                               ? { background: G } : {}}
                           >
-                            <span className="block font-semibold">{v.name}</span>
-                            <span className="text-xs mt-0.5 block opacity-80">₹{v.price}</span>
+                            <span className="block font-bold">{v.name}</span>
+                            <span className="text-xs mt-0.5 block opacity-85">₹{v.price}</span>
                           </button>
                         ))}
                       </div>
@@ -1138,16 +1146,16 @@ export default function CustomerMenu({
 
                   {/* Spice level */}
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                    <p className="text-xs font-bold text-[#f5efe2]/60 uppercase tracking-wider flex items-center gap-1">
                       🌶️ Spice Level
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {SPICE_LEVELS.map(lv => (
                         <button key={lv} onClick={() => setSpiceLevel(lv)}
-                          className={`px-4 py-2 rounded-2xl border text-xs font-semibold transition-all
+                          className={`px-4 py-2 rounded-2xl border text-xs font-bold transition-all
                             ${spiceLevel === lv
-                              ? "border-transparent text-white"
-                              : "bg-white border-gray-200 text-gray-500"}`}
+                              ? "border-transparent text-[#0b0a08]"
+                              : "bg-[#181512] border-white/[0.08] text-[#f5efe2]/60 hover:border-[#f0a040]/20"}`}
                           style={spiceLevel === lv ? { background: G } : {}}>
                           {lv}
                         </button>
@@ -1157,7 +1165,7 @@ export default function CustomerMenu({
 
                   {/* Add-ons */}
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <p className="text-xs font-bold text-[#f5efe2]/60 uppercase tracking-wider">
                       ➕ Add-ons
                     </p>
                     <div className="space-y-2">
@@ -1175,14 +1183,14 @@ export default function CustomerMenu({
                                 : [...prev, a.name])}
                             className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl
                               border text-sm transition-all
-                              ${active ? "border-transparent text-white" : "bg-white border-gray-200 text-gray-700"}`}
+                              ${active ? "border-transparent text-[#0b0a08] font-bold" : "bg-[#181512] border-white/[0.08] text-[#f5efe2] hover:border-[#f0a040]/20"}`}
                             style={active ? { background: G } : {}}>
-                            <span className="font-medium">{a.name}</span>
+                            <span className="font-semibold">{a.name}</span>
                             <div className="flex items-center gap-2">
-                              <span className={`text-xs ${active ? "text-white/80" : "text-gray-400"}`}>
+                              <span className={`text-xs ${active ? "text-[#0b0a08]/80 font-bold" : "text-[#f5efe2]/40"}`}>
                                 +₹{a.price}
                               </span>
-                              {active && <Check className="w-4 h-4" />}
+                              {active && <Check className="w-4 h-4 text-[#0b0a08] stroke-[3]" />}
                             </div>
                           </button>
                         );
@@ -1192,15 +1200,15 @@ export default function CustomerMenu({
 
                   {/* Special note */}
                   <div className="space-y-2 pb-2">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <p className="text-xs font-bold text-[#f5efe2]/60 uppercase tracking-wider">
                       📝 Special Instructions
                     </p>
                     <input
                       type="text" value={itemNote}
                       onChange={e => setItemNote(e.target.value)}
                       placeholder="e.g. less spicy, no onions…"
-                      className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm
-                        text-gray-800 placeholder-gray-300 focus:outline-none focus:border-[#3D7A5A]
+                      className="w-full bg-[#181512] border border-white/[0.08] rounded-2xl px-4 py-3 text-sm
+                        text-[#f5efe2] placeholder-[#f5efe2]/20 focus:outline-none focus:border-[#f0a040]
                         transition-all"
                     />
                   </div>
@@ -1208,11 +1216,11 @@ export default function CustomerMenu({
               </div>
 
               {/* Sticky CTA */}
-              <div className="bg-white px-5 py-4 border-t border-gray-100">
+              <div className="bg-[#13110e] px-5 py-4 border-t border-white/[0.08]">
                 <button
                   onClick={handleAddToCart}
-                  className="w-full py-4 rounded-2xl text-white font-bold text-sm tracking-wide
-                    shadow-lg active:scale-95 transition-transform"
+                  className="w-full py-4 rounded-2xl text-[#0b0a08] font-black text-sm tracking-widest uppercase
+                    shadow-lg active:scale-95 transition-transform hover:brightness-110"
                   style={{ background: G }}
                 >
                   ADD TO CART · ₹{(effectivePrice * itemQty).toFixed(0)}
@@ -1227,43 +1235,43 @@ export default function CustomerMenu({
       <AnimatePresence>
         {showChatDrawer && (
           <div className="fixed inset-0 z-50 flex items-end" onClick={() => setShowChatDrawer(false)}>
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="relative w-full bg-[#FAFAFA] rounded-t-[32px] max-h-[85vh] flex flex-col overflow-hidden"
+              className="relative w-full bg-[#13110e] border-t border-white/[0.08] max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="bg-white px-5 py-4 flex items-center justify-between border-b border-gray-100 flex-shrink-0">
+              <div className="bg-[#13110e] px-5 py-4 flex items-center justify-between border-b border-white/[0.08] flex-shrink-0">
                 <button onClick={() => setShowChatDrawer(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <ArrowLeft className="w-4 h-4 text-gray-600" />
+                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#f5efe2] transition-colors">
+                  <ArrowLeft className="w-4 h-4" />
                 </button>
                 <div className="text-center">
-                  <span className="text-sm font-extrabold text-gray-900 block">Table Support Chat</span>
+                  <span className="text-sm font-extrabold text-white block">Table Support Chat</span>
                   <div className="flex items-center gap-1 justify-center mt-0.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#3D7A5A] animate-pulse" />
-                    <span className="text-[10px] font-bold text-[#3D7A5A] uppercase tracking-wider">Live assistant</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#f0a040] animate-pulse" />
+                    <span className="text-[10px] font-bold text-[#f0a040] uppercase tracking-wider">Live assistant</span>
                   </div>
                 </div>
                 <div className="w-8 h-8 flex-shrink-0" /> {/* Spacer */}
               </div>
 
               {/* Chat Viewport */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-4">
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-[#0b0a08]">
                 {chatMessages.map((msg, index) => {
                   const isStaff = msg.sender === "staff";
                   return (
                     <div key={index} className={`flex ${isStaff ? "justify-start" : "justify-end"}`}>
                       <div className={`max-w-[75%] rounded-[20px] px-4 py-3 shadow-sm ${
-                        isStaff ? "bg-white text-gray-800 rounded-tl-sm" : "text-white rounded-tr-sm"
+                        isStaff ? "bg-[#181512] border border-white/[0.08] text-[#f5efe2] rounded-tl-sm" : "text-[#0b0a08] rounded-tr-sm font-semibold"
                       }`} style={!isStaff ? { background: G } : {}}>
                         <p className="text-xs font-medium leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                         <span className={`text-[9px] block text-right mt-1.5 font-bold ${
-                          isStaff ? "text-gray-400" : "text-white/60"
+                          isStaff ? "text-[#f5efe2]/40" : "text-[#0b0a08]/60"
                         }`}>{msg.time}</span>
                       </div>
                     </div>
@@ -1273,17 +1281,17 @@ export default function CustomerMenu({
                 {/* Simulated typing indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="bg-white max-w-[70%] rounded-[20px] rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <div className="bg-[#181512] border border-white/[0.08] max-w-[70%] rounded-[20px] rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-600 animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-600 animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-600 animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Bottom Drawer Actions & Inputs */}
-              <div className="bg-white border-t border-gray-100 p-4 space-y-3 flex-shrink-0">
+              <div className="bg-[#13110e] border-t border-white/[0.08] p-4 space-y-3 flex-shrink-0">
                 {/* Quick actions slider */}
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
                   {[
@@ -1296,8 +1304,8 @@ export default function CustomerMenu({
                     <button
                       key={act}
                       onClick={() => handleSendMessage(act)}
-                      className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 bg-gray-50 border border-gray-100
-                        rounded-xl text-[11px] font-bold text-gray-600 hover:bg-gray-100 active:scale-95 transition-all"
+                      className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 bg-[#181512] border border-white/[0.08]
+                        rounded-xl text-[11px] font-bold text-[#f5efe2] hover:bg-[#222222] active:scale-95 transition-all"
                     >
                       {act}
                     </button>
@@ -1313,15 +1321,15 @@ export default function CustomerMenu({
                     value={chatInput}
                     onChange={e => setChatInput(e.target.value)}
                     placeholder="Type your message here..."
-                    className="flex-1 bg-gray-50 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-400
-                      border border-transparent focus:outline-none focus:border-[#3D7A5A]/30 focus:ring-1 focus:ring-[#3D7A5A]/30"
+                    className="flex-1 bg-[#181512] border border-white/[0.08] rounded-2xl px-4 py-3 text-xs text-[#f5efe2] placeholder-[#f5efe2]/20
+                      focus:outline-none focus:border-[#f0a040]/30 focus:ring-1 focus:ring-[#f0a040]/30"
                   />
                   <button
                     type="submit"
-                    className="w-10 h-10 rounded-2xl flex items-center justify-center text-white active:scale-95 transition-all flex-shrink-0"
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center text-[#0b0a08] active:scale-95 hover:brightness-110 transition-all flex-shrink-0"
                     style={{ background: G }}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4 text-[#0b0a08]" />
                   </button>
                 </form>
               </div>
@@ -1334,57 +1342,57 @@ export default function CustomerMenu({
       <AnimatePresence>
         {showCartDrawer && (
           <div className="fixed inset-0 z-50 flex items-end" onClick={() => setShowCartDrawer(false)}>
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="relative w-full bg-[#FAFAFA] rounded-t-[32px] max-h-[85vh] flex flex-col overflow-hidden"
+              className="relative w-full bg-[#13110e] border-t border-white/[0.08] rounded-t-[32px] max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               {/* Drawer handle */}
               <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1 rounded-full bg-gray-200" />
+                <div className="w-10 h-1 rounded-full bg-white/10" />
               </div>
 
               {/* Header */}
-              <div className="px-5 pb-3 pt-2 flex items-center justify-between border-b border-gray-100 bg-white">
-                <h2 className="text-base font-extrabold text-gray-900">Your Order</h2>
+              <div className="px-5 pb-3 pt-2 flex items-center justify-between border-b border-white/[0.08] bg-[#13110e]">
+                <h2 className="text-base font-extrabold text-white">Your Order</h2>
                 <button onClick={() => setShowCartDrawer(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <X className="w-4 h-4 text-gray-500" />
+                  className="w-8 h-8 rounded-full bg-[#181512] border border-white/[0.08] text-[#f5efe2]/60 flex items-center justify-center transition-colors">
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Items */}
-              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-[#0b0a08]">
                 {cartItems.map(item => (
                   <div key={item.id}
-                    className="bg-white rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)]
+                    className="bg-[#181512] border border-white/[0.08] rounded-2xl p-4 shadow-sm
                       flex items-center gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-gray-900 truncate">{item.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">₹{item.price} each</p>
+                      <p className="text-sm font-bold text-[#f5efe2] truncate">{item.name}</p>
+                      <p className="text-xs text-[#f5efe2]/60 mt-0.5">₹{item.price} each</p>
                       {item.note && (
-                        <p className="text-[10px] text-gray-400 mt-0.5 truncate">{item.note}</p>
+                        <p className="text-[10px] text-[#f5efe2]/60 mt-0.5 truncate">{item.note}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-2 py-1">
+                      <div className="flex items-center gap-2 bg-[#13110e] border border-white/[0.08] rounded-xl px-2 py-1">
                         <button onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="text-gray-400 hover:text-gray-700">
+                          className="text-[#f5efe2]/60 hover:text-white transition-colors">
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="text-xs font-black text-gray-800 w-4 text-center">
+                        <span className="text-xs font-black text-white w-4 text-center">
                           {item.quantity}
                         </span>
                         <button onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="text-gray-400 hover:text-gray-700">
+                          className="text-[#f5efe2]/60 hover:text-white transition-colors">
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
-                      <span className="text-sm font-bold text-gray-800 w-12 text-right">
+                      <span className="text-sm font-bold text-[#f5efe2] w-12 text-right">
                         ₹{(item.price * item.quantity).toFixed(0)}
                       </span>
                     </div>
@@ -1392,34 +1400,34 @@ export default function CustomerMenu({
                 ))}
 
                 {/* Customer Details */}
-                <div className="bg-white rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)] space-y-3">
+                <div className="bg-[#181512] border border-white/[0.08] rounded-2xl p-4 shadow-sm space-y-3">
                   <div className="flex items-center gap-2">
                     <span className="text-base">👤</span>
-                    <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Your Details</p>
-                    <span className="text-[9px] bg-red-50 text-red-400 border border-red-100 font-bold px-1.5 py-0.5 rounded-full ml-auto">
+                    <p className="text-xs font-bold text-[#f5efe2] uppercase tracking-wider">Your Details</p>
+                    <span className="text-[9px] bg-red-500/10 text-red-400 border border-red-500/20 font-bold px-2 py-0.5 rounded-full ml-auto">
                       Required
                     </span>
                   </div>
 
                   {/* Name */}
                   <div className="relative">
-                    <label className="text-[10px] font-semibold text-gray-400 mb-1 block">Full Name *</label>
+                    <label className="text-[10px] font-semibold text-[#f5efe2]/60 mb-1 block">Full Name *</label>
                     <input
                       type="text"
                       value={customerName}
                       onChange={e => setCustomerName(e.target.value)}
                       placeholder="e.g. Rahul Sharma"
-                      className={`w-full bg-gray-50 border rounded-xl px-3 py-2.5 text-sm
-                        text-gray-800 placeholder-gray-300 focus:outline-none transition-all
-                        ${customerName.trim() ? "border-[#3D7A5A]/40" : "border-gray-200 focus:border-[#3D7A5A]"}`}
+                      className={`w-full bg-[#13110e] border rounded-xl px-3 py-2.5 text-sm
+                        text-[#f5efe2] placeholder-[#f5efe2]/20 focus:outline-none transition-all
+                        ${customerName.trim() ? "border-[#f0a040]/40" : "border-white/[0.08] focus:border-[#f0a040]"}`}
                     />
                   </div>
 
                   {/* Phone */}
                   <div>
-                    <label className="text-[10px] font-semibold text-gray-400 mb-1 block">Phone Number *</label>
+                    <label className="text-[10px] font-semibold text-[#f5efe2]/60 mb-1 block">Phone Number *</label>
                     <div className="flex gap-2">
-                      <span className="flex items-center px-3 bg-gray-100 border border-gray-200 rounded-xl text-xs font-semibold text-gray-500 flex-shrink-0">
+                      <span className="flex items-center px-3 bg-[#13110e] border border-white/[0.08] rounded-xl text-xs font-semibold text-[#f5efe2]/60 flex-shrink-0">
                         🇮🇳 +91
                       </span>
                       <input
@@ -1429,47 +1437,47 @@ export default function CustomerMenu({
                         value={customerPhone}
                         onChange={e => setCustomerPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                         placeholder="9876543210"
-                        className={`flex-1 bg-gray-50 border rounded-xl px-3 py-2.5 text-sm
-                          text-gray-800 placeholder-gray-300 focus:outline-none transition-all
-                          ${customerPhone.length === 10 ? "border-[#3D7A5A]/40" : "border-gray-200 focus:border-[#3D7A5A]"}`}
+                        className={`flex-1 bg-[#13110e] border rounded-xl px-3 py-2.5 text-sm
+                          text-[#f5efe2] placeholder-[#f5efe2]/20 focus:outline-none transition-all
+                          ${customerPhone.length === 10 ? "border-[#f0a040]/40" : "border-white/[0.08] focus:border-[#f0a040]"}`}
                       />
                     </div>
                   </div>
 
                   {/* Email (optional) */}
                   <div>
-                    <label className="text-[10px] font-semibold text-gray-400 mb-1 block">
-                      Email <span className="text-gray-300 font-normal">(optional — for receipt)</span>
+                    <label className="text-[10px] font-semibold text-[#f5efe2]/60 mb-1 block">
+                      Email <span className="text-[#f5efe2]/20 font-normal">(optional — for receipt)</span>
                     </label>
                     <input
                       type="email"
                       value={customerEmail}
                       onChange={e => setCustomerEmail(e.target.value)}
                       placeholder="rahul@example.com"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm
-                        text-gray-800 placeholder-gray-300 focus:outline-none focus:border-[#3D7A5A] transition-all"
+                      className="w-full bg-[#13110e] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm
+                        text-[#f5efe2] placeholder-[#f5efe2]/20 focus:outline-none focus:border-[#f0a040] transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Notes */}
-                <div className="bg-white rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-                  <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
+                <div className="bg-[#181512] border border-white/[0.08] rounded-2xl p-4 shadow-sm">
+                  <p className="text-xs font-bold text-[#f5efe2]/60 mb-2 uppercase tracking-wider">
                     📝 Kitchen Notes
                   </p>
                   <input
                     value={orderNote}
                     onChange={e => setOrderNote(e.target.value)}
                     placeholder="Any requests for the kitchen…"
-                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-xs
-                      text-gray-700 placeholder-gray-300 focus:outline-none focus:border-[#3D7A5A]"
+                    className="w-full bg-[#13110e] border border-white/[0.08] rounded-xl px-3 py-2 text-xs
+                      text-[#f5efe2] placeholder-[#f5efe2]/20 focus:outline-none focus:border-[#f0a040]"
                   />
                 </div>
               </div>
 
               {/* Payment Method Selector */}
-              <div className="px-5 pb-4 space-y-3">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">💳 Payment Method</p>
+              <div className="px-5 pb-4 bg-[#13110e] space-y-3 pt-2">
+                <p className="text-xs font-bold text-[#f5efe2]/60 uppercase tracking-wider">💳 Payment Method</p>
                 <div className="grid grid-cols-2 gap-3">
                   {/* Cash */}
                   <button
@@ -1477,16 +1485,15 @@ export default function CustomerMenu({
                     className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl
                       border-2 transition-all duration-200
                       ${paymentMethod === "CASH"
-                        ? "border-[#3D7A5A] bg-[#3D7A5A]/8 shadow-sm"
-                        : "border-gray-100 bg-white hover:border-gray-200"}`}
+                        ? "border-[#f0a040] bg-[#f0a040]/10 shadow-sm text-[#f0a040]"
+                        : "border-white/[0.08] bg-[#181512] hover:border-white/[0.12] text-[#f5efe2]/60"}`}
                   >
                     <span className="text-2xl">💵</span>
-                    <span className={`text-xs font-bold ${
-                      paymentMethod === "CASH" ? "text-[#3D7A5A]" : "text-gray-500"}`}>
+                    <span className="text-xs font-bold">
                       Pay at Counter
                     </span>
                     {paymentMethod === "CASH" && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#3D7A5A]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#f0a040]" />
                     )}
                   </button>
 
@@ -1496,25 +1503,25 @@ export default function CustomerMenu({
                     className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl
                       border-2 transition-all duration-200 relative overflow-hidden
                       ${paymentMethod === "ONLINE"
-                        ? "border-[#3D7A5A] bg-[#3D7A5A]/8 shadow-sm"
-                        : "border-gray-100 bg-white hover:border-gray-200"}`}
+                        ? "border-[#f0a040] bg-[#f0a040]/10 shadow-sm text-[#f0a040]"
+                        : "border-white/[0.08] bg-[#181512] hover:border-white/[0.12] text-[#f5efe2]/60"}`}
                   >
                     {/* Razorpay wordmark */}
                     <div className="flex items-center gap-1">
                       <span className="text-[15px] font-black tracking-tight"
-                        style={{ color: paymentMethod === "ONLINE" ? G : "#528FF0" }}>
+                        style={{ color: paymentMethod === "ONLINE" ? G : "#f5efe2/60" }}>
                         razor
                       </span>
-                      <span className="text-[15px] font-black tracking-tight text-gray-800">
+                      <span className="text-[15px] font-black tracking-tight text-[#f5efe2]">
                         pay
                       </span>
                     </div>
                     <span className={`text-[10px] font-semibold ${
-                      paymentMethod === "ONLINE" ? "text-[#3D7A5A]" : "text-gray-400"}`}>
+                      paymentMethod === "ONLINE" ? "text-[#f0a040]" : "text-[#f5efe2]/40"}`}>
                       UPI · Cards · Netbanking
                     </span>
                     {paymentMethod === "ONLINE" && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#3D7A5A]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#f0a040]" />
                     )}
                   </button>
                 </div>
@@ -1526,10 +1533,10 @@ export default function CustomerMenu({
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="bg-[#3D7A5A]/6 rounded-2xl p-3 flex items-start gap-3"
+                      className="bg-[#f0a040]/10 border border-[#f0a040]/20 rounded-2xl p-3 flex items-start gap-3"
                     >
                       <span className="text-lg mt-0.5">🔒</span>
-                      <p className="text-[11px] text-[#3D7A5A] font-semibold leading-relaxed">
+                      <p className="text-[11px] text-[#f0a040] font-semibold leading-relaxed">
                         Secure payment via Razorpay. Supports UPI, credit/debit cards, net banking &amp; wallets.
                       </p>
                     </motion.div>
@@ -1538,48 +1545,48 @@ export default function CustomerMenu({
               </div>
 
               {/* Bill breakdown + CTA */}
-              <div className="bg-white px-5 pt-4 pb-6 border-t border-gray-100 space-y-3">
-                <div className="space-y-1.5 text-xs text-gray-500">
+              <div className="bg-[#13110e] px-5 pt-4 pb-6 border-t border-white/[0.08] space-y-3">
+                <div className="space-y-1.5 text-xs text-[#f5efe2]/60">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span className="text-gray-800 font-semibold">₹{subtotal.toFixed(0)}</span>
+                    <span className="text-[#f5efe2] font-semibold">₹{subtotal.toFixed(0)}</span>
                   </div>
                   {restaurant.taxPercent > 0 && (
                     <div className="flex justify-between">
                       <span>GST ({restaurant.taxPercent}%)</span>
-                      <span className="text-gray-800 font-semibold">₹{tax.toFixed(0)}</span>
+                      <span className="text-[#f5efe2] font-semibold">₹{tax.toFixed(0)}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-extrabold text-sm pt-2
-                    border-t border-gray-100">
-                    <span className="text-gray-900">Total</span>
+                    border-t border-white/[0.08]">
+                    <span className="text-white">Total</span>
                     <span style={{ color: G }}>₹{grandTotal.toFixed(0)}</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setShowCartDrawer(false)}
-                    className="py-3.5 rounded-2xl border border-gray-200 text-sm font-semibold
-                      text-gray-500 hover:bg-gray-50 transition-all">
+                    className="py-3.5 rounded-2xl bg-white/5 border border-white/[0.08] text-sm font-semibold
+                      text-[#f5efe2] hover:bg-white/10 transition-all">
                     Keep Ordering
                   </button>
                   <button
                     onClick={handlePlaceOrder}
                     disabled={isPlacing || !customerName.trim() || customerPhone.length < 10}
-                    className="py-3.5 rounded-2xl text-white text-sm font-bold shadow-md
+                    className="py-3.5 rounded-2xl text-[#0b0a08] text-sm font-black tracking-wider uppercase shadow-md
                       active:scale-95 transition-all disabled:opacity-40 flex items-center
-                      justify-center gap-2"
+                      justify-center gap-2 hover:brightness-110"
                     style={{ background: G }}
                   >
                     {isPlacing ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-white/40 border-t-white
+                        <span className="w-4 h-4 border-2 border-[#0b0a08]/40 border-t-[#0b0a08]
                           rounded-full animate-spin" />
                         Placing…
                       </>
                     ) : !customerName.trim() || customerPhone.length < 10 ? (
-                      <>Fill your details above ↑</>
+                      <span className="text-[10px] tracking-normal font-semibold normal-case text-[#0b0a08]/85">Fill details above ↑</span>
                     ) : (
-                      <>{paymentMethod === "CASH" ? "💵 Place Order" : "🔒 Pay with Razorpay"}</>
+                      <>{paymentMethod === "CASH" ? "💵 Place Order" : "🔒 Pay now"}</>
                     )}
                   </button>
                 </div>
@@ -1593,35 +1600,35 @@ export default function CustomerMenu({
       <AnimatePresence>
         {showPairingSheet && lastAddedItem && pairingItems.length > 0 && (
           <div className="fixed inset-0 z-50 flex items-end" onClick={() => setShowPairingSheet(false)}>
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="relative w-full bg-white rounded-t-[32px] max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
+              className="relative w-full bg-[#13110e] border-t border-white/[0.08] rounded-t-[32px] max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               {/* Decorative handle bar */}
               <div className="flex justify-center pt-3 pb-1">
-                <div className="w-12 h-1.5 rounded-full bg-gray-200" />
+                <div className="w-12 h-1.5 rounded-full bg-white/10" />
               </div>
 
               {/* Header section with cute gamified sparks */}
-              <div className="px-6 pt-3 pb-4 text-center border-b border-gray-100 relative bg-gradient-to-b from-[#3D7A5A]/5 to-transparent">
+              <div className="px-6 pt-3 pb-4 text-center border-b border-white/[0.08] relative bg-gradient-to-b from-[#f0a040]/5 to-transparent">
                 <div className="absolute top-2 right-6 text-xl animate-bounce">✨</div>
                 <div className="absolute top-4 left-6 text-lg animate-pulse">🥤</div>
                 
-                <h3 className="text-lg font-black text-gray-900 tracking-tight flex items-center justify-center gap-1.5">
+                <h3 className="text-lg font-black text-white tracking-tight flex items-center justify-center gap-1.5">
                   Chef's Perfect Pairing! 🍳
                 </h3>
-                <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto leading-relaxed">
-                  Diners who ordered <strong className="text-[#3D7A5A]">{lastAddedItem.name}</strong> loved pairing it with these handpicked selections!
+                <p className="text-xs text-[#f5efe2]/60 mt-1 max-w-xs mx-auto leading-relaxed">
+                  Diners who ordered <strong className="text-[#f0a040]">{lastAddedItem.name}</strong> loved pairing it with these handpicked selections!
                 </p>
               </div>
 
               {/* Upsell choices */}
-              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4 bg-[#0b0a08]">
                 <div className="space-y-3">
                   {pairingItems.map(item => {
                     const alreadyInCart = qtyInCart(item.id) > 0;
@@ -1630,12 +1637,12 @@ export default function CustomerMenu({
                       <motion.div
                         key={item.id}
                         whileHover={{ y: -2 }}
-                        className={`flex items-center gap-4 p-3.5 bg-[#FAFAFA] rounded-[24px] border-2 transition-all duration-200 ${
-                          alreadyInCart ? "border-[#3D7A5A]/30 bg-[#3D7A5A]/2" : "border-gray-100"
+                        className={`flex items-center gap-4 p-3.5 bg-[#181512] rounded-[24px] border-2 transition-all duration-200 ${
+                          alreadyInCart ? "border-[#f0a040]/30 bg-[#f0a040]/5" : "border-white/[0.08]"
                         }`}
                       >
                         {/* Circular Image with nice fallback emoji */}
-                        <div className="w-16 h-16 rounded-full overflow-hidden bg-white border-2 border-white shadow-md flex-shrink-0 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full overflow-hidden bg-[#111111] border-2 border-white/[0.08] shadow-md flex-shrink-0 flex items-center justify-center">
                           {item.image ? (
                             <Image src={item.image} alt={item.name}
                               width={64} height={64} quality={80}
@@ -1649,24 +1656,24 @@ export default function CustomerMenu({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <VegBadge isVeg={item.isVeg} />
-                            <span className="text-[9px] font-extrabold text-[#3D7A5A] bg-[#3D7A5A]/10 px-1.5 py-0.5 rounded">
+                            <span className="text-[9px] font-extrabold text-[#f0a040] bg-[#f0a040]/10 px-1.5 py-0.5 rounded border border-[#f0a040]/20">
                               RECOMMENDED
                             </span>
                           </div>
-                          <h4 className="text-xs font-bold text-gray-900 truncate">{item.name}</h4>
+                          <h4 className="text-xs font-bold text-white truncate">{item.name}</h4>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-xs font-extrabold" style={{ color: G }}>
                               ₹{item.price}
                             </span>
-                            <span className="text-[10px] text-gray-400">· {calories} kcal</span>
+                            <span className="text-[10px] text-[#f5efe2]/60">· {calories} kcal</span>
                           </div>
                         </div>
 
                         {/* Fast Quick Add Button with checkmark states */}
                         <div className="flex-shrink-0">
                           {alreadyInCart ? (
-                            <div className="flex items-center gap-1.5 bg-[#3D7A5A] text-white rounded-full px-3.5 py-1.5 text-xs font-bold shadow-sm">
-                              <Check className="w-3.5 h-3.5 stroke-[3]" />
+                            <div className="flex items-center gap-1.5 bg-[#f0a040] text-[#0b0a08] rounded-full px-3.5 py-1.5 text-xs font-black shadow-sm">
+                              <Check className="w-3.5 h-3.5 stroke-[3] text-[#0b0a08]" />
                               <span>Added</span>
                             </div>
                           ) : (
@@ -1674,9 +1681,9 @@ export default function CustomerMenu({
                               onClick={() => {
                                 handleQuickAdd(item);
                               }}
-                              className="flex items-center gap-1 bg-gray-900 text-white rounded-full px-3.5 py-1.5 text-xs font-bold hover:bg-gray-800 transition-all active:scale-95 shadow-md"
+                              className="flex items-center gap-1 bg-[#f5efe2] text-[#0b0a08] rounded-full px-3.5 py-1.5 text-xs font-black hover:bg-white transition-all active:scale-95 shadow-md"
                             >
-                              <Plus className="w-3.5 h-3.5" />
+                              <Plus className="w-3.5 h-3.5 text-[#0b0a08]" />
                               <span>Add</span>
                             </button>
                           )}
@@ -1688,11 +1695,11 @@ export default function CustomerMenu({
               </div>
 
               {/* Action Buttons: Dismiss & Checkout */}
-              <div className="bg-white border-t border-gray-100 p-5 space-y-3 flex-shrink-0">
+              <div className="bg-[#13110e] border-t border-white/[0.08] p-5 space-y-3 flex-shrink-0">
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => setShowPairingSheet(false)}
-                    className="py-3.5 rounded-2xl border border-gray-200 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all"
+                    className="py-3.5 rounded-2xl bg-white/5 border border-white/[0.08] text-xs font-bold text-[#f5efe2] hover:bg-white/10 transition-all"
                   >
                     No thanks, close
                   </button>
@@ -1701,10 +1708,10 @@ export default function CustomerMenu({
                       setShowPairingSheet(false);
                       setShowCartDrawer(true);
                     }}
-                    className="py-3.5 rounded-2xl text-white text-xs font-bold shadow-md hover:opacity-95 transition-all flex items-center justify-center gap-1.5"
+                    className="py-3.5 rounded-2xl text-[#0b0a08] text-xs font-black shadow-md hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
                     style={{ background: G }}
                   >
-                    <ShoppingBag className="w-4 h-4" />
+                    <ShoppingBag className="w-4 h-4 text-[#0b0a08]" />
                     <span>View Cart &amp; Checkout</span>
                   </button>
                 </div>
