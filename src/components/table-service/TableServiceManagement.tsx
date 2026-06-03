@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, User, Clock, CheckCircle, Table as TableIcon, Plus, Check } from "lucide-react";
+import { MapPin, User, Clock, CheckCircle, Table as TableIcon, Plus, Check, BellRing } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +28,13 @@ interface TableService {
   table: Table;
   server?: Staff;
   createdAt: Date;
+}
+
+interface ServiceCall {
+  type: string;
+  message?: string | null;
+  status: "OPEN" | "RESOLVED";
+  requestedAt: string;
 }
 
 export default function TableServiceManagement({ restaurantId, locationId, restaurant }: { restaurantId: string; locationId: string; restaurant?: any }) {
@@ -155,10 +162,31 @@ export default function TableServiceManagement({ restaurantId, locationId, resta
     return elapsed < 60 ? `${elapsed}m` : `${Math.floor(elapsed / 60)}h ${elapsed % 60}m`;
   };
 
+  const getServiceCall = (notes?: string): ServiceCall | null => {
+    if (!notes) return null;
+    try {
+      const parsed = JSON.parse(notes);
+      return parsed.serviceCall?.status === "OPEN" ? parsed.serviceCall : null;
+    } catch {
+      return null;
+    }
+  };
+
+  async function resolveServiceCall(id: string) {
+    try {
+      await axios.patch(`/api/table-service/${id}`, { resolveServiceCall: true });
+      toast.success("Service call resolved");
+      fetchTableServices();
+    } catch {
+      toast.error("Failed to resolve service call");
+    }
+  }
+
   const filteredServices = tableServices.filter((s) => {
     if (filter === "all") return true;
     return s.status === filter;
   });
+  const activeServiceCalls = tableServices.filter((service) => getServiceCall(service.notes));
 
   if (loading) {
     return (
@@ -318,6 +346,7 @@ export default function TableServiceManagement({ restaurantId, locationId, resta
       </section>
 
       {/* Filter Tabs */}
+      <div className="flex flex-wrap items-center gap-3">
       <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-lg w-fit">
         {["all", "AVAILABLE", "OCCUPIED", "RESERVED", "DIRTY"].map((f) => (
           <button
@@ -333,6 +362,48 @@ export default function TableServiceManagement({ restaurantId, locationId, resta
           </button>
         ))}
       </div>
+        {activeServiceCalls.length > 0 && (
+          <div className="flex items-center gap-2 rounded-lg border border-[#f0a040]/25 bg-[#f0a040]/10 px-3 py-2 text-xs font-bold text-[#f0a040]">
+            <BellRing className="size-4" />
+            {activeServiceCalls.length} waiter call{activeServiceCalls.length === 1 ? "" : "s"} open
+          </div>
+        )}
+      </div>
+
+      {activeServiceCalls.length > 0 && (
+        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {activeServiceCalls.map((service) => {
+            const call = getServiceCall(service.notes);
+            if (!call) return null;
+
+            return (
+              <div key={service.id} className="rounded-xl border border-[#f0a040]/25 bg-[#f0a040]/10 p-4 flex items-start justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <BellRing className="size-4 text-[#f0a040]" />
+                    <p className="text-xs font-black text-[#f5efe2]">{service.table.name}</p>
+                    <span className="rounded-full bg-[#0b0a08] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#f0a040]">
+                      {call.type.replace("_", " ")}
+                    </span>
+                  </div>
+                  {call.message && (
+                    <p className="mt-2 text-xs text-[#f5efe2]/60">{call.message}</p>
+                  )}
+                  <p className="mt-1 text-[10px] text-[#f5efe2]/35 font-mono-dashboard">
+                    Requested {getElapsedTime(new Date(call.requestedAt))} ago
+                  </p>
+                </div>
+                <button
+                  onClick={() => resolveServiceCall(service.id)}
+                  className="rounded-lg bg-[#52d27a] px-3 py-2 text-[10px] font-black uppercase tracking-wider text-[#0b0a08]"
+                >
+                  Resolve
+                </button>
+              </div>
+            );
+          })}
+        </section>
+      )}
 
       {/* Tables Layout Display */}
       {viewMode === "floorplan" ? (
@@ -369,6 +440,29 @@ export default function TableServiceManagement({ restaurantId, locationId, resta
                     </span>
                   </div>
                 </div>
+
+                {/* Server Assignment */}
+                {getServiceCall(service.notes) && (
+                  <div className="rounded-xl border border-[#f0a040]/25 bg-[#f0a040]/10 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 text-[#f0a040]">
+                        <BellRing className="size-4" />
+                        <span className="text-[10px] font-black uppercase tracking-wider">
+                          {getServiceCall(service.notes)?.type.replace("_", " ")}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => resolveServiceCall(service.id)}
+                        className="text-[10px] font-black uppercase text-[#52d27a]"
+                      >
+                        Resolve
+                      </button>
+                    </div>
+                    {getServiceCall(service.notes)?.message && (
+                      <p className="mt-2 text-[11px] text-[#f5efe2]/60">{getServiceCall(service.notes)?.message}</p>
+                    )}
+                  </div>
+                )}
 
                 {/* Server Assignment */}
                 <div className="pt-2 border-t border-[rgba(255,255,255,0.04)]">

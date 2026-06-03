@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { formatDistanceToNow, format } from "date-fns";
-import { Search, Calendar, Download, Eye, Filter, ChevronDown, ArrowUpDown, ShoppingCart } from "lucide-react";
+import { Search, Download, Eye, ChevronDown, ArrowUpDown, ShoppingCart, Edit3, History, Split, Save } from "lucide-react";
 import toast from "react-hot-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,7 @@ type BoardOrder = {
   taxAmount: number;
   customerName: string | null;
   customerPhone: string | null;
+  specialNote?: string | null;
   createdAt: string;
   table: {
     name: string;
@@ -55,6 +56,10 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
   const [sortBy, setSortBy] = useState<"createdAt" | "totalAmount">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [selectedOrder, setSelectedOrder] = useState<BoardOrder | null>(null);
+  const [isEditingOrder, setIsEditingOrder] = useState(false);
+  const [editDraft, setEditDraft] = useState<BoardOrder | null>(null);
+  const [splitGuests, setSplitGuests] = useState(2);
+  const [editHistory, setEditHistory] = useState<Array<{ id: string; details: string; createdAt: string }>>([]);
   const queryClient = useQueryClient();
 
   const { data: ordersData, isLoading } = useQuery<BoardOrder[]>({
@@ -231,6 +236,49 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
     link.click();
     URL.revokeObjectURL(url);
     toast.success("CSV report exported!");
+  };
+
+  useEffect(() => {
+    if (!selectedOrder) {
+      setEditDraft(null);
+      setEditHistory([]);
+      setIsEditingOrder(false);
+      return;
+    }
+
+    setEditDraft(JSON.parse(JSON.stringify(selectedOrder)));
+    axios
+      .get(`/api/orders/${selectedOrder.id}/history`)
+      .then(({ data }) => setEditHistory(data))
+      .catch(() => setEditHistory([]));
+  }, [selectedOrder]);
+
+  const splitAmount = selectedOrder ? selectedOrder.totalAmount / Math.max(1, splitGuests) : 0;
+
+  const saveOrderEdits = async () => {
+    if (!editDraft || !selectedOrder) return;
+
+    try {
+      const { data } = await axios.patch(`/api/orders/${selectedOrder.id}`, {
+        customerName: editDraft.customerName,
+        customerPhone: editDraft.customerPhone,
+        specialNote: editDraft.specialNote,
+        status: editDraft.status,
+        items: editDraft.items.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      });
+
+      setOrders((prev) => prev.map((order) => (order.id === data.id ? data : order)));
+      setSelectedOrder(data);
+      setIsEditingOrder(false);
+      queryClient.invalidateQueries({ queryKey: ["orders", restaurantId] });
+      toast.success("Order updated and logged");
+    } catch {
+      toast.error("Failed to update order");
+    }
   };
 
   if (minLoading) {
@@ -442,6 +490,28 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                     {selectedOrder.orderNumber}
                   </h2>
                 </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsEditingOrder((value) => !value)}
+                    className={`h-8 px-3 rounded-lg border text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-colors ${
+                      isEditingOrder
+                        ? "bg-[#f0a040] border-[#f0a040] text-[#0b0a08]"
+                        : "bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.08)] text-[#f5efe2]/70 hover:text-white"
+                    }`}
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
+                  {isEditingOrder && (
+                    <button
+                      onClick={saveOrderEdits}
+                      className="h-8 px-3 rounded-lg bg-[#52d27a] text-[#0b0a08] text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      Save
+                    </button>
+                  )}
+                </div>
                 <button
                   onClick={() => setSelectedOrder(null)}
                   className="w-8 h-8 rounded-lg bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.08)] text-[#f5efe2]/60 hover:text-white flex items-center justify-center"
@@ -477,6 +547,79 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                     </p>
                   </div>
                 </div>
+
+                {isEditingOrder && editDraft && (
+                  <div className="rounded-xl border border-[#f0a040]/20 bg-[#f0a040]/5 p-4 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Edit3 className="w-4 h-4 text-[#f0a040]" />
+                      <p className="text-[10px] font-mono-dashboard uppercase tracking-widest text-[#f0a040]">Order edit mode</p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <input
+                        value={editDraft.customerName || ""}
+                        onChange={(event) => setEditDraft({ ...editDraft, customerName: event.target.value })}
+                        placeholder="Customer name"
+                        className="rounded-lg border border-white/[0.08] bg-[#0b0a08] px-3 py-2 text-xs text-[#f5efe2] outline-none focus:border-[#f0a040]"
+                      />
+                      <input
+                        value={editDraft.customerPhone || ""}
+                        onChange={(event) => setEditDraft({ ...editDraft, customerPhone: event.target.value })}
+                        placeholder="Customer phone"
+                        className="rounded-lg border border-white/[0.08] bg-[#0b0a08] px-3 py-2 text-xs text-[#f5efe2] outline-none focus:border-[#f0a040]"
+                      />
+                      <select
+                        value={editDraft.status}
+                        onChange={(event) => setEditDraft({ ...editDraft, status: event.target.value as BoardStatus })}
+                        className="rounded-lg border border-white/[0.08] bg-[#0b0a08] px-3 py-2 text-xs text-[#f5efe2] outline-none focus:border-[#f0a040]"
+                      >
+                        {["NEW", "PREPARING", "READY", "DONE", "CANCELLED"].map((status) => (
+                          <option key={status} value={status}>{status}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <textarea
+                      value={editDraft.specialNote || ""}
+                      onChange={(event) => setEditDraft({ ...editDraft, specialNote: event.target.value })}
+                      placeholder="Special note"
+                      className="w-full min-h-[72px] rounded-lg border border-white/[0.08] bg-[#0b0a08] px-3 py-2 text-xs text-[#f5efe2] outline-none focus:border-[#f0a040]"
+                    />
+                    <div className="space-y-2">
+                      {editDraft.items.map((item) => (
+                        <div key={item.id} className="grid grid-cols-[1fr_80px_96px] items-center gap-2 rounded-lg border border-white/[0.06] bg-[#0b0a08] p-2">
+                          <span className="text-xs font-semibold text-[#f5efe2] truncate">{item.menuItem.name}</span>
+                          <input
+                            type="number"
+                            min={0}
+                            value={item.quantity}
+                            onChange={(event) => setEditDraft({
+                              ...editDraft,
+                              items: editDraft.items.map((draftItem) =>
+                                draftItem.id === item.id
+                                  ? { ...draftItem, quantity: Number(event.target.value) || 0 }
+                                  : draftItem
+                              ),
+                            })}
+                            className="rounded-lg border border-white/[0.08] bg-[#070707] px-2 py-1.5 text-right text-xs text-[#f5efe2] outline-none focus:border-[#f0a040]"
+                          />
+                          <input
+                            type="number"
+                            min={0}
+                            value={item.price}
+                            onChange={(event) => setEditDraft({
+                              ...editDraft,
+                              items: editDraft.items.map((draftItem) =>
+                                draftItem.id === item.id
+                                  ? { ...draftItem, price: Number(event.target.value) || 0 }
+                                  : draftItem
+                              ),
+                            })}
+                            className="rounded-lg border border-white/[0.08] bg-[#070707] px-2 py-1.5 text-right text-xs text-[#f5efe2] outline-none focus:border-[#f0a040]"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <p className="text-[9px] font-mono-dashboard uppercase tracking-widest text-[#f5efe2]/40 mb-2">Itemized checkout</p>
@@ -518,6 +661,53 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                     <p className="font-mono-dashboard text-lg text-[#f0a040]">
                       ₹{selectedOrder.totalAmount.toFixed(0)}
                     </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="border border-[rgba(255,255,255,0.08)] rounded-xl p-4 bg-[#070707]">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Split className="w-4 h-4 text-[#f0a040]" />
+                      <p className="text-[9px] font-mono-dashboard uppercase tracking-widest text-[#f5efe2]/40">Bill splitting</p>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <label className="text-xs text-[#f5efe2]/55">Guests</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={splitGuests}
+                        onChange={(event) => setSplitGuests(Math.max(1, Number(event.target.value) || 1))}
+                        className="w-20 rounded-lg border border-white/[0.08] bg-[#0b0a08] px-2 py-1.5 text-right text-xs text-[#f5efe2] outline-none focus:border-[#f0a040]"
+                      />
+                    </div>
+                    <div className="mt-3 flex justify-between border-t border-white/[0.08] pt-3">
+                      <span className="text-xs text-[#f5efe2]/55">Equal split</span>
+                      <span className="font-mono-dashboard font-black text-[#f0a040]">INR {splitAmount.toFixed(0)} each</span>
+                    </div>
+                  </div>
+
+                  <div className="border border-[rgba(255,255,255,0.08)] rounded-xl p-4 bg-[#070707]">
+                    <div className="flex items-center gap-2 mb-3">
+                      <History className="w-4 h-4 text-[#f0a040]" />
+                      <p className="text-[9px] font-mono-dashboard uppercase tracking-widest text-[#f5efe2]/40">Edit history</p>
+                    </div>
+                    {editHistory.length === 0 ? (
+                      <p className="text-xs text-[#f5efe2]/40">No edits logged for this order yet.</p>
+                    ) : (
+                      <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
+                        {editHistory.map((log) => (
+                          <div key={log.id} className="rounded-lg border border-white/[0.06] bg-[#0b0a08] p-2">
+                            <p className="text-[10px] text-[#f5efe2]/45">
+                              {format(new Date(log.createdAt), "MMM dd, HH:mm")}
+                            </p>
+                            <p className="mt-1 text-[10px] text-[#f5efe2]/65 line-clamp-2">
+                              {log.details}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

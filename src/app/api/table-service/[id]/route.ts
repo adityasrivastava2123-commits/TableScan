@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const body = await request.json();
-    const { status, serverId, notes } = body;
+    const { status, serverId, notes, resolveServiceCall } = body;
 
     const updateData: any = {};
     if (status) {
@@ -22,7 +22,10 @@ export async function PATCH(
       }
     }
     if (serverId !== undefined) updateData.serverId = serverId;
-    if (notes) updateData.notes = notes;
+    if (notes !== undefined) updateData.notes = notes;
+    if (resolveServiceCall) {
+      updateData.notes = null;
+    }
 
     const tableService = await prisma.tableService.update({
       where: { id: params.id },

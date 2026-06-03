@@ -55,6 +55,7 @@ export async function GET(
         payment: {
           select: {
             status: true,
+            method: true,
           },
         },
       },
@@ -73,4 +74,3 @@ export async function GET(
     );
   }
 }
-

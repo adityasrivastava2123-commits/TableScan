@@ -25,6 +25,7 @@ import {
   Brain,
   MessageSquare,
   Sparkles,
+  PanelsTopLeft,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import type { Restaurant } from "@prisma/client";
@@ -45,6 +46,7 @@ interface SidebarItem {
 
 const sidebarItems: SidebarItem[] = [
   { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard className="size-4" />, section: "overview" },
+  { label: "Role Views", path: "/role-dashboards", icon: <PanelsTopLeft className="size-4" />, section: "overview" },
   { label: "Reports", path: "/reports", icon: <BarChart2 className="size-4" />, section: "overview" },
   { label: "AI Forecast", path: "/forecasting", icon: <Brain className="size-4" />, section: "overview" },
   { label: "History", path: "/history", icon: <Clock className="size-4" />, section: "overview" },

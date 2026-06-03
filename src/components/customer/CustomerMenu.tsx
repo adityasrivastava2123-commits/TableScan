@@ -265,6 +265,25 @@ export default function CustomerMenu({
     }
   };
 
+  const requestWaiter = async (requestType: string, message: string) => {
+    try {
+      await axios.put("/api/table-service", {
+        tableId: table.id,
+        restaurantId: restaurant.id,
+        requestType,
+        message,
+      });
+      toast.success("Request sent to the floor team.", {
+        style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" },
+        iconTheme: { primary: "#f0a040", secondary: "#13110e" },
+      });
+    } catch {
+      toast.error("Could not send request. Please try chat instead.", {
+        style: { background: "#13110e", color: "#f5efe2", border: "1px solid rgba(255,255,255,0.08)" },
+      });
+    }
+  };
+
   // Poll order status
   useEffect(() => {
     const selectedOrder = activeOrders.find(o => o.id === selectedOrderId) || placedOrder;
@@ -638,6 +657,13 @@ export default function CustomerMenu({
             >
               <MessageSquare className="w-4 h-4" />
             </button>
+            <button
+              onClick={() => requestWaiter("WAITER", "Please send a waiter to the table.")}
+              className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#f0a040]/10 border border-[#f0a040]/20 text-[#f0a040] hover:bg-[#f0a040]/20 transition-all"
+              title="Call Waiter"
+            >
+              <BellRing className="w-4 h-4" />
+            </button>
             {totalItems > 0 && (
               <button
                 onClick={() => setShowCartDrawer(true)}
@@ -666,6 +692,23 @@ export default function CustomerMenu({
           <span className="text-xs font-bold px-3 py-1 rounded-full text-[#0b0a08] shadow-sm" style={{ background: G }}>
             Table #{table.name}
           </span>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 mb-3">
+          {[
+            ["WATER", "Water", "Please bring water to the table."],
+            ["BILL", "Bill", "Please bring the bill."],
+            ["CLEAN_TABLE", "Clean", "Please help clean the table."],
+            ["ASSISTANCE", "Help", "Please send assistance to the table."],
+          ].map(([type, label, message]) => (
+            <button
+              key={type}
+              onClick={() => requestWaiter(type, message)}
+              className="rounded-2xl border border-white/[0.08] bg-[#13110e] px-2 py-2 text-[10px] font-black uppercase tracking-wider text-[#f5efe2]/65 hover:border-[#f0a040]/35 hover:text-[#f0a040] transition-all"
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* Search field */}

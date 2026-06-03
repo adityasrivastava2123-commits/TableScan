@@ -329,4 +329,13 @@
   
   html:not(.dark) select option, .light select option { background-color: var(--bg1) !important; color: var(--text) !important; }
   html:not(.dark) input::placeholder, .light input::placeholder { color: var(--text3) !important; }
+  
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
 }
