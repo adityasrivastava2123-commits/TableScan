@@ -155,24 +155,24 @@ export default function DeveloperConsole() {
   }
 
   return (
-    <div className="p-7 space-y-6 max-w-7xl mx-auto text-[#f0ece4] min-h-screen">
+    <div className="p-7 space-y-6 max-w-7xl mx-auto text-[#f5efe2] min-h-screen">
       
       {/* Premium Admin Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(255,255,255,0.06)] pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(255,255,255,0.08)] pb-6">
         <div className="flex items-center gap-4">
-          <div className="w-[50px] h-[50px] rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-violet-500/10 border border-violet-500/20">
-            <ShieldAlert className="size-6 text-white animate-pulse" />
+          <div className="w-[50px] h-[50px] rounded-2xl bg-gradient-to-br from-[#f0a040] to-[#e85a2a] flex items-center justify-center shadow-lg shadow-[#f0a040]/10 border border-[#f0a040]/20">
+            <ShieldAlert className="size-6 text-[#0b0a08] animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-[#f0ece4] to-[#a8a29e] bg-clip-text text-transparent">
-                Developer Control Center
+              <h1 className="text-2xl font-bold tracking-tight text-[#f5efe2]">
+                Developer <em className="font-editorial italic font-normal text-[#f0a040]">Console</em>
               </h1>
-              <span className="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20 text-[10px] font-bold flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-full bg-[#f0a040]/10 text-[#f0a040] border border-[#f0a040]/20 text-[10px] font-bold flex items-center gap-1">
                 <Cpu className="size-2.5" /> SUPERADMIN
               </span>
             </div>
-            <p className="text-[12px] text-[#9a9488] mt-0.5">
+            <p className="text-[12px] text-[#f5efe2]/60 mt-0.5">
               Platform-wide tenant administration, live database metrics, and developer override controls
             </p>
           </div>
@@ -182,9 +182,9 @@ export default function DeveloperConsole() {
           <button
             onClick={() => loadData(true)}
             disabled={refreshing}
-            className="px-4 py-2.5 rounded-xl bg-[#161616] border border-[rgba(255,255,255,0.08)] hover:bg-[#222] transition-all flex items-center gap-2 text-xs font-semibold"
+            className="px-4 py-2.5 rounded-xl bg-white/[0.02] border border-[rgba(255,255,255,0.08)] hover:bg-white/[0.04] hover:border-[#f0a040] transition-all flex items-center gap-2 text-xs font-semibold"
           >
-            <RefreshCw className={`size-3.5 text-violet-400 ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`size-3.5 text-[#f0a040] ${refreshing ? "animate-spin" : ""}`} />
             Refresh Telemetry
           </button>
         </div>
@@ -195,42 +195,42 @@ export default function DeveloperConsole() {
         {[
           { 
             title: "Total SaaS Volume", 
-            val: `$${(stats?.volume || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, 
+            val: `₹${(stats?.volume || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, 
             desc: "Lifetime order revenue", 
-            color: "from-violet-500/10 to-indigo-500/10 border-violet-500/20 text-violet-400" 
+            color: "from-[#f0a040]/10 to-[#e85a2a]/10 border-[#f0a040]/20 text-[#f0a040]" 
           },
           { 
             title: "Business Tenants", 
             val: stats?.restaurants || 0, 
             desc: "Registered restaurants", 
-            color: "from-blue-500/10 to-cyan-500/10 border-blue-500/20 text-blue-400" 
+            color: "from-[#f0a040]/10 to-[#e85a2a]/10 border-[#f0a040]/20 text-[#f0a040]" 
           },
           { 
             title: "Global Accounts", 
             val: stats?.users || 0, 
             desc: "Owners and staff users", 
-            color: "from-emerald-500/10 to-teal-500/10 border-emerald-500/20 text-emerald-400" 
+            color: "from-[#f0a040]/10 to-[#e85a2a]/10 border-[#f0a040]/20 text-[#f0a040]" 
           },
           { 
             title: "Lifetime Orders", 
             val: stats?.orders || 0, 
             desc: "Executed table requests", 
-            color: "from-amber-500/10 to-orange-500/10 border-orange-500/20 text-amber-400" 
+            color: "from-[#f0a040]/10 to-[#e85a2a]/10 border-[#f0a040]/20 text-[#f0a040]" 
           },
           { 
             title: "Global Catalog Items", 
             val: stats?.menuItems || 0, 
             desc: "Food & drink menu list", 
-            color: "from-rose-500/10 to-pink-500/10 border-rose-500/20 text-rose-400" 
+            color: "from-[#f0a040]/10 to-[#e85a2a]/10 border-[#f0a040]/20 text-[#f0a040]" 
           }
         ].map((item, idx) => (
-          <div key={idx} className="bg-[#111] border border-[rgba(255,255,255,0.04)] rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+          <div key={idx} className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] hover:border-[#f0a040]/30 transition-all duration-300 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
             <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${item.color} blur-2xl opacity-20`} />
             <div>
-              <span className="text-[10px] font-semibold text-[#6f695f] uppercase tracking-wider">{item.title}</span>
-              <div className="text-2xl font-extrabold tracking-tight text-white mt-1.5">{item.val}</div>
+              <span className="text-[10px] font-semibold text-[#f5efe2]/40 uppercase tracking-wider">{item.title}</span>
+              <div className="text-2xl font-extrabold tracking-tight text-[#f5efe2] mt-1.5 font-mono-dashboard">{item.val}</div>
             </div>
-            <div className="mt-2 text-[10px] text-[#9a9488]">{item.desc}</div>
+            <div className="mt-2 text-[10px] text-[#f5efe2]/60">{item.desc}</div>
           </div>
         ))}
       </div>
@@ -239,24 +239,24 @@ export default function DeveloperConsole() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Left Side: Tenant Board & Plan Management */}
-        <div className="lg:col-span-2 bg-[#0c0c0c] border border-[rgba(255,255,255,0.05)] rounded-2xl p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.04)] pb-4">
+        <div className="lg:col-span-2 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] pb-4">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Hotel className="size-4 text-violet-400" />
+              <h3 className="text-sm font-bold text-[#f5efe2] flex items-center gap-2">
+                <Hotel className="size-4 text-[#f0a040]" />
                 Active SaaS Business Tenants
               </h3>
-              <p className="text-[10px] text-[#6f695f] mt-0.5">Manage subscription limits and override plans</p>
+              <p className="text-[10px] text-[#f5efe2]/40 mt-0.5">Manage subscription limits and override plans</p>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-violet-500/10 text-violet-400 text-[10px] font-bold">
-              {restaurants.length} business portals
+            <span className="px-2.5 py-0.5 rounded-full bg-[#f0a040]/10 text-[#f0a040] text-[10px] font-bold font-mono-dashboard">
+              {restaurants.length} portals
             </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="text-[#6f695f] uppercase font-bold border-b border-[rgba(255,255,255,0.04)] text-[10px]">
+                <tr className="text-[#f5efe2]/40 border-b border-[rgba(255,255,255,0.08)] font-bold uppercase text-[10px]">
                   <th className="pb-3 pr-2">Restaurant Portal</th>
                   <th className="pb-3 pr-2">Developer Owner</th>
                   <th className="pb-3 pr-2 text-center">Locations</th>
@@ -264,34 +264,34 @@ export default function DeveloperConsole() {
                   <th className="pb-3 text-center">Subscription Plan</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(255,255,255,0.03)]">
+              <tbody className="divide-y divide-[rgba(255,255,255,0.05)]">
                 {restaurants.map(r => (
-                  <tr key={r.id} className="hover:bg-[#111]/30 transition-colors">
+                  <tr key={r.id} className="hover:bg-white/[0.01] transition-colors">
                     <td className="py-3.5 pr-2">
-                      <div className="font-bold text-white leading-tight">{r.name}</div>
-                      <div className="text-[10px] text-[#6f695f] font-mono mt-0.5">slug: {r.slug}</div>
+                      <div className="font-bold text-[#f5efe2] leading-tight">{r.name}</div>
+                      <div className="text-[10px] text-[#f5efe2]/40 font-mono-dashboard mt-0.5">slug: {r.slug}</div>
                     </td>
                     <td className="py-3.5 pr-2">
-                      <div className="font-medium text-[#f0ece4]">{r.ownerName}</div>
-                      <div className="text-[10px] text-[#6f695f]">{r.ownerEmail}</div>
+                      <div className="font-medium text-[#f5efe2]">{r.ownerName}</div>
+                      <div className="text-[10px] text-[#f5efe2]/40">{r.ownerEmail}</div>
                     </td>
-                    <td className="py-3.5 pr-2 text-center text-white font-semibold">
-                      {r.locationsCount} Locs
+                    <td className="py-3.5 pr-2 text-center text-[#f5efe2] font-semibold font-mono-dashboard">
+                      {r.locationsCount}
                     </td>
-                    <td className="py-3.5 pr-2 text-center">
-                      <div className="text-white font-semibold">{r.menuItemsCount} Items</div>
-                      <div className="text-[10px] text-[#6f695f]">{r.ordersCount} Orders</div>
+                    <td className="py-3.5 pr-2 text-center font-mono-dashboard">
+                      <div className="text-[#f5efe2] font-semibold">{r.menuItemsCount} Items</div>
+                      <div className="text-[10px] text-[#f5efe2]/40">{r.ordersCount} Orders</div>
                     </td>
                     <td className="py-3.5 text-center">
-                      <div className="flex items-center justify-center gap-1.5 bg-[#141414] p-1 rounded-xl border border-[rgba(255,255,255,0.04)] w-fit mx-auto">
+                      <div className="flex items-center justify-center gap-1.5 bg-[#0b0a08] p-1 rounded-xl border border-[rgba(255,255,255,0.08)] w-fit mx-auto">
                         {(["STARTER", "GROWTH", "PRO"] as const).map(tier => (
                           <button
                             key={tier}
                             onClick={() => handlePlanOverride(r.id, tier)}
-                            className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase transition-all ${
+                            className={`px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase transition-all ${
                               r.plan === tier
-                                ? "bg-violet-600 text-white shadow-md shadow-violet-500/10"
-                                : "text-[#6f695f] hover:text-white"
+                                ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] shadow-md shadow-amber-950/20"
+                                : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                             }`}
                           >
                             {tier}
@@ -310,18 +310,18 @@ export default function DeveloperConsole() {
         <div className="space-y-6">
           
           {/* Health Deck Panel */}
-          <div className="bg-[#0c0c0c] border border-[rgba(255,255,255,0.05)] rounded-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.04)] pb-3">
+          <div className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] pb-3">
               <div>
-                <h3 className="text-xs font-bold text-white tracking-wider uppercase flex items-center gap-1.5">
-                  <Activity className="size-3.5 text-violet-400" />
+                <h3 className="text-xs font-bold text-[#f5efe2] tracking-wider uppercase flex items-center gap-1.5">
+                  <Activity className="size-3.5 text-[#f0a040]" />
                   SaaS Gateway Health
                 </h3>
-                <p className="text-[10px] text-[#6f695f] mt-0.5">Integrations latency check</p>
+                <p className="text-[10px] text-[#f5efe2]/40 mt-0.5">Integrations latency check</p>
               </div>
               <button
                 onClick={triggerHealthPing}
-                className="px-2.5 py-1 bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 rounded-lg text-[10px] font-bold transition-all"
+                className="px-2.5 py-1 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] text-[#f0a040] hover:bg-white/[0.04] hover:border-[#f0a040] rounded-lg text-[10px] font-bold transition-all"
               >
                 Perform Ping
               </button>
@@ -329,21 +329,21 @@ export default function DeveloperConsole() {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { name: "Supabase DB", status: health.supabase.status, latency: `${health.supabase.ping}ms`, icon: Server, color: "text-emerald-400" },
-                { name: "Clerk Auth", status: health.clerk.status, latency: `${health.clerk.ping}ms`, icon: HardDrive, color: "text-blue-400" },
-                { name: "Stripe API", status: health.stripe.status, latency: `${health.stripe.ping}ms`, icon: CreditCard, color: "text-rose-400" },
-                { name: "Pusher Sync", status: health.pusher.status, latency: `${health.pusher.ping}ms`, icon: Wifi, color: "text-amber-400" }
+                { name: "Supabase DB", status: health.supabase.status, latency: `${health.supabase.ping}ms`, icon: Server, color: "text-[#52d27a]" },
+                { name: "Clerk Auth", status: health.clerk.status, latency: `${health.clerk.ping}ms`, icon: HardDrive, color: "text-[#f0a040]" },
+                { name: "Stripe API", status: health.stripe.status, latency: `${health.stripe.ping}ms`, icon: CreditCard, color: "text-[#e85a2a]" },
+                { name: "Pusher Sync", status: health.pusher.status, latency: `${health.pusher.ping}ms`, icon: Wifi, color: "text-[#f0a040]" }
               ].map((gateway, idx) => (
-                <div key={idx} className="bg-[#111] p-3 rounded-xl border border-[rgba(255,255,255,0.04)] space-y-1">
-                  <div className="flex justify-between items-center text-[10px] text-[#9a9488]">
+                <div key={idx} className="bg-[#0b0a08] p-3 rounded-xl border border-[rgba(255,255,255,0.08)] space-y-1">
+                  <div className="flex justify-between items-center text-[10px] text-[#f5efe2]/60">
                     <span className="font-semibold">{gateway.name}</span>
                     <gateway.icon className={`size-3.5 ${gateway.color}`} />
                   </div>
                   <div className="flex justify-between items-end pt-1">
-                    <span className="text-[9px] px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-md font-bold">
+                    <span className="text-[9px] px-1.5 py-0.5 bg-[rgba(82,210,122,0.15)] text-[#52d27a] rounded-md font-bold">
                       {gateway.status}
                     </span>
-                    <span className="text-[11px] font-bold font-mono text-white">{gateway.latency}</span>
+                    <span className="text-[11px] font-bold font-mono-dashboard text-[#f5efe2]">{gateway.latency}</span>
                   </div>
                 </div>
               ))}
@@ -351,13 +351,13 @@ export default function DeveloperConsole() {
           </div>
 
           {/* Linux-style logs stream & Sandbox */}
-          <div className="bg-[#0c0c0c] border border-[rgba(255,255,255,0.05)] rounded-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.04)] pb-3">
-              <h3 className="text-xs font-bold text-white tracking-wider uppercase flex items-center gap-1.5">
-                <Terminal className="size-3.5 text-violet-400" />
+          <div className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] pb-3">
+              <h3 className="text-xs font-bold text-[#f5efe2] tracking-wider uppercase flex items-center gap-1.5">
+                <Terminal className="size-3.5 text-[#f0a040]" />
                 Developer Sandbox Console
               </h3>
-              <span className="text-[9px] text-[#6f695f] font-bold font-mono uppercase bg-[#141414] px-2 py-0.5 rounded-md border border-[rgba(255,255,255,0.03)]">
+              <span className="text-[9px] text-[#f5efe2]/40 font-bold font-mono-dashboard uppercase bg-[#0b0a08] px-2 py-0.5 rounded-md border border-[rgba(255,255,255,0.08)]">
                 bash
               </span>
             </div>
@@ -366,20 +366,20 @@ export default function DeveloperConsole() {
             <div className="grid grid-cols-2 gap-2 pb-2">
               <button
                 onClick={simulateDatabaseSeed}
-                className="py-2 bg-[#161616] border border-[rgba(255,255,255,0.06)] hover:border-violet-500/35 hover:text-white rounded-xl text-[10px] font-bold text-[#f0ece4] transition-all flex items-center justify-center gap-1"
+                className="py-2 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] hover:border-[#f0a040] hover:text-[#f5efe2] rounded-xl text-[10px] font-bold text-[#f5efe2]/60 transition-all flex items-center justify-center gap-1"
               >
-                <Play className="size-3 text-violet-400" /> Seeding Mock
+                <Play className="size-3 text-[#f0a040]" /> Seeding Mock
               </button>
               <button
                 onClick={flushCache}
-                className="py-2 bg-[#161616] border border-[rgba(255,255,255,0.06)] hover:border-violet-500/35 hover:text-white rounded-xl text-[10px] font-bold text-[#f0ece4] transition-all flex items-center justify-center gap-1"
+                className="py-2 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] hover:border-[#f0a040] hover:text-[#f5efe2] rounded-xl text-[10px] font-bold text-[#f5efe2]/60 transition-all flex items-center justify-center gap-1"
               >
-                <RefreshCw className="size-3 text-violet-400" /> Flush Caches
+                <RefreshCw className="size-3 text-[#f0a040]" /> Flush Caches
               </button>
             </div>
 
             {/* Terminal display log screen */}
-            <div className="bg-[#050505] p-3 rounded-xl border border-[rgba(255,255,255,0.03)] h-[220px] overflow-y-auto font-mono text-[9px] space-y-2 text-[#b5b2a9]">
+            <div className="bg-[#0b0a08] p-3 rounded-xl border border-[rgba(255,255,255,0.08)] h-[220px] overflow-y-auto font-mono-dashboard text-[9px] space-y-2 text-[#f5efe2]/80">
               {logs.map((log, idx) => (
                 <div key={idx} className="leading-relaxed break-all truncate">
                   {log}

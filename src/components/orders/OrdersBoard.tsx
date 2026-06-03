@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { formatDistanceToNow, format } from "date-fns";
-import { Search, Calendar, Download, Eye, Filter, ChevronDown, ArrowUpDown } from "lucide-react";
+import { Search, Calendar, Download, Eye, Filter, ChevronDown, ArrowUpDown, ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -58,7 +58,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
   const queryClient = useQueryClient();
 
   const { data: ordersData, isLoading } = useQuery({
-    queryKey: ["orders", restaurantId],
+    key: ["orders", restaurantId],
     queryFn: async () => {
       const { data } = await axios.get<BoardOrder[]>(
         `/api/orders/restaurant/${restaurantId}`,
@@ -66,7 +66,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
       return data;
     },
     staleTime: 1000 * 30, // 30 seconds
-  });
+  } as any);
 
   useEffect(() => {
     if (ordersData) {
@@ -208,6 +208,31 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
     }
   };
 
+  const handleExportCsv = () => {
+    const header = ["Order Number", "Table", "Items Count", "Total", "Status", "Date/Time"];
+    const rows = filteredOrders.map((order) => [
+      order.orderNumber,
+      order.table.name,
+      order.items.length,
+      order.totalAmount.toFixed(2),
+      order.status,
+      format(new Date(order.createdAt), "yyyy-MM-dd HH:mm:ss"),
+    ]);
+
+    const csvContent = [header, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `orders-export-${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV report exported!");
+  };
+
   if (minLoading) {
     return <OrdersBoardSkeleton />;
   }
@@ -217,41 +242,52 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6"
+      className="space-y-8 relative"
     >
-      {/* Analytics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <AnalyticsCard label="Today's Orders" value={analytics.todaysOrders} icon="📋" />
-        <AnalyticsCard label="Today's Revenue" value={`₹${analytics.revenueToday.toFixed(0)}`} icon="💰" />
-        <AnalyticsCard label="Avg Order Value" value={`₹${analytics.avgOrderValue.toFixed(0)}`} icon="📊" />
-        <AnalyticsCard label="Pending" value={analytics.pendingOrders} icon="⏳" />
+      {/* ── Page Header ────────────────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(255,255,255,0.08)] pb-5">
+        <div className="flex items-center gap-3.5">
+          <div className="w-[50px] h-[50px] rounded-2xl bg-gradient-to-tr from-[#f0a040] to-[#e85a2a] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#f0a040]/15 border border-[#f0a040]/20">
+            <ShoppingCart className="size-5 text-white" />
+          </div>
+          <div>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#f0a040]">BOARD HUB</span>
+            <h1 className="text-2xl font-bold tracking-tight text-[#f5efe2] font-editorial italic mt-0.5">
+              Order Management
+            </h1>
+            <p className="text-[11px] text-[#f5efe2]/50 font-serif italic mt-0.5">
+              Real-time checkout dispatching and customer billing ledger
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleExportCsv}
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-transparent border border-[rgba(255,255,255,0.08)] text-[#f5efe2]/60 hover:text-white font-mono-dashboard uppercase tracking-wider text-[10px] font-bold transition-all"
+        >
+          <Download className="w-4 h-4" /> Export CSV
+        </button>
       </div>
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Order Management</h1>
-          <p className="text-neutral-500 dark:text-neutral-400 mt-1">
-            {filteredOrders.length} orders found
-          </p>
-        </div>
-        <Button variant="outline" size="sm">
-          <Download className="w-4 h-4 mr-2" />
-          Export
-        </Button>
+      {/* Analytics Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <AnalyticsCard label="Today's Orders" value={analytics.todaysOrders} icon="📋" color="blue" />
+        <AnalyticsCard label="Today's Revenue" value={`₹${analytics.revenueToday.toLocaleString()}`} icon="💰" color="green" />
+        <AnalyticsCard label="Avg Order Value" value={`₹${analytics.avgOrderValue.toFixed(0)}`} icon="📊" color="purple" />
+        <AnalyticsCard label="Pending Checkout" value={analytics.pendingOrders} icon="⏳" color="orange" />
       </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f5efe2]/40" />
           <input
             type="text"
             placeholder="Search orders..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#f97316]"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#0b0a08] text-[#f5efe2] text-xs font-mono-dashboard focus:outline-none focus:border-[#f0a040]"
           />
         </div>
 
@@ -260,7 +296,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as BoardStatus | "ALL")}
-            className="appearance-none px-4 py-2 pr-10 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#f97316]"
+            className="appearance-none px-4 py-2 pr-10 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#0b0a08] text-[#f5efe2] text-xs font-mono-dashboard focus:outline-none focus:border-[#f0a040]"
           >
             <option value="ALL">All Status</option>
             <option value="NEW">New</option>
@@ -269,7 +305,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
             <option value="DONE">Done</option>
             <option value="CANCELLED">Cancelled</option>
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f5efe2]/45 pointer-events-none" />
         </div>
 
         {/* Date Filter */}
@@ -277,36 +313,28 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value as "today" | "week" | "month" | "all")}
-            className="appearance-none px-4 py-2 pr-10 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#f97316]"
+            className="appearance-none px-4 py-2 pr-10 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#0b0a08] text-[#f5efe2] text-xs font-mono-dashboard focus:outline-none focus:border-[#f0a040]"
           >
             <option value="today">Today</option>
             <option value="week">This Week</option>
             <option value="month">This Month</option>
             <option value="all">All Time</option>
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f5efe2]/45 pointer-events-none" />
         </div>
       </div>
 
       {/* Orders Table */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-[#0b0a08]/40 border border-[rgba(255,255,255,0.08)] backdrop-blur-md rounded-2xl shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
+            <thead className="bg-[#0b0a08] text-left text-[9px] font-mono-dashboard font-black uppercase tracking-wider text-[#f5efe2]/40 border-b border-[rgba(255,255,255,0.08)]">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
-                  Order
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
-                  Table
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider cursor-pointer hover:text-[#f97316]"
+                <th className="px-6 py-4">Order</th>
+                <th className="px-6 py-4">Customer</th>
+                <th className="px-6 py-4">Table</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 cursor-pointer hover:text-[#f0a040]"
                   onClick={() => toggleSort("totalAmount")}
                 >
                   <div className="flex items-center gap-1">
@@ -314,7 +342,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                     <ArrowUpDown className="w-3 h-3" />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider cursor-pointer hover:text-[#f97316]"
+                <th className="px-6 py-4 cursor-pointer hover:text-[#f0a040]"
                   onClick={() => toggleSort("createdAt")}
                 >
                   <div className="flex items-center gap-1">
@@ -322,12 +350,10 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                     <ArrowUpDown className="w-3 h-3" />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
+            <tbody className="divide-y divide-[rgba(255,255,255,0.08)]">
               <AnimatePresence mode="popLayout">
                 {filteredOrders.map((order) => (
                   <motion.tr
@@ -335,49 +361,48 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                    className="hover:bg-[rgba(255,255,255,0.01)] transition-colors"
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div>
-                        <p className="font-semibold text-neutral-800 dark:text-white">{order.orderNumber}</p>
-                        <p className="text-xs text-neutral-500">{order.items.length} items</p>
+                        <p className="font-bold text-[#f5efe2] font-mono-dashboard">{order.orderNumber}</p>
+                        <p className="text-[10px] text-[#f5efe2]/40 font-serif italic mt-0.5">{order.items.length} items</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm text-neutral-800 dark:text-white">
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-semibold text-[#f5efe2]">
                         {order.customerName || "Guest"}
                       </p>
                       {order.customerPhone && (
-                        <p className="text-xs text-neutral-500">{order.customerPhone}</p>
+                        <p className="text-[10px] font-mono-dashboard text-[#f5efe2]/40 mt-0.5">{order.customerPhone}</p>
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm text-neutral-800 dark:text-white">{order.table.name}</p>
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-semibold text-[#f5efe2]">{order.table.name}</p>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <StatusBadge status={order.status} />
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="font-semibold text-neutral-800 dark:text-white">
-                        ₹{order.totalAmount.toFixed(2)}
+                    <td className="px-6 py-4">
+                      <p className="font-black text-[#f5efe2] font-mono-dashboard text-sm">
+                        ₹{order.totalAmount.toFixed(0)}
                       </p>
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        {format(new Date(order.createdAt), "MMM dd, yyyy")}
+                    <td className="px-6 py-4">
+                      <p className="text-xs font-mono-dashboard text-[#f5efe2]/75">
+                        {format(new Date(order.createdAt), "MMM dd · HH:mm")}
                       </p>
-                      <p className="text-xs text-neutral-500">
-                        {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                      <p className="text-[9px] font-mono-dashboard text-[#f5efe2]/40 mt-0.5">
+                        {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true }).toUpperCase()}
                       </p>
                     </td>
-                    <td className="px-4 py-3">
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                    <td className="px-6 py-4">
+                      <button
                         onClick={() => setSelectedOrder(order)}
+                        className="flex items-center justify-center h-8 w-8 rounded-lg bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.08)] text-[#f5efe2]/70 hover:text-white transition-colors"
                       >
                         <Eye className="w-4 h-4" />
-                      </Button>
+                      </button>
                     </td>
                   </motion.tr>
                 ))}
@@ -388,7 +413,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
 
         {filteredOrders.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-neutral-500 dark:text-neutral-400">No orders found</p>
+            <p className="text-[#f5efe2]/40 font-serif italic text-sm">No orders found matching filters</p>
           </div>
         )}
       </Card>
@@ -400,93 +425,98 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/85 backdrop-blur-xs z-50 flex items-center justify-center p-4"
             onClick={() => setSelectedOrder(null)}
           >
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
+              initial={{ scale: 0.97, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="bg-white dark:bg-neutral-800 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              exit={{ scale: 0.97, y: 20 }}
+              className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-neutral-800 dark:text-white">
-                  {selectedOrder.orderNumber}
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
+              <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] pb-4 mb-6">
+                <div>
+                  <span className="text-[9px] font-mono-dashboard font-black text-[#f0a040] uppercase tracking-wider">CHECKOUT DETAIL</span>
+                  <h2 className="text-2xl font-bold text-[#f5efe2] font-mono-dashboard mt-0.5">
+                    {selectedOrder.orderNumber}
+                  </h2>
+                </div>
+                <button
                   onClick={() => setSelectedOrder(null)}
+                  className="w-8 h-8 rounded-lg bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.08)] text-[#f5efe2]/60 hover:text-white flex items-center justify-center"
                 >
                   ✕
-                </Button>
+                </button>
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-[#070707] border border-[rgba(255,255,255,0.04)] p-4 rounded-xl">
                   <div>
-                    <p className="text-sm text-neutral-500">Customer</p>
-                    <p className="font-semibold text-neutral-800 dark:text-white">
+                    <p className="text-[9px] font-mono-dashboard uppercase text-[#f5efe2]/40">Customer</p>
+                    <p className="font-bold text-[#f5efe2] text-sm mt-0.5">
                       {selectedOrder.customerName || "Guest"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-neutral-500">Table</p>
-                    <p className="font-semibold text-neutral-800 dark:text-white">
+                    <p className="text-[9px] font-mono-dashboard uppercase text-[#f5efe2]/40">Table</p>
+                    <p className="font-bold text-[#f5efe2] text-sm mt-0.5">
                       {selectedOrder.table.name}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-neutral-500">Status</p>
-                    <StatusBadge status={selectedOrder.status} />
+                    <p className="text-[9px] font-mono-dashboard uppercase text-[#f5efe2]/40">Status</p>
+                    <div className="mt-1">
+                      <StatusBadge status={selectedOrder.status} />
+                    </div>
                   </div>
                   <div>
-                    <p className="text-sm text-neutral-500">Payment</p>
-                    <p className="font-semibold text-neutral-800 dark:text-white">
+                    <p className="text-[9px] font-mono-dashboard uppercase text-[#f5efe2]/40">Payment</p>
+                    <p className="font-bold text-[#f5efe2] text-sm mt-0.5">
                       {selectedOrder.payment?.method || "N/A"} ({selectedOrder.payment?.status})
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-sm text-neutral-500 mb-2">Items</p>
+                  <p className="text-[9px] font-mono-dashboard uppercase tracking-widest text-[#f5efe2]/40 mb-2">Itemized checkout</p>
                   <div className="space-y-2">
                     {selectedOrder.items.map((item) => (
                       <div
                         key={item.id}
-                        className="flex justify-between items-center p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg"
+                        className="flex justify-between items-center p-3 bg-[#0b0a08]/80 border border-[rgba(255,255,255,0.08)] rounded-xl"
                       >
-                        <div>
-                          <p className="font-medium text-neutral-800 dark:text-white">
-                            {item.quantity}x {item.menuItem.name}
-                          </p>
+                        <div className="flex items-center gap-2.5">
+                          <span className="font-mono-dashboard font-black text-[#f0a040] text-xs bg-[#f0a040]/10 px-2 py-0.5 rounded-md">{item.quantity}x</span>
+                          <span className="font-semibold text-[#f5efe2] text-sm">
+                            {item.menuItem.name}
+                          </span>
                         </div>
-                        <p className="font-semibold text-neutral-800 dark:text-white">
-                          ₹{(item.price * item.quantity).toFixed(2)}
+                        <p className="font-bold text-[#f5efe2] font-mono-dashboard">
+                          ₹{(item.price * item.quantity).toFixed(0)}
                         </p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="border-t border-neutral-200 dark:border-neutral-700 pt-4">
-                  <div className="flex justify-between">
-                    <p className="text-neutral-600 dark:text-neutral-400">Subtotal</p>
-                    <p className="font-semibold text-neutral-800 dark:text-white">
-                      ₹{(selectedOrder.totalAmount - (selectedOrder.taxAmount || 0)).toFixed(2)}
+                <div className="border-t border-[rgba(255,255,255,0.08)] pt-4 space-y-2">
+                  <div className="flex justify-between text-xs text-[#f5efe2]/60">
+                    <p className="font-serif italic">Subtotal</p>
+                    <p className="font-mono-dashboard">
+                      ₹{(selectedOrder.totalAmount - (selectedOrder.taxAmount || 0)).toFixed(0)}
                     </p>
                   </div>
-                  <div className="flex justify-between">
-                    <p className="text-neutral-600 dark:text-neutral-400">Tax</p>
-                    <p className="font-semibold text-neutral-800 dark:text-white">
-                      ₹{(selectedOrder.taxAmount || 0).toFixed(2)}
+                  <div className="flex justify-between text-xs text-[#f5efe2]/60">
+                    <p className="font-serif italic">Tax</p>
+                    <p className="font-mono-dashboard">
+                      ₹{(selectedOrder.taxAmount || 0).toFixed(0)}
                     </p>
                   </div>
-                  <div className="flex justify-between text-lg font-bold">
-                    <p className="text-neutral-800 dark:text-white">Total</p>
-                    <p className="text-neutral-800 dark:text-white">
-                      ₹{selectedOrder.totalAmount.toFixed(2)}
+                  <div className="flex justify-between text-base font-bold text-[#f5efe2] border-t border-[rgba(255,255,255,0.08)] pt-2">
+                    <p className="font-editorial italic text-lg">Total Amount</p>
+                    <p className="font-mono-dashboard text-lg text-[#f0a040]">
+                      ₹{selectedOrder.totalAmount.toFixed(0)}
                     </p>
                   </div>
                 </div>
@@ -501,32 +531,37 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
 
 function StatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { color: string; label: string; bg: string }> = {
-    "NEW": { color: "text-blue-500", label: "New", bg: "bg-blue-500/10" },
-    "PREPARING": { color: "text-[#f97316]", label: "Preparing", bg: "bg-[#f97316]/10" },
-    "READY": { color: "text-[#22c55e]", label: "Ready", bg: "bg-[#22c55e]/10" },
-    "DONE": { color: "text-[#999999]", label: "Done", bg: "bg-[#999999]/10" },
-    "CANCELLED": { color: "text-[#ef4444]", label: "Cancelled", bg: "bg-[#ef4444]/10" },
+    "NEW": { color: "text-blue-400 border-blue-500/20", label: "New", bg: "bg-blue-500/10" },
+    "PREPARING": { color: "text-[#f0a040] border-amber-500/20", label: "Prep", bg: "bg-amber-500/10" },
+    "READY": { color: "text-[#52d27a] border-[#52d27a]/20", label: "Ready", bg: "bg-[#52d27a]/10" },
+    "DONE": { color: "text-[#f5efe2]/50 border-white/10", label: "Done", bg: "bg-white/5" },
+    "CANCELLED": { color: "text-red-400 border-red-500/20", label: "Cancelled", bg: "bg-red-500/10" },
   };
 
   const config = statusConfig[status] || statusConfig["NEW"];
 
   return (
-    <Badge className={`${config.bg} ${config.color} border-0`}>
+    <Badge className={`${config.bg} ${config.color} border text-[9px] font-mono-dashboard font-black uppercase tracking-wider py-0.5 px-2 rounded-full`}>
       {config.label}
     </Badge>
   );
 }
 
-function AnalyticsCard({ label, value, icon }: { label: string; value: string | number; icon: string }) {
+function AnalyticsCard({ label, value, icon, color }: { label: string; value: string | number; icon: string; color: string }) {
+  const colorClasses = {
+    blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    green: "bg-[#52d27a]/10 text-[#52d27a] border-[#52d27a]/20",
+    purple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+    orange: "bg-[#f0a040]/10 text-[#f0a040] border-[#f0a040]/20",
+  };
+
   return (
-    <Card className="p-4 bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">{label}</p>
-          <p className="text-2xl font-bold text-neutral-800 dark:text-white mt-1">{value}</p>
-        </div>
-        <span className="text-2xl">{icon}</span>
+    <Card className="p-4 bg-[#0b0a08]/40 border border-[rgba(255,255,255,0.08)] backdrop-blur-md rounded-2xl flex flex-col justify-between">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[9px] uppercase tracking-widest text-[#f5efe2]/40 font-mono-dashboard">{label}</p>
+        <div className={`p-1.5 rounded-lg border text-sm ${colorClasses[color as keyof typeof colorClasses]}`}>{icon}</div>
       </div>
+      <p className="text-xl font-bold text-[#f5efe2] font-mono-dashboard mt-1">{value}</p>
     </Card>
   );
 }
@@ -554,4 +589,3 @@ function OrdersBoardSkeleton() {
     </div>
   );
 }
-

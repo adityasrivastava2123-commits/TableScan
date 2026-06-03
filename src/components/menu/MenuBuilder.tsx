@@ -392,31 +392,33 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
   );
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-neutral-800 dark:text-[#f0ece4]">
+    <div className="max-w-7xl mx-auto space-y-6 text-[#f5efe2]">
       
       {/* ── Page Header ────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-neutral-200 dark:border-[rgba(255,255,255,0.06)] pb-5">
+      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-[rgba(255,255,255,0.08)] pb-5">
         <div className="flex items-center gap-3.5">
-          <div className="w-[50px] h-[50px] rounded-2xl bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#f97316]/10 border border-[#f97316]/20">
-            <Utensils className="size-5 text-white" />
+          <div className="w-[50px] h-[50px] rounded-2xl bg-gradient-to-br from-[#f0a040] to-[#e85a2a] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#f0a040]/10 border border-[#f0a040]/20">
+            <Utensils className="size-5 text-[#0b0a08]" />
           </div>
           <div>
-            <h1 className="text-[22px] font-extrabold text-neutral-800 dark:text-[#f0ece4] leading-none tracking-tight">Menu Builder</h1>
-            <p className="text-[12px] text-neutral-500 dark:text-[#9a9488] mt-1.5 font-medium">Design and structure your restaurant menu catalog</p>
+            <h1 className="text-2xl font-bold text-[#f5efe2] tracking-tight">
+              Menu <em className="font-editorial italic font-normal text-[#f0a040]">Builder</em>
+            </h1>
+            <p className="text-[12px] text-[#f5efe2]/60 mt-1.5 font-medium">Design and structure your restaurant menu catalog</p>
           </div>
         </div>
         <div className="flex gap-2.5 flex-wrap">
           <button
             onClick={addSampleData}
             id="btn-sample-menu"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-[#111] border border-neutral-200 dark:border-[rgba(34,197,94,0.25)] text-[#22c55e] dark:text-[#4ade80] text-[12px] font-semibold hover:border-[#22c55e] hover:bg-neutral-50 dark:hover:bg-[rgba(34,197,94,0.03)] transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/[0.02] border border-[rgba(82,210,122,0.25)] text-[#52d27a] text-[12px] font-semibold hover:border-[#52d27a] hover:bg-[rgba(82,210,122,0.03)] transition-all shadow-sm"
           >
             <Sparkles className="size-3.5" /> Core Framework
           </button>
           <button
             onClick={() => setAddingCat(true)}
             id="btn-add-category-header"
-            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-[#f97316] text-white text-[12px] font-bold hover:bg-[#ea6c0a] shadow-lg shadow-[#f97316]/15 hover:shadow-[#f97316]/25 transition-all"
+            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] text-[12px] font-bold hover:brightness-110 active:scale-95 shadow-lg shadow-amber-950/20 transition-all"
           >
             <Plus className="size-3.5" /> Add Category
           </button>
@@ -424,7 +426,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
       </div>
 
       {/* ── Mobile Categories Horizontal scroll ───────────────────────── */}
-      <div className="block lg:hidden border-b border-neutral-200 dark:border-[rgba(255,255,255,0.06)] pb-2 overflow-x-auto scrollbar-none">
+      <div className="block lg:hidden border-b border-[rgba(255,255,255,0.08)] pb-2 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 px-1 py-1 min-w-max">
           {categories.map((cat) => {
             const isSelected = selectedCategoryId === cat.id;
@@ -434,14 +436,14 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                 onClick={() => setSelectedCategoryId(cat.id)}
                 className={`relative px-4 py-2 rounded-xl text-[12px] font-bold border transition-all ${
                   isSelected
-                    ? "bg-[#f97316]/10 border-[#f97316] text-[#f97316]"
-                    : "bg-white dark:bg-[#111] border-neutral-200 dark:border-[rgba(255,255,255,0.06)] text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4] hover:bg-neutral-50 dark:hover:bg-[#161616]"
+                    ? "bg-[#f0a040]/10 border-[#f0a040] text-[#f0a040]"
+                    : "bg-white/[0.02] border-[rgba(255,255,255,0.08)] text-[#f5efe2]/60 hover:text-[#f5efe2] hover:bg-white/[0.04]"
                 }`}
               >
                 <span className="flex items-center gap-2">
                   {cat.name}
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                    isSelected ? "bg-[#f97316] text-white" : "bg-neutral-100 dark:bg-[#1f1f1f] text-neutral-400 dark:text-[#5a5650]"
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono-dashboard ${
+                    isSelected ? "bg-[#f0a040] text-[#0b0a08] font-bold" : "bg-white/5 text-[#f5efe2]/40"
                   }`}>
                     {cat.menuItems.length}
                   </span>
@@ -456,26 +458,26 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 items-start">
         
         {/* ── LEFT PANEL: Category Sidebar ──────────────────────────────── */}
-        <div className="hidden lg:flex flex-col bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl overflow-hidden shadow-lg dark:shadow-xl dark:shadow-black/20 self-start">
+        <div className="hidden lg:flex flex-col bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl overflow-hidden shadow-xl self-start">
           
           {/* Sidebar Header & Search */}
-          <div className="p-4 border-b border-neutral-200 dark:border-[rgba(255,255,255,0.06)] bg-neutral-50/50 dark:bg-[#131313] space-y-3">
+          <div className="p-4 border-b border-[rgba(255,255,255,0.08)] bg-white/[0.01] space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-neutral-400 dark:text-[#5a5650] uppercase tracking-widest flex items-center gap-1.5">
+              <span className="text-[11px] font-bold text-[#f5efe2]/40 uppercase tracking-widest flex items-center gap-1.5">
                 <FolderOpen className="size-3.5" /> Categories Menu
               </span>
-              <span className="text-[10px] bg-neutral-100 dark:bg-[#1a1a1a] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] text-neutral-500 dark:text-[#9a9488] font-bold px-2 py-0.5 rounded-full">
+              <span className="text-[10px] bg-white/5 border border-white/10 text-[#f5efe2]/60 font-bold px-2 py-0.5 rounded-full font-mono-dashboard">
                 {categories.length}
               </span>
             </div>
             
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400 dark:text-[#5a5650]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-[#f5efe2]/40" />
               <input
                 value={categorySearch}
                 onChange={e => setCategorySearch(e.target.value)}
                 placeholder="Search categories..."
-                className="w-full bg-neutral-100 dark:bg-[#161616] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-3 py-2 text-[12px] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#5a5650] outline-none focus:border-[#f97316]/50 transition-colors"
+                className="w-full bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-3 py-2 text-[12px] text-[#f5efe2] placeholder-[#f5efe2]/30 outline-none focus:border-[#f0a040]/50 transition-colors"
               />
             </div>
           </div>
@@ -490,7 +492,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="bg-neutral-50 dark:bg-[#141414] border border-[#f97316]/30 p-2 rounded-xl mb-2 space-y-2"
+                  className="bg-[#0b0a08] border border-[#f0a040]/30 p-2 rounded-xl mb-2 space-y-2"
                 >
                   <input
                     autoFocus
@@ -498,18 +500,18 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                     onChange={e => setNewCatName(e.target.value)}
                     placeholder="New category name..."
                     onKeyDown={e => e.key === "Enter" && addCategory()}
-                    className="w-full bg-white dark:bg-[#1c1c1c] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg px-2.5 py-1.5 text-[12px] text-neutral-800 dark:text-[#f0ece4] focus:outline-none focus:border-[#f97316]/50 placeholder-neutral-400 dark:placeholder-[#5a5650]"
+                    className="w-full bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-lg px-2.5 py-1.5 text-[12px] text-[#f5efe2] focus:outline-none focus:border-[#f0a040]/50 placeholder-[#f5efe2]/30"
                   />
                   <div className="flex gap-1.5 justify-end">
                     <button
                       onClick={addCategory}
-                      className="px-2.5 py-1 rounded bg-[#f97316] text-white text-[10px] font-bold hover:bg-[#ea6c0a]"
+                      className="px-2.5 py-1 rounded bg-[#f0a040] text-[#0b0a08] text-[10px] font-bold hover:brightness-115"
                     >
                       Create
                     </button>
                     <button
                       onClick={() => { setAddingCat(false); setNewCatName(""); }}
-                      className="px-2.5 py-1 rounded bg-white dark:bg-[#1c1c1c] text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4] text-[10px] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)]"
+                      className="px-2.5 py-1 rounded bg-white/[0.02] text-[#f5efe2]/60 hover:text-[#f5efe2] text-[10px] border border-[rgba(255,255,255,0.08)]"
                     >
                       Cancel
                     </button>
@@ -519,7 +521,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
             </AnimatePresence>
 
             {filteredCategories.length === 0 ? (
-              <div className="py-8 text-center text-neutral-400 dark:text-[#5a5650] text-[11px] font-medium">
+              <div className="py-8 text-center text-[#f5efe2]/40 text-[11px] font-medium">
                 {categorySearch ? "No matches found" : "No categories created"}
               </div>
             ) : (
@@ -533,15 +535,15 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                     onClick={() => !isEditingThis && setSelectedCategoryId(cat.id)}
                     className={`group w-full flex items-center justify-between rounded-xl px-3 py-2.5 transition-all cursor-pointer relative ${
                       isSelected
-                        ? "bg-neutral-100 dark:bg-[#181818] border border-neutral-200 dark:border-[rgba(249,115,22,0.15)] text-neutral-800 dark:text-[#f0ece4]"
-                        : "text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4] hover:bg-neutral-50 dark:hover:bg-[#151515] border border-transparent"
+                        ? "bg-white/[0.03] border border-[rgba(240,160,64,0.15)] text-[#f5efe2]"
+                        : "text-[#f5efe2]/60 hover:text-[#f5efe2] hover:bg-white/[0.01] border border-transparent"
                     }`}
                   >
                     {/* Left Active Glow bar */}
                     {isSelected && (
                       <motion.div
                         layoutId="activeCategoryBorder"
-                        className="absolute left-0 top-2 bottom-2 w-1 bg-[#f97316] rounded-full shadow-[0_0_10px_#f97316]"
+                        className="absolute left-0 top-2 bottom-2 w-1 bg-[#f0a040] rounded-full shadow-[0_0_10px_#f0a040]"
                       />
                     )}
 
@@ -552,25 +554,25 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                           value={editingCategoryName}
                           onChange={e => setEditingCategoryName(e.target.value)}
                           onKeyDown={e => e.key === "Enter" && saveCategoryRename(cat.id)}
-                          className="bg-white dark:bg-[#1a1a1a] border border-[#f97316]/50 rounded px-2.5 py-1 text-[12px] text-neutral-800 dark:text-[#f0ece4] focus:outline-none"
+                          className="bg-white/[0.02] border border-[#f0a040]/50 rounded px-2.5 py-1 text-[12px] text-[#f5efe2] focus:outline-none"
                         />
                         <input
                           value={editingCategoryDesc}
                           onChange={e => setEditingCategoryDesc(e.target.value)}
                           placeholder="Add description..."
                           onKeyDown={e => e.key === "Enter" && saveCategoryRename(cat.id)}
-                          className="bg-white dark:bg-[#1a1a1a] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] rounded px-2.5 py-1 text-[10px] text-neutral-400 dark:text-[#9a9488] placeholder-neutral-300 dark:placeholder-[#444] focus:outline-none"
+                          className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded px-2.5 py-1 text-[10px] text-[#f5efe2]/40 placeholder-[#f5efe2]/20 focus:outline-none"
                         />
                         <div className="flex justify-end gap-1">
                           <button
                             onClick={() => saveCategoryRename(cat.id)}
-                            className="p-1 rounded bg-[#f97316]/10 hover:bg-[#f97316]/20 text-[#f97316] text-[10px] font-bold"
+                            className="p-1 rounded bg-[#f0a040]/10 hover:bg-[#f0a040]/20 text-[#f0a040] text-[10px] font-bold"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setEditingCategory(null)}
-                            className="p-1 rounded bg-neutral-100 dark:bg-[#1c1c1c] text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4] text-[10px]"
+                            className="p-1 rounded bg-white/[0.02] text-[#f5efe2]/60 hover:text-[#f5efe2] text-[10px]"
                           >
                             Cancel
                           </button>
@@ -579,11 +581,11 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                     ) : (
                       <>
                         <div className="flex flex-col min-w-0 pr-2">
-                          <span className={`text-[13px] font-bold truncate ${isSelected ? "text-[#f97316]" : ""}`}>
+                          <span className={`text-[13px] font-bold truncate ${isSelected ? "text-[#f0a040]" : ""}`}>
                             {cat.name}
                           </span>
                           {cat.description && (
-                            <span className="text-[10px] text-neutral-400 dark:text-[#5a5650] truncate mt-0.5 group-hover:text-[#6e685d] font-medium">
+                            <span className="text-[10px] text-[#f5efe2]/40 truncate mt-0.5 group-hover:text-[#f5efe2]/60 font-medium">
                               {cat.description}
                             </span>
                           )}
@@ -592,10 +594,10 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                         {/* Badging & Actions */}
                         <div className="flex items-center gap-1.5 flex-shrink-0" onClick={e => e.stopPropagation()}>
                           {/* Count Pill */}
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors ${
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors font-mono-dashboard ${
                             isSelected 
-                              ? "bg-[#f97316]/10 border border-[#f97316]/20 text-[#f97316]"
-                              : "bg-neutral-100 dark:bg-[#181818] border border-neutral-200 dark:border-[rgba(255,255,255,0.05)] text-neutral-400 dark:text-[#5a5650]"
+                              ? "bg-[#f0a040]/10 border border-[#f0a040]/20 text-[#f0a040]"
+                              : "bg-white/5 border border-white/10 text-[#f5efe2]/40"
                           }`}>
                             {cat.menuItems.length}
                           </span>
@@ -604,14 +606,14 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                           <div className="hidden group-hover:flex items-center gap-1">
                             <button
                               onClick={() => startEditingCategory(cat)}
-                              className="w-6 h-6 rounded bg-neutral-100 dark:bg-[#222] hover:bg-neutral-200 dark:hover:bg-[#333] text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4] flex items-center justify-center transition-colors border border-neutral-200 dark:border-transparent"
+                              className="w-6 h-6 rounded bg-white/5 hover:bg-white/10 text-[#f5efe2]/60 hover:text-[#f5efe2] flex items-center justify-center transition-colors border border-[rgba(255,255,255,0.08)]"
                               title="Edit Details"
                             >
                               <Edit size={11} />
                             </button>
                             <button
                               onClick={() => deleteCategory(cat.id)}
-                              className="w-6 h-6 rounded bg-red-50 dark:bg-[#ef4444]/10 hover:bg-red-100 dark:hover:bg-[#ef4444]/20 text-red-500 dark:text-[#f87171] flex items-center justify-center transition-colors"
+                              className="w-6 h-6 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center transition-colors border border-red-500/20"
                               title="Delete Category"
                             >
                               <Trash2 size={11} />
@@ -627,9 +629,9 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
           </div>
 
           {/* Quick Stats Pill Strip bottom */}
-          <div className="p-3 border-t border-neutral-200 dark:border-[rgba(255,255,255,0.06)] bg-neutral-50/50 dark:bg-[#131313] flex justify-between text-[10px] text-neutral-400 dark:text-[#5a5650] font-bold">
+          <div className="p-3 border-t border-[rgba(255,255,255,0.08)] bg-white/[0.01] flex justify-between text-[10px] text-[#f5efe2]/40 font-bold font-mono-dashboard">
             <span className="flex items-center gap-1"><LayoutGrid size={11} /> {totalItems} Items</span>
-            <span className="flex items-center gap-1 text-red-500 dark:text-[#f87171]"><EyeOff size={11} /> {hiddenItems} Hidden</span>
+            <span className="flex items-center gap-1 text-[#e85a2a]"><EyeOff size={11} /> {hiddenItems} Hidden</span>
           </div>
         </div>
 
@@ -638,23 +640,23 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
           
           {/* Active Category Header Workspace */}
           {activeCategory ? (
-            <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl p-5 shadow-md dark:shadow-xl dark:shadow-black/10 relative overflow-hidden">
+            <div className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl p-5 shadow-lg relative overflow-hidden">
               {/* Glowing Ambient Backdrop Accent */}
-              <div className="absolute right-0 top-0 w-64 h-64 bg-[#f97316]/5 blur-[80px] pointer-events-none rounded-full" />
+              <div className="absolute right-0 top-0 w-64 h-64 bg-[#f0a040]/5 blur-[80px] pointer-events-none rounded-full" />
               
               <div className="flex justify-between items-start flex-wrap gap-4 relative z-10">
                 <div className="space-y-1 max-w-lg">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-[18px] font-extrabold text-neutral-800 dark:text-[#f0ece4] tracking-tight">{activeCategory.name}</h2>
+                    <h2 className="text-[18px] font-extrabold text-[#f5efe2] tracking-tight">{activeCategory.name}</h2>
                     <button
                       onClick={() => startEditingCategory(activeCategory)}
-                      className="p-1 rounded-lg text-neutral-400 dark:text-[#5a5650] hover:text-[#f97316] hover:bg-neutral-50 dark:hover:bg-[#1a1a1a] transition-all border border-neutral-200 dark:border-transparent"
+                      className="p-1 rounded-lg text-[#f5efe2]/40 hover:text-[#f0a040] hover:bg-white/[0.02] border border-[rgba(255,255,255,0.08)] transition-all"
                       title="Rename Category"
                     >
                       <Edit size={13} />
                     </button>
                   </div>
-                  <p className="text-[12px] text-neutral-500 dark:text-[#9a9488] leading-relaxed">
+                  <p className="text-[12px] text-[#f5efe2]/60 leading-relaxed">
                     {activeCategory.description || "No description provided for this category section. Add one to describe these items."}
                   </p>
                 </div>
@@ -663,14 +665,14 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                 <div className="flex gap-2">
                   <button
                     onClick={() => deleteCategory(activeCategory.id)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-950/25 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 text-[11px] font-bold hover:bg-red-100 dark:hover:bg-red-950/40 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-bold hover:bg-red-500/20 transition-all"
                   >
                     <Trash2 className="size-3.5" /> Delete Category
                   </button>
                   <button
                     onClick={openDrawerForAdd}
                     id="btn-add-item-workspace"
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#f97316] hover:bg-[#ea6c0a] text-white text-[11px] font-extrabold shadow-md shadow-[#f97316]/10 transition-all"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] text-[11px] font-extrabold hover:brightness-110 shadow-md shadow-amber-950/20 active:scale-95 transition-all"
                   >
                     <Plus className="size-3.5" /> Add Dish
                   </button>
@@ -678,30 +680,30 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
               </div>
 
               {/* Live Category-Level Stats Bar */}
-              <div className="mt-5 pt-4 border-t border-neutral-200 dark:border-[rgba(255,255,255,0.05)] grid grid-cols-3 gap-2.5 relative z-10">
-                <div className="bg-neutral-50/50 dark:bg-[#161616]/40 p-2.5 rounded-xl border border-neutral-200/60 dark:border-[rgba(255,255,255,0.03)] text-center">
-                  <p className="text-[9px] text-neutral-400 dark:text-[#5a5650] uppercase tracking-wider font-bold">Total Dishes</p>
-                  <p className="text-[16px] font-extrabold text-neutral-800 dark:text-[#f0ece4] mt-0.5">{activeCategory.menuItems.length}</p>
+              <div className="mt-5 pt-4 border-t border-[rgba(255,255,255,0.05)] grid grid-cols-3 gap-2.5 relative z-10 font-mono-dashboard">
+                <div className="bg-white/[0.01] p-2.5 rounded-xl border border-[rgba(255,255,255,0.03)] text-center">
+                  <p className="text-[9px] text-[#f5efe2]/40 uppercase tracking-wider font-bold font-sans">Total Dishes</p>
+                  <p className="text-[16px] font-extrabold text-[#f5efe2] mt-0.5">{activeCategory.menuItems.length}</p>
                 </div>
-                <div className="bg-neutral-50/50 dark:bg-[#161616]/40 p-2.5 rounded-xl border border-neutral-200/60 dark:border-[rgba(255,255,255,0.03)] text-center">
-                  <p className="text-[9px] text-neutral-400 dark:text-[#5a5650] uppercase tracking-wider font-bold">Vegetarian Ratio</p>
-                  <p className="text-[16px] font-extrabold text-green-600 dark:text-[#4ade80] mt-0.5">
-                    {activeCategory.menuItems.filter(i => i.isVeg).length} <span className="text-[10px] text-neutral-400 dark:text-[#5a5650] font-bold">veg</span>
+                <div className="bg-white/[0.01] p-2.5 rounded-xl border border-[rgba(255,255,255,0.03)] text-center">
+                  <p className="text-[9px] text-[#f5efe2]/40 uppercase tracking-wider font-bold font-sans">Vegetarian Ratio</p>
+                  <p className="text-[16px] font-extrabold text-[#52d27a] mt-0.5">
+                    {activeCategory.menuItems.filter(i => i.isVeg).length} <span className="text-[10px] text-[#f5efe2]/40 font-bold font-sans">veg</span>
                   </p>
                 </div>
-                <div className="bg-neutral-50/50 dark:bg-[#161616]/40 p-2.5 rounded-xl border border-neutral-200/60 dark:border-[rgba(255,255,255,0.03)] text-center">
-                  <p className="text-[9px] text-neutral-400 dark:text-[#5a5650] uppercase tracking-wider font-bold">Active Public</p>
-                  <p className="text-[16px] font-extrabold text-[#f97316] mt-0.5">
-                    {activeCategory.menuItems.filter(i => i.isAvailable).length} <span className="text-[10px] text-neutral-400 dark:text-[#5a5650] font-bold">online</span>
+                <div className="bg-white/[0.01] p-2.5 rounded-xl border border-[rgba(255,255,255,0.03)] text-center">
+                  <p className="text-[9px] text-[#f5efe2]/40 uppercase tracking-wider font-bold font-sans">Active Public</p>
+                  <p className="text-[16px] font-extrabold text-[#f0a040] mt-0.5">
+                    {activeCategory.menuItems.filter(i => i.isAvailable).length} <span className="text-[10px] text-[#f5efe2]/40 font-bold font-sans">online</span>
                   </p>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl p-12 text-center shadow-lg">
-              <AlertCircle className="size-8 text-neutral-400 dark:text-[#5a5650] mx-auto mb-3" />
-              <p className="text-[15px] font-bold text-neutral-800 dark:text-[#f0ece4]">No Category Selected</p>
-              <p className="text-[12px] text-neutral-500 dark:text-[#9a9488] max-w-sm mx-auto mt-1.5">
+            <div className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl p-12 text-center shadow-lg">
+              <AlertCircle className="size-8 text-[#f5efe2]/40 mx-auto mb-3" />
+              <p className="text-[15px] font-bold text-[#f5efe2]">No Category Selected</p>
+              <p className="text-[12px] text-[#f5efe2]/60 max-w-sm mx-auto mt-1.5">
                 Please select an active category from the sidebar or click "Add Category" to create a new category partition.
               </p>
             </div>
@@ -709,29 +711,29 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
 
           {/* Filters and Search toolbar */}
           {activeCategory && (
-            <div className="flex flex-col sm:flex-row items-center gap-3 bg-white dark:bg-[#111] p-3 rounded-2xl border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-3 bg-white/[0.02] p-3 rounded-2xl border border-[rgba(255,255,255,0.08)] shadow-sm">
               {/* Item Text Search */}
               <div className="relative w-full sm:flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-neutral-400 dark:text-[#5a5650]" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-[#f5efe2]/40" />
                 <input
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder={`Search ${activeCategory.name}...`}
-                  className="w-full bg-neutral-50 dark:bg-[#161616] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#5a5650] outline-none focus:border-[#f97316]/50 transition-colors"
+                  className="w-full bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-[#f5efe2] placeholder-[#f5efe2]/30 outline-none focus:border-[#f0a040]/50 transition-colors"
                 />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-600">
+                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#f5efe2]/40 hover:text-[#f5efe2]">
                     <X size={15} />
                   </button>
                 )}
               </div>
 
               {/* Segmented Filter Veg / Non-Veg */}
-              <div className="flex gap-1.5 p-1 bg-neutral-50 dark:bg-[#161616] rounded-xl border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] w-full sm:w-auto">
+              <div className="flex gap-1.5 p-1 bg-white/[0.01] rounded-xl border border-[rgba(255,255,255,0.08)] w-full sm:w-auto">
                 <button
                   onClick={() => setVegFilter("all")}
                   className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all ${
-                    vegFilter === "all" ? "bg-[#f97316] text-white shadow-sm" : "text-neutral-400 dark:text-[#5a5650] hover:text-neutral-800 dark:hover:text-[#9a9488]"
+                    vegFilter === "all" ? "bg-[#f0a040] text-[#0b0a08] shadow-sm" : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                   }`}
                 >
                   All
@@ -739,7 +741,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                 <button
                   onClick={() => setVegFilter("veg")}
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all flex items-center justify-center gap-1 ${
-                    vegFilter === "veg" ? "bg-green-50 dark:bg-[rgba(34,197,94,0.15)] text-green-600 dark:text-[#4ade80] border border-green-200 dark:border-[#22c55e]/30" : "text-neutral-400 dark:text-[#5a5650] hover:text-neutral-800 dark:hover:text-[#9a9488]"
+                    vegFilter === "veg" ? "bg-[rgba(82,210,122,0.15)] text-[#52d27a] border border-[#52d27a]/30" : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                   }`}
                 >
                   <Leaf className="size-3" /> Veg
@@ -747,7 +749,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                 <button
                   onClick={() => setVegFilter("nonveg")}
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all flex items-center justify-center gap-1 ${
-                    vegFilter === "nonveg" ? "bg-red-50 dark:bg-[rgba(239,68,68,0.15)] text-red-600 dark:text-[#f87171] border border-red-200 dark:border-[#ef4444]/30" : "text-neutral-400 dark:text-[#5a5650] hover:text-neutral-800 dark:hover:text-[#9a9488]"
+                    vegFilter === "nonveg" ? "bg-[rgba(232,90,42,0.15)] text-[#e85a2a] border border-[#e85a2a]/30" : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                   }`}
                 >
                   <Drumstick className="size-3" /> Non-Veg
@@ -755,11 +757,11 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
               </div>
 
               {/* Segmented Filter Available / Hidden */}
-              <div className="flex gap-1.5 p-1 bg-neutral-50 dark:bg-[#161616] rounded-xl border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] w-full sm:w-auto">
+              <div className="flex gap-1.5 p-1 bg-white/[0.01] rounded-xl border border-[rgba(255,255,255,0.08)] w-full sm:w-auto">
                 <button
                   onClick={() => setAvailabilityFilter("all")}
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all ${
-                    availabilityFilter === "all" ? "bg-neutral-200 dark:bg-[#222] text-neutral-800 dark:text-[#f0ece4] border border-neutral-300 dark:border-[rgba(255,255,255,0.1)]" : "text-neutral-400 dark:text-[#5a5650] hover:text-neutral-800 dark:hover:text-[#9a9488]"
+                    availabilityFilter === "all" ? "bg-white/10 text-[#f5efe2] border border-white/20" : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                   }`}
                 >
                   All Status
@@ -767,7 +769,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                 <button
                   onClick={() => setAvailabilityFilter("active")}
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all ${
-                    availabilityFilter === "active" ? "bg-green-50 dark:bg-[rgba(34,197,94,0.1)] text-green-600 dark:text-[#4ade80]" : "text-neutral-400 dark:text-[#5a5650] hover:text-neutral-800 dark:hover:text-[#9a9488]"
+                    availabilityFilter === "active" ? "bg-[rgba(82,210,122,0.1)] text-[#52d27a]" : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                   }`}
                 >
                   Online
@@ -775,7 +777,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                 <button
                   onClick={() => setAvailabilityFilter("hidden")}
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all ${
-                    availabilityFilter === "hidden" ? "bg-red-50 dark:bg-[rgba(239,68,68,0.1)] text-red-600 dark:text-[#f87171]" : "text-neutral-400 dark:text-[#5a5650] hover:text-neutral-800 dark:hover:text-[#9a9488]"
+                    availabilityFilter === "hidden" ? "bg-[rgba(232,90,42,0.1)] text-[#e85a2a]" : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                   }`}
                 >
                   Hidden
@@ -799,15 +801,15 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.22, delay: idx * 0.02 }}
-                    className={`group bg-white dark:bg-[#111111] border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between ${
+                    className={`group bg-white/[0.02] border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between ${
                       item.isAvailable
-                        ? "border-neutral-200 dark:border-[rgba(255,255,255,0.06)] hover:border-[#f97316]/30 hover:-translate-y-1"
-                        : "border-neutral-200/60 dark:border-[rgba(255,255,255,0.03)] opacity-60 hover:opacity-80"
+                        ? "border-[rgba(255,255,255,0.08)] hover:border-[#f0a040]/30 hover:-translate-y-1"
+                        : "border-[rgba(255,255,255,0.04)] opacity-50 hover:opacity-75"
                     }`}
                   >
                     <div>
                       {/* Image Aspect ratio container with overlay controls */}
-                      <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-[#161616] border-b border-neutral-200 dark:border-[rgba(255,255,255,0.05)] group/img">
+                      <div className="relative aspect-video w-full overflow-hidden bg-white/[0.02] border-b border-[rgba(255,255,255,0.08)] group/img">
                         {item.image ? (
                           <img
                             src={item.image}
@@ -815,9 +817,9 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                             className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-[#181818] dark:to-[#121212] flex flex-col items-center justify-center text-neutral-300 dark:text-[#3c3a36]">
-                            <Utensils className="size-7 stroke-[1.5] mb-1 text-neutral-300 dark:text-[#4a4742] group-hover/img:text-[#f97316]/50 transition-colors" />
-                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-neutral-300 dark:text-[#4a4742]">TableScan Menu</span>
+                          <div className="w-full h-full bg-gradient-to-br from-[#0b0a08] to-[#121210] flex flex-col items-center justify-center text-[#f5efe2]/20">
+                            <Utensils className="size-7 stroke-[1.5] mb-1 text-[#f5efe2]/20 group-hover/img:text-[#f0a040]/50 transition-colors" />
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-[#f5efe2]/20">TableScan Menu</span>
                           </div>
                         )}
 
@@ -825,18 +827,18 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                         <div className="absolute top-3 left-3">
                           <span className={`flex h-6 items-center gap-1.5 px-2.5 rounded-xl text-[10px] font-bold border backdrop-blur-md ${
                             item.isVeg
-                              ? "bg-green-50/90 dark:bg-[rgba(34,197,94,0.15)] border-green-200 dark:border-[#22c55e]/30 text-green-600 dark:text-[#4ade80]"
-                              : "bg-red-50/90 dark:bg-[rgba(239,68,68,0.15)] border-red-200 dark:border-[#ef4444]/30 text-red-600 dark:text-[#f87171]"
+                              ? "bg-[#0b0a08]/90 border-[#52d27a]/30 text-[#52d27a]"
+                              : "bg-[#0b0a08]/90 border-[#e85a2a]/30 text-[#e85a2a]"
                           }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${item.isVeg ? "bg-[#22c55e]" : "bg-[#ef4444]"}`} />
+                            <span className={`w-1.5 h-1.5 rounded-full ${item.isVeg ? "bg-[#52d27a]" : "bg-[#e85a2a]"}`} />
                             {item.isVeg ? "Veg" : "Non-Veg"}
                           </span>
                         </div>
 
                         {/* Item Availability switch overlay floating in bottom-right */}
-                        <div className="absolute bottom-3 right-3 flex items-center bg-white/95 dark:bg-[#111111]/85 border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] backdrop-blur-md px-2.5 py-1 rounded-xl shadow-md">
+                        <div className="absolute bottom-3 right-3 flex items-center bg-[#0b0a08]/90 border border-[rgba(255,255,255,0.08)] backdrop-blur-md px-2.5 py-1 rounded-xl shadow-md">
                           <span className={`text-[9px] font-extrabold mr-2 uppercase tracking-wide ${
-                            item.isAvailable ? "text-green-600 dark:text-[#4ade80]" : "text-red-500 dark:text-[#f87171]"
+                            item.isAvailable ? "text-[#52d27a]" : "text-[#e85a2a]"
                           }`}>
                             {item.isAvailable ? "Online" : "Hidden"}
                           </span>
@@ -848,7 +850,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                               toggleAvailability(activeCategory.id, item);
                             }}
                             className={`relative w-8 h-4.5 rounded-full p-0.5 transition-colors duration-200 focus:outline-none flex items-center ${
-                              item.isAvailable ? "bg-[#22c55e]" : "bg-neutral-200 dark:bg-[#2c2c2c]"
+                              item.isAvailable ? "bg-[#52d27a]" : "bg-white/10"
                             }`}
                           >
                             <motion.div
@@ -867,28 +869,28 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                       {/* Content block details */}
                       <div className="p-4 space-y-2">
                         <div className="flex justify-between items-start gap-2">
-                          <h4 className="text-[14px] font-bold text-neutral-800 dark:text-[#f0ece4] line-clamp-1 group-hover:text-[#f97316] transition-colors">{item.name}</h4>
-                          <span className="text-[14px] font-extrabold text-neutral-850 dark:text-[#f0ece4] tabular-nums font-mono">₹{item.price}</span>
+                          <h4 className="text-[14px] font-bold text-[#f5efe2] line-clamp-1 group-hover:text-[#f0a040] transition-colors">{item.name}</h4>
+                          <span className="text-[14px] font-extrabold text-[#f5efe2] tabular-nums font-mono-dashboard">₹{item.price}</span>
                         </div>
                         {item.description ? (
-                          <p className="text-[11px] text-neutral-500 dark:text-[#9a9488] line-clamp-2 leading-relaxed min-h-[32px]">{item.description}</p>
+                          <p className="text-[11px] text-[#f5efe2]/60 line-clamp-2 leading-relaxed min-h-[32px]">{item.description}</p>
                         ) : (
-                          <p className="text-[11px] text-neutral-400 dark:text-[#444444] italic line-clamp-2 leading-relaxed min-h-[32px]">No description added for this dish.</p>
+                          <p className="text-[11px] text-[#f5efe2]/40 italic line-clamp-2 leading-relaxed min-h-[32px]">No description added for this dish.</p>
                         )}
                       </div>
                     </div>
 
                     {/* Bottom Card Footer Actions Panel */}
-                    <div className="px-4 pb-4 pt-1 flex gap-2 border-t border-neutral-100 dark:border-[rgba(255,255,255,0.03)] bg-neutral-50/30 dark:bg-[#131313]/30">
+                    <div className="px-4 pb-4 pt-1 flex gap-2 border-t border-[rgba(255,255,255,0.04)] bg-white/[0.01]">
                       <button
                         onClick={() => openDrawerForEdit(item)}
-                        className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-xl bg-white dark:bg-[#161616] border border-neutral-250 dark:border-[rgba(255,255,255,0.06)] hover:bg-neutral-50 dark:hover:bg-[#222] text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4] text-[11px] font-bold transition-all shadow-xs"
+                        className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-xl bg-white/[0.02] border border-[rgba(255,255,255,0.08)] hover:bg-white/[0.04] text-[#f5efe2]/60 hover:text-[#f5efe2] text-[11px] font-bold transition-all"
                       >
                         <Edit size={12} /> Edit Details
                       </button>
                       <button
                         onClick={() => deleteItem(activeCategory.id, item.id)}
-                        className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/10 border border-transparent hover:border-red-200 dark:hover:border-red-900/30 text-red-500 hover:text-red-400 text-[11px] flex items-center justify-center transition-all"
+                        className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-transparent hover:border-red-500/20 text-[#e85a2a] hover:text-red-400 text-[11px] flex items-center justify-center transition-all"
                         title="Delete Dish"
                       >
                         <Trash2 size={12} />
@@ -902,14 +904,14 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                   <motion.button
                     layout
                     onClick={openDrawerForAdd}
-                    className="h-full min-h-[225px] rounded-2xl border-2 border-dashed border-neutral-350 dark:border-[rgba(255,255,255,0.08)] hover:border-[#f97316]/30 bg-neutral-50/50 dark:bg-[#0f0f0f] hover:bg-white dark:hover:bg-[#121212]/50 text-neutral-400 dark:text-[#5a5650] hover:text-[#f97316] transition-all flex flex-col items-center justify-center p-6 gap-3 group"
+                    className="h-full min-h-[225px] rounded-2xl border-2 border-dashed border-[rgba(255,255,255,0.08)] hover:border-[#f0a040]/30 bg-white/[0.01] hover:bg-white/[0.02] text-[#f5efe2]/40 hover:text-[#f0a040] transition-all flex flex-col items-center justify-center p-6 gap-3 group"
                   >
-                    <div className="w-10 h-10 rounded-full border border-dashed border-neutral-300 dark:border-[rgba(255,255,255,0.12)] group-hover:border-[#f97316]/30 flex items-center justify-center transition-all">
+                    <div className="w-10 h-10 rounded-full border border-dashed border-[rgba(255,255,255,0.12)] group-hover:border-[#f0a040]/30 flex items-center justify-center transition-all">
                       <Plus className="size-4 group-hover:scale-110 transition-transform" />
                     </div>
                     <div className="text-center">
                       <p className="text-[12px] font-bold">Add Menu Item</p>
-                      <p className="text-[10px] text-neutral-400 dark:text-[#5a5650] group-hover:text-[#9a9488] transition-colors mt-0.5 max-w-[150px] mx-auto">
+                      <p className="text-[10px] text-[#f5efe2]/40 group-hover:text-[#f5efe2]/60 transition-colors mt-0.5 max-w-[150px] mx-auto">
                         Insert a new specialty under this category
                       </p>
                     </div>
@@ -925,18 +927,18 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#111] rounded-2xl border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] text-center px-4"
+              className="flex flex-col items-center justify-center py-20 bg-white/[0.02] rounded-2xl border border-[rgba(255,255,255,0.08)] text-center px-4"
             >
-              <div className="w-14 h-14 rounded-2xl bg-neutral-50 dark:bg-[#161616] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] flex items-center justify-center mx-auto mb-4">
-                <Utensils className="size-6 text-neutral-400 dark:text-[#5a5650]" />
+              <div className="w-14 h-14 rounded-2xl bg-white/[0.02] border border-[rgba(255,255,255,0.08)] flex items-center justify-center mx-auto mb-4">
+                <Utensils className="size-6 text-[#f5efe2]/40" />
               </div>
-              <p className="text-[15px] font-bold text-neutral-800 dark:text-[#f0ece4] mb-1">
+              <p className="text-[15px] font-bold text-[#f5efe2] mb-1">
                 {searchQuery || vegFilter !== "all" || availabilityFilter !== "all" 
                   ? "No matching menu items" 
                   : "No dishes added yet"
                 }
               </p>
-              <p className="text-[12px] text-neutral-500 dark:text-[#9a9488] mb-5 max-w-xs mx-auto">
+              <p className="text-[12px] text-[#f5efe2]/60 mb-5 max-w-xs mx-auto">
                 {searchQuery || vegFilter !== "all" || availabilityFilter !== "all"
                   ? "Try resetting your active search text or adjusting the dietary filters."
                   : `Start crafting your dishes or appetizers under this category to populate the menu.`
@@ -946,14 +948,14 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
               {searchQuery || vegFilter !== "all" || availabilityFilter !== "all" ? (
                 <button
                   onClick={() => { setSearchQuery(""); setVegFilter("all"); setAvailabilityFilter("all"); }}
-                  className="px-4 py-2 rounded-xl bg-white dark:bg-[#222] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] text-neutral-800 dark:text-[#f0ece4] hover:bg-neutral-50 dark:hover:bg-[#333] font-bold text-[11px] transition-colors"
+                  className="px-4 py-2 rounded-xl bg-white/[0.02] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] hover:bg-white/[0.04] font-bold text-[11px] transition-colors"
                 >
                   Reset Active Filters
                 </button>
               ) : (
                 <button
                   onClick={openDrawerForAdd}
-                  className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-[#f97316] text-white text-[12px] font-bold hover:bg-[#ea6c0a] shadow-lg shadow-[#f97316]/10"
+                  className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] text-[12px] font-bold hover:brightness-110 active:scale-95 shadow-lg shadow-amber-950/20 transition-all"
                 >
                   <Plus className="size-3.5" /> Add First Dish
                 </button>
@@ -973,7 +975,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setDrawerOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50"
+              className="fixed inset-0 bg-[#0b0a08]/80 backdrop-blur-sm z-50"
             />
             
             {/* Workspace Drawer */}
@@ -982,25 +984,25 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 26, stiffness: 220 }}
-              className="fixed top-0 right-0 bottom-0 w-full sm:w-[460px] bg-white dark:bg-[#0d0d0d] border-l border-neutral-200 dark:border-[rgba(255,255,255,0.08)] shadow-2xl z-50 flex flex-col justify-between"
+              className="fixed top-0 right-0 bottom-0 w-full sm:w-[460px] bg-[#0b0a08] border-l border-[rgba(255,255,255,0.08)] shadow-2xl z-50 flex flex-col justify-between"
             >
               {/* Drawer Scrollable Content */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6 pr-4 scrollbar-thin">
                 
                 {/* Drawer Header */}
-                <div className="flex items-center justify-between pb-4.5 border-b border-neutral-200 dark:border-[rgba(255,255,255,0.06)]">
+                <div className="flex items-center justify-between pb-4.5 border-b border-[rgba(255,255,255,0.08)]">
                   <div>
-                    <h3 className="text-[17px] font-extrabold text-neutral-800 dark:text-[#f0ece4] tracking-tight">
+                    <h3 className="text-xl font-bold text-[#f5efe2]">
                       {drawerMode === "add" ? "Create New Dish" : "Edit Dish Details"}
                     </h3>
-                    <p className="text-[11px] text-neutral-500 dark:text-[#9a9488] mt-1 font-medium">
+                    <p className="text-[11px] text-[#f5efe2]/60 mt-1 font-medium">
                       {drawerMode === "add" ? "Define a premium menu item under " : "Manage specifications for "}
-                      <span className="text-[#f97316] font-bold">{activeCategory?.name}</span>
+                      <span className="text-[#f0a040] font-bold">{activeCategory?.name}</span>
                     </p>
                   </div>
                   <button
                     onClick={() => setDrawerOpen(false)}
-                    className="w-8 h-8 rounded-xl bg-neutral-100 dark:bg-[#161616] border border-neutral-200 dark:border-[rgba(255,255,255,0.06)] hover:bg-neutral-200 dark:hover:bg-[#222] text-[#5a5650] hover:text-neutral-800 dark:hover:text-[#f0ece4] flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-xl bg-white/[0.02] border border-[rgba(255,255,255,0.08)] hover:bg-white/[0.04] text-[#f5efe2]/60 hover:text-[#f5efe2] flex items-center justify-center transition-colors"
                   >
                     <X className="size-4" />
                   </button>
@@ -1011,57 +1013,57 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                   
                   {/* Name Input */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="drawer-item-name" className="text-neutral-500 dark:text-[#9a9488] text-[10px] font-bold uppercase tracking-wider block">Dish Name *</Label>
+                    <Label htmlFor="drawer-item-name" className="text-[#f5efe2]/40 text-[10px] font-bold uppercase tracking-wider block">Dish Name *</Label>
                     <Input
                       id="drawer-item-name"
                       autoFocus
                       value={drawerItemData.name}
                       onChange={e => setDrawerItemData({ ...drawerItemData, name: e.target.value })}
                       placeholder="e.g. Tandoori Butter Soya Chaap"
-                      className="h-10 bg-neutral-50 dark:bg-[#141414] border-neutral-200 dark:border-[rgba(255,255,255,0.08)] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#444] focus:border-[#f97316] focus:ring-0 text-[13px] rounded-xl"
+                      className="h-10 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] placeholder-[#f5efe2]/20 focus:border-[#f0a040]/50 focus:ring-0 text-[13px] rounded-xl outline-none"
                     />
                   </div>
                   
                   {/* Price Input */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="drawer-item-price" className="text-neutral-500 dark:text-[#9a9488] text-[10px] font-bold uppercase tracking-wider block">Retail Price (₹) *</Label>
+                    <Label htmlFor="drawer-item-price" className="text-[#f5efe2]/40 text-[10px] font-bold uppercase tracking-wider block">Retail Price (₹) *</Label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-[#5a5650] text-[13px] font-bold font-mono">₹</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#f5efe2]/40 text-[13px] font-bold font-mono-dashboard">₹</span>
                       <Input
                         id="drawer-item-price"
                         type="number"
                         value={drawerItemData.price}
                         onChange={e => setDrawerItemData({ ...drawerItemData, price: e.target.value })}
                         placeholder="299"
-                        className="h-10 pl-8 bg-neutral-50 dark:bg-[#141414] border-neutral-200 dark:border-[rgba(255,255,255,0.08)] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#444] focus:border-[#f97316] focus:ring-0 text-[13px] rounded-xl font-mono"
+                        className="h-10 pl-8 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] placeholder-[#f5efe2]/20 focus:border-[#f0a040]/50 focus:ring-0 text-[13px] rounded-xl font-mono-dashboard outline-none"
                       />
                     </div>
                   </div>
                   
                   {/* Description text input */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="drawer-item-desc" className="text-neutral-500 dark:text-[#9a9488] text-[10px] font-bold uppercase tracking-wider block">Description Specifications</Label>
+                    <Label htmlFor="drawer-item-desc" className="text-[#f5efe2]/40 text-[10px] font-bold uppercase tracking-wider block">Description Specifications</Label>
                     <textarea
                       id="drawer-item-desc"
                       rows={3}
                       value={drawerItemData.description}
                       onChange={e => setDrawerItemData({ ...drawerItemData, description: e.target.value })}
                       placeholder="Ingredients, heat score, allergy warning, and flavor profile details..."
-                      className="w-full p-3 bg-neutral-50 dark:bg-[#141414] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] text-neutral-800 dark:text-[#f0ece4] placeholder-neutral-400 dark:placeholder-[#444] focus:border-[#f97316] focus:ring-0 text-[13px] rounded-xl outline-none resize-none transition-colors"
+                      className="w-full p-3 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] placeholder-[#f5efe2]/20 focus:border-[#f0a040]/50 focus:ring-0 text-[13px] rounded-xl outline-none resize-none transition-colors"
                     />
                   </div>
                   
                   {/* Veg / Non-Veg Toggle (Segmented control style) */}
                   <div className="space-y-1.5">
-                    <Label className="text-neutral-500 dark:text-[#9a9488] text-[10px] font-bold uppercase tracking-wider block mb-1">Dietary Preference</Label>
-                    <div className="grid grid-cols-2 gap-2 bg-neutral-50 dark:bg-[#121212] p-1.5 rounded-xl border border-neutral-200 dark:border-[rgba(255,255,255,0.06)]">
+                    <Label className="text-[#f5efe2]/40 text-[10px] font-bold uppercase tracking-wider block mb-1">Dietary Preference</Label>
+                    <div className="grid grid-cols-2 gap-2 bg-white/[0.01] p-1.5 rounded-xl border border-[rgba(255,255,255,0.06)]">
                       <button
                         type="button"
                         onClick={() => setDrawerItemData({ ...drawerItemData, isVeg: true })}
                         className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-bold transition-all ${
                           drawerItemData.isVeg
-                            ? "bg-[rgba(34,197,94,0.12)] border border-[#22c55e]/30 text-[#22c55e] dark:text-[#4ade80]"
-                            : "text-neutral-500 dark:text-[#5a5650] hover:text-neutral-850"
+                            ? "bg-[rgba(82,210,122,0.12)] border border-[#52d27a]/30 text-[#52d27a]"
+                            : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                         }`}
                       >
                         <Leaf className="size-3.5" /> Veg
@@ -1071,8 +1073,8 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                         onClick={() => setDrawerItemData({ ...drawerItemData, isVeg: false })}
                         className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-bold transition-all ${
                           !drawerItemData.isVeg
-                            ? "bg-[rgba(239,68,68,0.12)] border border-[#ef4444]/30 text-[#ef4444] dark:text-[#f87171]"
-                            : "text-neutral-500 dark:text-[#5a5650] hover:text-neutral-850"
+                            ? "bg-[rgba(232,90,42,0.12)] border border-[#e85a2a]/30 text-[#e85a2a]"
+                            : "text-[#f5efe2]/40 hover:text-[#f5efe2]"
                         }`}
                       >
                         <Drumstick className="size-3.5" /> Non-Veg
@@ -1082,25 +1084,25 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                   
                   {/* Base64 Photo Upload block */}
                   <div className="space-y-1.5">
-                    <Label className="text-neutral-500 dark:text-[#9a9488] text-[10px] font-bold uppercase tracking-wider block">Dish Photo Layout</Label>
+                    <Label className="text-[#f5efe2]/40 text-[10px] font-bold uppercase tracking-wider block">Dish Photo Layout</Label>
                     {drawerItemData.image ? (
-                      <div className="relative aspect-video rounded-xl overflow-hidden border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] bg-neutral-50 dark:bg-[#161616]">
+                      <div className="relative aspect-video rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-white/[0.02]">
                         <img src={drawerItemData.image} alt="Dish representation" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => setDrawerItemData({ ...drawerItemData, image: "" })}
-                          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#ef4444] text-white flex items-center justify-center shadow-lg hover:bg-[#ea3838] transition-colors"
+                          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#e85a2a] text-[#0b0a08] flex items-center justify-center shadow-lg hover:brightness-110 transition-colors"
                         >
                           <X className="size-4" />
                         </button>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center border border-dashed border-neutral-300 dark:border-[rgba(255,255,255,0.08)] hover:border-[#f97316]/50 rounded-xl p-6 cursor-pointer bg-neutral-50 dark:bg-[#141414] hover:bg-neutral-100 dark:hover:bg-[#181818]/30 transition-all text-center">
-                        <div className="w-9 h-9 rounded-xl bg-neutral-200 dark:bg-white/5 flex items-center justify-center mb-2">
-                          <ImagePlus className="size-4.5 text-neutral-500 dark:text-[#9a9488]" />
+                      <label className="flex flex-col items-center justify-center border border-dashed border-[rgba(255,255,255,0.08)] hover:border-[#f0a040]/50 rounded-xl p-6 cursor-pointer bg-white/[0.01] hover:bg-white/[0.02] transition-all text-center">
+                        <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center mb-2">
+                          <ImagePlus className="size-4.5 text-[#f5efe2]/40" />
                         </div>
-                        <span className="text-[12px] font-bold text-neutral-800 dark:text-[#f0ece4]">Upload premium dish graphic</span>
-                        <span className="text-[10px] text-neutral-400 dark:text-[#5a5650] mt-0.5">Recommended 16:9 aspect ratio, under 2MB</span>
+                        <span className="text-[12px] font-bold text-[#f5efe2]">Upload premium dish graphic</span>
+                        <span className="text-[10px] text-[#f5efe2]/40 mt-0.5">Recommended 16:9 aspect ratio, under 2MB</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -1117,18 +1119,18 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
               </div>
               
               {/* Drawer Footer Actions panel */}
-              <div className="p-6 border-t border-neutral-200 dark:border-[rgba(255,255,255,0.06)] bg-neutral-50/50 dark:bg-[#111111]/40 flex gap-3">
+              <div className="p-6 border-t border-[rgba(255,255,255,0.06)] bg-white/[0.01] flex gap-3">
                 <button
                   onClick={handleDrawerSave}
                   disabled={!drawerItemData.name.trim() || !drawerItemData.price}
-                  className="flex-1 py-2.5 rounded-xl bg-[#f97316] text-white font-bold text-[12px] hover:bg-[#ea6c0a] disabled:opacity-50 disabled:hover:bg-[#f97316] transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-[#f97316]/10"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] font-bold text-[12px] hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100 transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-amber-950/20"
                 >
                   {drawerMode === "add" ? <Plus size={14} /> : <Check size={14} />}
                   {drawerMode === "add" ? "Create Dish Item" : "Confirm Modification"}
                 </button>
                 <button
                   onClick={() => setDrawerOpen(false)}
-                  className="px-5 py-2.5 rounded-xl bg-neutral-100 dark:bg-[#161616] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4] font-bold text-[12px] transition-colors"
+                  className="px-5 py-2.5 rounded-xl bg-white/[0.02] border border-[rgba(255,255,255,0.08)] text-[#f5efe2]/60 hover:text-[#f5efe2] font-bold text-[12px] transition-colors"
                 >
                   Cancel
                 </button>

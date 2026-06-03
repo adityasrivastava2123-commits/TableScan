@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import Sidebar from "@/components/dashboard/Sidebar";
+import Topbar from "@/components/dashboard/Topbar";
 import AIAssistant from "@/components/dashboard/AIAssistant";
 import Breadcrumbs from "@/components/dashboard/Breadcrumbs";
 import BroadcastBanner from "@/components/dashboard/BroadcastBanner";
@@ -49,15 +50,31 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[#f9f9f6] dark:bg-[#0a0a0a] text-neutral-800 dark:text-[#f0ece4] overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[#0b0a08] text-[#f5efe2] overflow-hidden relative">
+      {/* ── Google Fonts & custom styles for all dashboard sub-pages ── */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+        .font-editorial {
+          font-family: 'Cormorant Garamond', serif;
+        }
+        .font-mono-dashboard {
+          font-family: 'JetBrains Mono', monospace;
+        }
+      `}} />
+
+      {/* ── Ambient Background Glows ── */}
+      <div className="pointer-events-none fixed top-[-100px] left-[-100px] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#e8923a]/10 to-transparent blur-[140px] z-0" />
+      <div className="pointer-events-none fixed bottom-[-150px] right-[-100px] w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-[#b1421a]/8 to-transparent blur-[140px] z-0" />
+
       <Sidebar
         restaurant={restaurant}
         restaurantOpen={restaurantOpen}
       />
       <AIAssistant restaurant={restaurant} />
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0 relative z-10">
         <BroadcastBanner />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <Topbar />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 relative">
           <Breadcrumbs />
           {children}
         </main>

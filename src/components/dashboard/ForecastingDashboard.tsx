@@ -14,9 +14,6 @@ import {
   ReferenceLine,
 } from "recharts";
 import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
   AlertTriangle,
   RefreshCw,
   Brain,
@@ -82,30 +79,29 @@ const inr = new Intl.NumberFormat("en-IN", {
 
 function getHeatmapColor(value: number): string {
   if (value === 0) return "rgba(255,255,255,0.03)";
-  if (value < 20) return "rgba(249,115,22,0.08)";
-  if (value < 40) return "rgba(249,115,22,0.2)";
-  if (value < 60) return "rgba(249,115,22,0.38)";
-  if (value < 80) return "rgba(249,115,22,0.58)";
-  return "rgba(249,115,22,0.85)";
+  if (value < 20) return "rgba(240, 160, 64, 0.08)";
+  if (value < 40) return "rgba(240, 160, 64, 0.2)";
+  if (value < 60) return "rgba(240, 160, 64, 0.38)";
+  if (value < 80) return "rgba(240, 160, 64, 0.58)";
+  return "rgba(240, 160, 64, 0.85)";
 }
 
 function getImpactColor(impact: string) {
   if (impact === "high") return { bg: "rgba(239,68,68,0.1)", text: "#f87171", dot: "#ef4444" };
-  if (impact === "medium") return { bg: "rgba(249,115,22,0.1)", text: "#f97316", dot: "#f97316" };
+  if (impact === "medium") return { bg: "rgba(240,160,64,0.1)", text: "#f0a040", dot: "#f0a040" };
   return { bg: "rgba(59,130,246,0.1)", text: "#60a5fa", dot: "#3b82f6" };
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] border border-neutral-200 dark:border-[rgba(255,255,255,0.1)] rounded-xl p-3 shadow-xl text-[12px]">
-      <p className="text-neutral-500 dark:text-[#9a9488] mb-2 font-medium">{label}</p>
+    <div className="bg-[#0b0a08] border border-[rgba(240,160,64,0.3)] rounded-lg p-3.5 shadow-xl text-[12px] font-mono-dashboard">
+      <p className="text-[#f5efe2]/40 mb-2 font-medium uppercase tracking-widest">{label}</p>
       {payload.map((entry: any, i: number) => (
         entry.value !== null && entry.value !== undefined && (
-          <div key={i} className="flex items-center gap-2 mb-1">
-            <div className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
-            <span className="text-neutral-500 dark:text-[#9a9488]">{entry.name === "actual" ? "Actual" : entry.name === "forecast" ? "Forecast" : entry.name}:</span>
-            <span className="text-neutral-800 dark:text-[#f0ece4] font-semibold">
+          <div key={i} className="flex items-center justify-between gap-6 mb-1 text-xs">
+            <span className="text-[#f5efe2]/60">{entry.name === "actual" ? "Actual" : entry.name === "forecast" ? "Forecast" : entry.name}:</span>
+            <span className="text-[#f5efe2] font-black">
               {typeof entry.value === "number" && entry.name !== "orders" && entry.name !== "forecastHigh" && entry.name !== "forecastLow"
                 ? inr.format(entry.value)
                 : entry.value}
@@ -116,12 +112,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     </div>
   );
 };
-
-function SkeletonCard({ className = "" }: { className?: string }) {
-  return (
-    <div className={`bg-neutral-100 dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl animate-pulse ${className}`} />
-  );
-}
 
 export default function ForecastingDashboard({ restaurant }: Props) {
   const [data, setData] = useState<ForecastData | null>(null);
@@ -150,27 +140,12 @@ export default function ForecastingDashboard({ restaurant }: Props) {
 
   if (loading) {
     return (
-      <div className="space-y-5">
-        {/* Header skeleton */}
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="h-8 w-64 bg-[#141414] rounded-lg animate-pulse mb-2" />
-            <div className="h-4 w-48 bg-[#141414] rounded animate-pulse" />
-          </div>
-          <div className="h-9 w-28 bg-[#141414] rounded-lg animate-pulse" />
-        </div>
-        {/* KPI row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-          {[1, 2, 3, 4].map((i) => <SkeletonCard key={i} className="h-28" />)}
-        </div>
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-3.5">
-          <SkeletonCard className="h-72" />
-          <SkeletonCard className="h-72" />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-          <SkeletonCard className="h-56" />
-          <SkeletonCard className="h-56" />
+      <div className="space-y-6 pt-2">
+        <div className="h-8 animate-pulse bg-neutral-900 rounded" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-28 animate-pulse bg-neutral-950 rounded-xl border border-neutral-800" />
+          ))}
         </div>
       </div>
     );
@@ -179,15 +154,15 @@ export default function ForecastingDashboard({ restaurant }: Props) {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <AlertTriangle className="w-12 h-12 text-[#f97316] mb-4" />
-        <h2 className="text-xl font-bold text-[#f0ece4] mb-2">Failed to load forecast</h2>
-        <p className="text-[#9a9488] mb-6 text-sm">There was an error computing your forecast data.</p>
+        <AlertTriangle className="w-12 h-12 text-[#f0a040] mb-4" />
+        <h2 className="text-xl font-bold text-[#f5efe2] mb-2">Failed to Load Forecast</h2>
+        <p className="text-[#f5efe2]/40 mb-6 text-sm">There was an error computing your forecast data.</p>
         <button
           onClick={fetchForecast}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#f97316] text-white rounded-lg text-sm font-semibold hover:bg-[#ea6c0a] transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] rounded-lg text-xs font-black tracking-wider hover:brightness-110 transition-all flex items-center gap-2"
         >
           <RefreshCw className="w-4 h-4" />
-          Try Again
+          TRY AGAIN
         </button>
       </div>
     );
@@ -197,230 +172,236 @@ export default function ForecastingDashboard({ restaurant }: Props) {
 
   if (!data.hasEnoughData) {
     return (
-      <div className="space-y-5">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f97316] to-[#d97706] flex items-center justify-center">
-            <Brain className="w-5 h-5 text-white" />
+      <div className="space-y-8 relative">
+        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#f0a040] to-transparent absolute top-0 left-0 opacity-40 pointer-events-none" />
+        
+        <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#f0a040] bg-[#f0a040]/10 border border-[#f0a040]/20 px-3 py-1 rounded-full">
+                AI FORECASTING
+              </span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#f5efe2]">
+              Operational Intelligence
+            </h2>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight">AI Forecasting</h1>
-            <p className="text-[13px] text-neutral-500 dark:text-[#9a9488]">Predictive intelligence for your restaurant</p>
+        </section>
+
+        <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-12 text-center shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f0a040]/10 to-[#e85a2a]/10 border border-[#f0a040]/20 flex items-center justify-center mx-auto mb-5">
+            <Brain className="w-8 h-8 text-[#f0a040]" />
           </div>
-        </div>
-        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-2xl p-12 text-center shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[rgba(249,115,22,0.15)] to-[rgba(249,115,22,0.05)] border border-[rgba(249,115,22,0.2)] flex items-center justify-center mx-auto mb-5">
-            <Brain className="w-8 h-8 text-[#f97316]" />
-          </div>
-          <h2 className="text-xl font-bold text-neutral-800 dark:text-[#f0ece4] mb-3">Not enough data yet</h2>
-          <p className="text-neutral-600 dark:text-[#9a9488] text-sm max-w-md mx-auto leading-relaxed mb-2">
-            AI forecasting needs at least 5 orders to start detecting patterns. Right now you have <span className="text-[#f97316] font-semibold">{data.totalOrdersAnalyzed} order{data.totalOrdersAnalyzed !== 1 ? "s" : ""}</span>.
+          <h2 className="text-xl font-bold text-[#f5efe2] mb-3">Insufficient Order History</h2>
+          <p className="text-[#f5efe2]/60 text-sm max-w-md mx-auto leading-relaxed mb-2 font-serif italic">
+            Predictive modeling requires at least 5 orders to identify food patterns. Currently analyzed: <span className="text-[#f0a040] font-bold">{data.totalOrdersAnalyzed} order{data.totalOrdersAnalyzed !== 1 ? "s" : ""}</span>.
           </p>
-          <p className="text-neutral-400 dark:text-[#5a5650] text-xs">As your restaurant takes more orders, the AI will start predicting revenue, demand peaks, and smart recommendations.</p>
+          <p className="text-[#f5efe2]/30 text-xs font-mono-dashboard">As order volumes scale, forecasting algorithms will automatically kick in.</p>
         </div>
       </div>
     );
   }
 
   const { kpis, chartData, heatmap, topItems, recommendations } = data;
-
-  // Split chart into actual vs forecast zones
   const todayLabel = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
-    <div className="space-y-5">
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f97316] to-[#d97706] flex items-center justify-center shadow-lg shadow-[#f97316]/20 flex-shrink-0">
-            <Brain className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight">AI Forecasting</h1>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-gradient-to-r from-[rgba(249,115,22,0.15)] to-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.25)] rounded-full text-[10px] font-bold tracking-wider text-[#f97316]">
-                <Sparkles className="w-2.5 h-2.5" />
-                AI POWERED
-              </span>
-            </div>
-            <p className="text-[13px] text-neutral-500 dark:text-[#9a9488] mt-0.5">
-              Based on {data.totalOrdersAnalyzed} orders · Updated {lastUpdated?.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) || "just now"}
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={fetchForecast}
-          className="flex items-center gap-2 px-4 py-2.5 border border-neutral-200 dark:border-[rgba(255,255,255,0.12)] rounded-lg bg-transparent text-neutral-700 dark:text-[#f0ece4] text-[12px] font-medium hover:border-[#f97316] hover:text-[#f97316] transition-all self-start"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          Refresh Forecast
-        </button>
-      </div>
+    <div className="space-y-8 relative">
+      {/* Thin Saffron Accenting Border at top */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#f0a040] to-transparent absolute top-0 left-0 opacity-40 pointer-events-none" />
 
-      {/* ── KPI Strip ──────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+      {/* EDITORIAL HERO HEADER */}
+      <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#f0a040] bg-[#f0a040]/10 border border-[#f0a040]/20 px-3 py-1 rounded-full">
+              PREDICTIVE ENGINE
+            </span>
+            <span className="text-[10px] text-[#f5efe2]/40 font-mono-dashboard">
+              {new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" }).toUpperCase()}
+            </span>
+          </div>
+          
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#f5efe2] leading-none">
+            AI Forecasting Dashboard at <em className="font-editorial italic font-normal text-[#f0a040]">{restaurant.name}</em>
+          </h2>
+          
+          <p className="text-xs sm:text-sm text-[#f5efe2]/60 font-serif italic tracking-wide max-w-xl">
+            Forecast next-day revenue volume, identify traffic peaks, and optimize food inventories.
+          </p>
+        </div>
+
+        {/* Actions panel */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={fetchForecast}
+            className="px-4.5 py-3 border border-[rgba(255,255,255,0.08)] bg-white/[0.02] hover:bg-white/[0.04] rounded-lg text-xs font-semibold tracking-wider text-[#f5efe2] transition-all flex items-center gap-2 hover:border-[#f0a040]"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>REFRESH ENGINE</span>
+          </button>
+        </div>
+      </section>
+
+      {/* KPI Cards Strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <ForecastKPICard
           label="PREDICTED REVENUE"
           sublabel="Tomorrow"
           value={inr.format(kpis.predictedRevenue)}
-          icon="📈"
-          accentColor="#22c55e"
-          delay="0ms"
+          accentColor="#52d27a"
         />
         <ForecastKPICard
-          label="PREDICTED ORDERS"
+          label="PREDICTED COVERS"
           sublabel="Tomorrow"
           value={kpis.predictedOrders.toString()}
-          icon="🍽️"
-          accentColor="#3b82f6"
-          delay="75ms"
+          accentColor="#60a5fa"
         />
         <ForecastKPICard
           label="BUSIEST HOUR"
-          sublabel="Peak predicted"
+          sublabel="Peak traffic slot"
           value={kpis.busiestHour}
-          icon="⏰"
-          accentColor="#f97316"
-          delay="150ms"
+          accentColor="#f0a040"
         />
         <ForecastKPICard
           label="LOW-STOCK RISK"
           sublabel={kpis.lowStockRiskCount > 0 ? kpis.lowStockRiskItems[0] : "All items stable"}
           value={`${kpis.lowStockRiskCount} item${kpis.lowStockRiskCount !== 1 ? "s" : ""}`}
-          icon="📦"
-          accentColor={kpis.lowStockRiskCount > 0 ? "#ef4444" : "#22c55e"}
-          delay="225ms"
+          accentColor={kpis.lowStockRiskCount > 0 ? "#ef4444" : "#52d27a"}
         />
       </div>
 
-      {/* ── Demand Forecast Chart + Heatmap ────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] gap-3.5">
-        {/* Forecast Chart */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[14px] text-[#f97316]">♦</span>
-              <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">Revenue Forecast</span>
+      {/* Demand Forecast Chart & Heatmap */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] gap-6 items-stretch">
+        
+        {/* Forecast Line Plot */}
+        <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 flex flex-col justify-between shadow-xl min-h-[350px] relative overflow-hidden">
+          <div>
+            <div className="flex items-center justify-between mb-4 border-b border-[rgba(255,255,255,0.05)] pb-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold tracking-[0.2em] text-[#f0a040] uppercase">REVENUE FORECAST</span>
+                <h4 className="text-base font-bold text-[#f5efe2]">14 Days Actual + 3 Day AI Projection</h4>
+              </div>
+              <div className="flex items-center gap-4 text-[10px] font-mono-dashboard uppercase">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-1.5 bg-[#f0a040]" />
+                  <span className="text-[#f5efe2]/40">Actual</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-0.5 border-t-2 border-dashed border-[#f0a040]" />
+                  <span className="text-[#f5efe2]/40">Forecast</span>
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-4 text-[10px]">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-6 h-0.5 bg-[#f97316]" />
-                <span className="text-[#9a9488]">Actual</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-6 h-0.5 bg-[#f97316] opacity-50 border-dashed" style={{ borderTop: "2px dashed #f97316", height: "0px" }} />
-                <span className="text-[#9a9488]">Forecast</span>
-              </span>
+
+            <div className="flex-1 w-full min-h-[220px] mt-4">
+              <ResponsiveContainer width="100%" height={210}>
+                <ComposedChart data={chartData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
+                  <defs>
+                    <linearGradient id="fg-actual" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f0a040" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="#e85a2a" stopOpacity={0.02} />
+                    </linearGradient>
+                    <linearGradient id="fg-forecast" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f0a040" stopOpacity={0.15} />
+                      <stop offset="100%" stopColor="#e85a2a" stopOpacity={0.01} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis
+                    dataKey="date"
+                    stroke="rgba(245, 239, 226, 0.3)"
+                    fontSize={9}
+                    tickLine={false}
+                    interval={2}
+                    fontFamily="JetBrains Mono"
+                  />
+                  <YAxis
+                    stroke="rgba(245, 239, 226, 0.3)"
+                    fontSize={9}
+                    tickLine={false}
+                    axisLine={false}
+                    fontFamily="JetBrains Mono"
+                    tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <ReferenceLine x={todayLabel} stroke="rgba(240, 160, 64, 0.4)" strokeDasharray="4 2" label={{ value: "Today", fontSize: 8, fill: "#f0a040", position: "insideTop", fontFamily: "JetBrains Mono" }} />
+                  <Area
+                    type="monotone"
+                    dataKey="actual"
+                    stroke="#f0a040"
+                    strokeWidth={2}
+                    fill="url(#fg-actual)"
+                    connectNulls={false}
+                    dot={false}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="forecastHigh"
+                    stroke="transparent"
+                    fill="url(#fg-forecast)"
+                    connectNulls={false}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="forecast"
+                    stroke="#f0a040"
+                    strokeWidth={2}
+                    strokeDasharray="6 3"
+                    dot={{ r: 3, fill: "#f0a040", strokeWidth: 0 }}
+                    connectNulls={false}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
             </div>
           </div>
-          <p className="text-[11px] text-[#5a5650] mb-4">14 days actual + 3 day AI projection</p>
-
-          <ResponsiveContainer width="100%" height={210}>
-            <ComposedChart data={chartData} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="fg-actual" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f97316" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#f97316" stopOpacity={0.02} />
-                </linearGradient>
-                <linearGradient id="fg-forecast" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f97316" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="#f97316" stopOpacity={0.01} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis
-                dataKey="date"
-                stroke="#5a5650"
-                fontSize={8}
-                tickLine={false}
-                interval={2}
-              />
-              <YAxis
-                stroke="#5a5650"
-                fontSize={8}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine x={todayLabel} stroke="rgba(249,115,22,0.4)" strokeDasharray="4 2" label={{ value: "Today", fontSize: 8, fill: "#f97316", position: "insideTop" }} />
-              {/* Actual area */}
-              <Area
-                type="monotone"
-                dataKey="actual"
-                stroke="#f97316"
-                strokeWidth={2}
-                fill="url(#fg-actual)"
-                connectNulls={false}
-                dot={false}
-                activeDot={{ r: 4, fill: "#f97316" }}
-              />
-              {/* Confidence band */}
-              <Area
-                type="monotone"
-                dataKey="forecastHigh"
-                stroke="transparent"
-                fill="url(#fg-forecast)"
-                connectNulls={false}
-                dot={false}
-                activeDot={false}
-              />
-              {/* Forecast line */}
-              <Line
-                type="monotone"
-                dataKey="forecast"
-                stroke="#f97316"
-                strokeWidth={2}
-                strokeDasharray="6 3"
-                dot={{ r: 3, fill: "#f97316", strokeWidth: 0 }}
-                connectNulls={false}
-                activeDot={{ r: 5 }}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
         </div>
 
-        {/* Peak Hours Heatmap */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[14px]">🔥</span>
-            <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">Peak Hours Map</span>
-          </div>
-          <p className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">Order density by day & hour</p>
-
-          <div className="overflow-x-auto">
-            {/* Hour labels — only show a subset to avoid crowding */}
-            <div className="flex gap-[2px] mb-1 pl-8">
-              {heatmap.hours.map((h, i) => (
-                <div
-                  key={i}
-                  className="text-[7px] text-[#5a5650] text-center flex-1 min-w-[10px]"
-                  style={{ display: [0, 6, 12, 18].includes(i) ? "block" : "none" }}
-                >
-                  {h}
-                </div>
-              ))}
+        {/* Heatmap Card */}
+        <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1 border-b border-[rgba(255,255,255,0.05)] pb-4">
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[#e85a2a] uppercase">PEAK HOURS MAP</span>
             </div>
-            {heatmap.data.map((row, dayIdx) => (
-              <div key={dayIdx} className="flex items-center gap-[2px] mb-[2px]">
-                <div className="text-[9px] text-[#5a5650] w-7 flex-shrink-0 text-right pr-1">
-                  {heatmap.days[dayIdx]}
+            <p className="text-[11px] text-[#f5efe2]/40 font-serif italic mb-4">Order density matrix by day & hour</p>
+
+            <div className="overflow-x-auto custom-scrollbar">
+              <div className="min-w-[280px]">
+                {/* Hour labels */}
+                <div className="flex gap-[2px] mb-1 pl-8">
+                  {heatmap.hours.map((h, i) => (
+                    <div
+                      key={i}
+                      className="text-[7px] text-[#f5efe2]/30 text-center flex-1 min-w-[10px] font-mono-dashboard"
+                      style={{ display: [0, 6, 12, 18].includes(i) ? "block" : "none" }}
+                    >
+                      {h}
+                    </div>
+                  ))}
                 </div>
-                {row.map((val, hourIdx) => (
-                  <div
-                    key={hourIdx}
-                    className="flex-1 h-[18px] rounded-[2px] min-w-[10px]"
-                    style={{ background: getHeatmapColor(val) }}
-                    title={`${heatmap.days[dayIdx]} ${heatmap.hours[hourIdx]}: ${val}% intensity`}
-                  />
+                {heatmap.data.map((row, dayIdx) => (
+                  <div key={dayIdx} className="flex items-center gap-[2px] mb-[2px]">
+                    <div className="text-[9px] text-[#f5efe2]/40 w-7 flex-shrink-0 text-right pr-1.5 font-mono-dashboard uppercase">
+                      {heatmap.days[dayIdx]}
+                    </div>
+                    {row.map((val, hourIdx) => (
+                      <div
+                        key={hourIdx}
+                        className="flex-1 h-[18px] rounded-[2px] min-w-[10px]"
+                        style={{ background: getHeatmapColor(val) }}
+                        title={`${heatmap.days[dayIdx]} ${heatmap.hours[hourIdx]}: ${val}% intensity`}
+                      />
+                    ))}
+                  </div>
                 ))}
               </div>
-            ))}
+            </div>
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-end gap-2 mt-3">
-            <span className="text-[9px] text-[#5a5650]">Low</span>
+          <div className="flex items-center justify-end gap-2 mt-4 text-[9px] font-mono-dashboard uppercase text-[#f5efe2]/40">
+            <span>Low</span>
             {[0, 20, 40, 60, 80].map((v) => (
               <div
                 key={v}
@@ -428,151 +409,148 @@ export default function ForecastingDashboard({ restaurant }: Props) {
                 style={{ background: getHeatmapColor(v) }}
               />
             ))}
-            <span className="text-[9px] text-[#5a5650]">High</span>
+            <span>High</span>
           </div>
         </div>
       </div>
 
-      {/* ── Top Items + Recommendations ───────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-        {/* Top Item Demand */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[14px]">🍽️</span>
-            <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">Item Demand Forecast</span>
-          </div>
-          <p className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">Top items with predicted demand & trend vs. last 7 days</p>
+      {/* Top Selling Items & AI Recommendations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Item Demand Forecast */}
+        <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4 border-b border-[rgba(255,255,255,0.05)] pb-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold tracking-[0.2em] text-[#f0a040] uppercase">ITEM DEMAND FORECAST</span>
+                <h4 className="text-base font-bold text-[#f5efe2]">Dish Performance Metrics</h4>
+              </div>
+            </div>
 
-          <div className="space-y-0">
-            {topItems.slice(0, 5).map((item, idx) => {
-              const isUp = item.trend > 5;
-              const isDown = item.trend < -5;
-              const maxRevenue = topItems[0]?.revenue || 1;
+            <div className="space-y-1">
+              {topItems.slice(0, 5).map((item, idx) => {
+                const isUp = item.trend > 5;
+                const isDown = item.trend < -5;
+                const maxRevenue = topItems[0]?.revenue || 1;
 
-              return (
-                <div
-                  key={idx}
-                  className="flex items-center gap-3 py-3 border-b border-[rgba(255,255,255,0.06)] last:border-0"
-                >
-                  <span className="w-5 h-5 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[9px] font-bold text-[#5a5650] flex-shrink-0">
-                    {idx + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[13px] text-[#f0ece4] font-medium truncate">{item.name}</span>
-                      <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                        <span
-                          className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                            isUp
-                              ? "bg-[rgba(34,197,94,0.15)] text-[#4ade80]"
-                              : isDown
-                              ? "bg-[rgba(239,68,68,0.15)] text-[#f87171]"
-                              : "bg-[rgba(255,255,255,0.06)] text-[#9a9488]"
-                          }`}
-                        >
-                          {isUp ? <ChevronUp className="w-3 h-3" /> : isDown ? <ChevronDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
-                          {Math.abs(item.trend)}%
-                        </span>
-                        <span className="text-[11px] text-[#5a5650]">~{item.predictedTomorrow} tmrw</span>
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3.5 py-3.5 border-b border-[rgba(255,255,255,0.05)] last:border-0"
+                  >
+                    <span className="w-6 h-6 rounded-lg bg-[rgba(240,160,64,0.1)] border border-[rgba(240,160,64,0.15)] flex items-center justify-center text-[10px] font-extrabold text-[#f0a040] flex-shrink-0">
+                      {idx + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-bold text-[#f5efe2] truncate">{item.name}</span>
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-2 font-mono-dashboard">
+                          <span
+                            className={`flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.5 rounded-full ${
+                              isUp
+                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                : isDown
+                                ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                                : "bg-white/5 text-[#f5efe2]/40 border border-white/10"
+                            }`}
+                          >
+                            {isUp ? <ChevronUp className="w-2.5 h-2.5" /> : isDown ? <ChevronDown className="w-2.5 h-2.5" /> : null}
+                            {Math.abs(item.trend)}%
+                          </span>
+                          <span className="text-[10px] text-[#f5efe2]/40">~{item.predictedTomorrow} tmrw</span>
+                        </div>
+                      </div>
+                      <div className="bg-white/5 rounded-full h-1">
+                        <div
+                          className="h-1 rounded-full bg-gradient-to-r from-[#f0a040] to-[#e85a2a] transition-all duration-700"
+                          style={{ width: `${Math.max(4, (item.revenue / maxRevenue) * 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-1 text-[9px] font-mono-dashboard text-[#f5efe2]/40">
+                        <span>{item.total} sold today</span>
+                        <span>{inr.format(item.revenue)}</span>
                       </div>
                     </div>
-                    <div className="bg-[#1a1a1a] rounded-full h-1.5">
-                      <div
-                        className="h-1.5 rounded-full bg-gradient-to-r from-[#f97316] to-[#f59e0b] transition-all duration-700"
-                        style={{ width: `${Math.max(4, (item.revenue / maxRevenue) * 100)}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between mt-1">
-                      <span className="text-[9px] text-[#5a5650]">{item.total} sold</span>
-                      <span className="text-[9px] text-[#5a5650]">{inr.format(item.revenue)}</span>
-                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
         {/* AI Recommendations */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[14px]">✦</span>
-            <span className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4]">AI Recommendations</span>
-          </div>
-          <p className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">Actionable insights from your data patterns</p>
+        <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4 border-b border-[rgba(255,255,255,0.05)] pb-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold tracking-[0.2em] text-[#e85a2a] uppercase">AI INSIGHTS</span>
+                <h4 className="text-base font-bold text-[#f5efe2]">Optimization Advisory</h4>
+              </div>
+            </div>
 
-          <div className="space-y-3">
-            {recommendations.slice(0, 4).map((rec, idx) => {
-              const colors = getImpactColor(rec.impact);
-              return (
-                <div
-                  key={idx}
-                  className="flex gap-3 p-3 rounded-xl border border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,255,255,0.1)] transition-colors"
-                  style={{ background: colors.bg }}
-                >
-                  <span className="text-[18px] flex-shrink-0 mt-0.5">{rec.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <p className="text-[12px] font-semibold text-[#f0ece4] leading-snug">{rec.title}</p>
-                      <span
-                        className="text-[8px] font-bold tracking-widest px-1.5 py-0.5 rounded uppercase flex-shrink-0"
-                        style={{ background: `${colors.dot}20`, color: colors.text }}
-                      >
-                        {rec.impact}
-                      </span>
+            <div className="space-y-3.5">
+              {recommendations.slice(0, 4).map((rec, idx) => {
+                const colors = getImpactColor(rec.impact);
+                return (
+                  <div
+                    key={idx}
+                    className="flex gap-3.5 p-4 rounded-xl border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] transition-colors"
+                    style={{ background: colors.bg }}
+                  >
+                    <span className="text-[18px] flex-shrink-0 mt-0.5">{rec.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-[#f5efe2] leading-snug">{rec.title}</p>
+                        <span
+                          className="text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded-full uppercase flex-shrink-0 font-mono-dashboard"
+                          style={{ background: `${colors.dot}20`, color: colors.text }}
+                        >
+                          {rec.impact} impact
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#f5efe2]/60 leading-relaxed font-serif italic">{rec.description}</p>
                     </div>
-                    <p className="text-[11px] text-[#9a9488] leading-relaxed">{rec.description}</p>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   );
 }
 
-// ── KPI Card ─────────────────────────────────────────────────────────────────
-
 function ForecastKPICard({
   label,
   sublabel,
   value,
-  icon,
   accentColor,
-  delay,
 }: {
   label: string;
   sublabel: string;
   value: string;
-  icon: string;
   accentColor: string;
-  delay: string;
 }) {
   return (
-    <div
-      className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-[18px_20px] relative overflow-hidden hover:border-neutral-300 dark:hover:border-[rgba(255,255,255,0.13)] shadow-sm transition-all group"
-      style={{ animationDelay: delay }}
-    >
-      {/* Glow background on hover */}
+    <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-5 relative overflow-hidden group shadow-xl">
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-xl"
-        style={{ background: `radial-gradient(circle at 30% 50%, ${accentColor}12 0%, transparent 70%)` }}
+        style={{ background: `radial-gradient(circle at 30% 50%, ${accentColor}08 0%, transparent 70%)` }}
       />
       <div className="relative z-10">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[20px]">{icon}</span>
+        <div className="flex items-center justify-between mb-3.5 border-b border-[rgba(255,255,255,0.05)] pb-3">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-[#f5efe2]/40 uppercase">{label}</span>
           <div
             className="w-2 h-2 rounded-full"
             style={{ background: accentColor, boxShadow: `0 0 6px ${accentColor}` }}
           />
         </div>
-        <p className="text-[10px] tracking-wider uppercase text-neutral-400 dark:text-[#5a5650] mb-1.5">{label}</p>
-        <p className="text-[24px] font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight leading-none mb-1.5">
+        <p className="text-2xl md:text-3xl font-extrabold text-[#f5efe2] tracking-tight leading-none mb-1.5 font-mono-dashboard">
           {value}
         </p>
-        <p className="text-[11px] text-neutral-500 dark:text-[#5a5650]">{sublabel}</p>
+        <p className="text-[10px] text-[#f5efe2]/40 font-serif italic">{sublabel}</p>
       </div>
     </div>
   );

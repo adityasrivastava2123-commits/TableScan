@@ -23,7 +23,7 @@ export default async function SchedulePage() {
 
   return (
     <div className="w-full">
-      <StaffScheduling restaurantId={restaurant.id} />
+      <StaffScheduling restaurantId={restaurant.id} restaurant={restaurant} />
     </div>
   );
 }

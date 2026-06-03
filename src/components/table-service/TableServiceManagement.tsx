@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, User, Clock, CheckCircle, XCircle, AlertCircle, Users, Plus, MessageSquare, Send, Check } from "lucide-react";
+import { MapPin, User, Clock, CheckCircle, Table as TableIcon, Plus, Check } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +30,7 @@ interface TableService {
   createdAt: Date;
 }
 
-export default function TableServiceManagement({ restaurantId, locationId }: { restaurantId: string; locationId: string }) {
+export default function TableServiceManagement({ restaurantId, locationId, restaurant }: { restaurantId: string; locationId: string; restaurant?: any }) {
   const [tableServices, setTableServices] = useState<TableService[]>([]);
   const [tables, setTables] = useState<Table[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
@@ -67,8 +67,6 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
     };
   }, [restaurantId, locationId, filter]);
 
-
-
   async function fetchTableServices() {
     try {
       const response = await axios.get(`/api/table-service?restaurantId=${restaurantId}${filter !== "all" ? `&status=${filter}` : ""}`);
@@ -85,7 +83,7 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
     }
 
     try {
-      const response = await axios.post("/api/tables", {
+      await axios.post("/api/tables", {
         name: newTable.name,
         capacity: newTable.capacity,
         locationId,
@@ -142,12 +140,12 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "AVAILABLE": return "bg-[rgba(34,197,94,0.1)] text-[#4ade80] border-[rgba(34,197,94,0.3)]";
-      case "OCCUPIED": return "bg-[rgba(249,115,22,0.1)] text-[#f97316] border-[rgba(249,115,22,0.3)]";
-      case "RESERVED": return "bg-[rgba(59,130,246,0.1)] text-[#60a5fa] border-[rgba(59,130,246,0.3)]";
-      case "DIRTY": return "bg-[rgba(239,68,68,0.1)] text-[#f87171] border-[rgba(239,68,68,0.3)]";
-      case "MAINTENANCE": return "bg-[rgba(100,116,139,0.1)] text-[#94a3b8] border-[rgba(100,116,139,0.3)]";
-      default: return "bg-[rgba(255,255,255,0.05)] text-[#9a9488] border-[rgba(255,255,255,0.1)]";
+      case "AVAILABLE": return "bg-[#52d27a]/10 text-[#52d27a] border border-[#52d27a]/20";
+      case "OCCUPIED": return "bg-amber-500/10 text-[#f0a040] border border-amber-500/20";
+      case "RESERVED": return "bg-blue-500/10 text-blue-400 border border-blue-500/20";
+      case "DIRTY": return "bg-red-500/10 text-red-400 border border-red-500/20";
+      case "MAINTENANCE": return "bg-white/5 text-[#f5efe2]/40 border border-white/10";
+      default: return "bg-white/5 text-[#f5efe2]/50 border border-white/10";
     }
   };
 
@@ -163,93 +161,109 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
   });
 
   if (loading) {
-    return <div className="text-center py-12 text-[#9a9488]">Loading table service...</div>;
+    return (
+      <div className="space-y-6 pt-2">
+        <div className="h-8 animate-pulse bg-neutral-900 rounded" />
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-24 animate-pulse bg-neutral-950 rounded-xl border border-neutral-800" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-7 space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3.5 flex-wrap">
-        <div className="w-[46px] h-[46px] rounded-xl bg-[#f97316] flex items-center justify-center flex-shrink-0">
-          <MapPin className="size-5 text-white" />
+    <div className="space-y-8 relative">
+      {/* Thin Saffron Accenting Border at top */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#f0a040] to-transparent absolute top-0 left-0 opacity-40 pointer-events-none" />
+
+      {/* EDITORIAL HERO HEADER */}
+      <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#f0a040] bg-[#f0a040]/10 border border-[#f0a040]/20 px-3 py-1 rounded-full">
+              FLOOR SERVICE
+            </span>
+            <span className="text-[10px] text-[#f5efe2]/40 font-mono-dashboard">
+              {new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" }).toUpperCase()}
+            </span>
+          </div>
+          
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#f5efe2] leading-none">
+            Table Service Deck {restaurant?.name && <>at <em className="font-editorial italic font-normal text-[#f0a040]">{restaurant.name}</em></>}
+          </h2>
+          
+          <p className="text-xs sm:text-sm text-[#f5efe2]/60 font-serif italic tracking-wide max-w-xl">
+            Live interactive floor plans, dining statuses, and server allocations.
+          </p>
         </div>
-        <div>
-          <h1 className="text-[20px] font-bold text-[#f0ece4]">Table Service</h1>
-          <p className="text-[12px] text-[#9a9488]">Track table status and server assignments</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:ml-auto">
-          <div className="flex bg-[#222222] border border-[rgba(255,255,255,0.12)] p-1 rounded-lg">
+
+        {/* Actions panel */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="flex bg-white/5 border border-white/10 p-1 rounded-lg">
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-3.5 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold transition-all ${
                 viewMode === "grid"
-                  ? "bg-[#f97316] text-white shadow-sm"
-                  : "text-[#9a9488] hover:text-[#f0ece4]"
+                  ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08]"
+                  : "text-[#f5efe2]/50 hover:text-[#f5efe2]"
               }`}
             >
               Grid View
             </button>
             <button
               onClick={() => setViewMode("floorplan")}
-              className={`px-3.5 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold transition-all ${
                 viewMode === "floorplan"
-                  ? "bg-[#f97316] text-white shadow-sm"
-                  : "text-[#9a9488] hover:text-[#f0ece4]"
+                  ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08]"
+                  : "text-[#f5efe2]/50 hover:text-[#f5efe2]"
               }`}
             >
               Floor Plan
             </button>
           </div>
+
           <button
             onClick={() => setAddingTable(true)}
-            className="px-4 py-2 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-all flex-shrink-0"
+            className="px-4.5 py-3 bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] rounded-lg text-xs font-black tracking-wider hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-amber-950/20"
           >
-            + Add Table
+            <Plus className="size-3.5 fill-[#0b0a08]" />
+            <span>ADD TABLE</span>
           </button>
-          {["all", "AVAILABLE", "OCCUPIED", "RESERVED", "DIRTY"].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
-                filter === f
-                  ? "bg-[#f97316] text-white"
-                  : "bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] hover:border-[#f97316]"
-              }`}
-            >
-              {f.charAt(0) + f.slice(1).toLowerCase()}
-            </button>
-          ))}
         </div>
-      </div>
+      </section>
 
       {/* Add Table Form */}
       {addingTable && (
-        <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5 space-y-4">
+        <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 space-y-4 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#f0a040] to-[#e85a2a]" />
+          <h3 className="text-sm font-bold text-[#f5efe2] tracking-wider uppercase">Add Dining Table</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Table Name *</label>
+              <label className="text-[#f5efe2]/60 text-[11px] font-medium mb-1 block">Table Name *</label>
               <input
                 value={newTable.name}
                 onChange={(e) => setNewTable({ ...newTable, name: e.target.value })}
                 placeholder="e.g., Table 1"
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
+                className="w-full h-10 bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] placeholder-[#f5efe2]/20 focus:border-[#f0a040] outline-none text-[13px] px-3 transition-colors rounded-lg"
               />
             </div>
             <div>
-              <label className="text-[#f0ece4] text-[12px] font-medium mb-1 block">Capacity</label>
+              <label className="text-[#f5efe2]/60 text-[11px] font-medium mb-1 block">Capacity</label>
               <input
                 type="number"
                 value={newTable.capacity}
                 onChange={(e) => setNewTable({ ...newTable, capacity: parseInt(e.target.value) || 4 })}
                 min="1"
-                className="w-full h-10 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] placeholder-[#5a5650] focus:border-[#f97316] text-[13px] px-3"
+                className="w-full h-10 bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040] outline-none text-[13px] px-3 transition-colors rounded-lg"
               />
             </div>
           </div>
           <div className="flex gap-2.5">
             <button
               onClick={createTable}
-              className="px-4 py-2 rounded-lg bg-[#f97316] text-white text-[12px] font-semibold hover:bg-[#ea6c0a] transition-colors"
+              className="px-4.5 py-2.5 bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] rounded-lg text-xs font-black tracking-wider hover:brightness-110 transition-all shadow-md"
             >
               Create Table
             </button>
@@ -258,7 +272,7 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
                 setAddingTable(false);
                 setNewTable({ name: "", capacity: 4 });
               }}
-              className="px-4 py-2 rounded-lg bg-[#222222] border border-[rgba(255,255,255,0.12)] text-[#f0ece4] hover:bg-[#181818] transition-colors text-[12px]"
+              className="px-4.5 py-2.5 border border-[rgba(255,255,255,0.08)] bg-white/[0.02] hover:bg-white/[0.04] rounded-lg text-xs font-semibold tracking-wider text-[#f5efe2] transition-all"
             >
               Cancel
             </button>
@@ -266,46 +280,62 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
         </div>
       )}
 
-      {/* Stats */}
-      {minLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-24 rounded-xl" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
-          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-            <div className="text-[11px] text-[#5a5650] mb-1">Available</div>
-            <div className="text-[26px] font-bold text-[#4ade80]">{tableServices.filter((s) => s.status === "AVAILABLE").length}</div>
-          </div>
-          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-            <div className="text-[11px] text-[#5a5650] mb-1">Occupied</div>
-            <div className="text-[26px] font-bold text-[#f97316]">{tableServices.filter((s) => s.status === "OCCUPIED").length}</div>
-          </div>
-          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-            <div className="text-[11px] text-[#5a5650] mb-1">Reserved</div>
-            <div className="text-[26px] font-bold text-[#60a5fa]">{tableServices.filter((s) => s.status === "RESERVED").length}</div>
-          </div>
-          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-            <div className="text-[11px] text-[#5a5650] mb-1">Dirty</div>
-            <div className="text-[26px] font-bold text-[#f87171]">{tableServices.filter((s) => s.status === "DIRTY").length}</div>
-          </div>
-          <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-            <div className="text-[11px] text-[#5a5650] mb-1">Total Tables</div>
-            <div className="text-[26px] font-bold text-[#f0ece4]">{tables.length}</div>
-          </div>
-        </div>
-      )}
+      {/* STAT STRIP - 5-Column Grid with 1px Dividers */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-[rgba(255,255,255,0.08)] relative z-10 shadow-xl">
+        {[
+          { label: "AVAILABLE TABLES", value: tableServices.filter((s) => s.status === "AVAILABLE").length.toString(), color: "text-[#52d27a]" },
+          { label: "OCCUPIED TABLES", value: tableServices.filter((s) => s.status === "OCCUPIED").length.toString(), color: "text-[#f0a040]" },
+          { label: "RESERVED TABLES", value: tableServices.filter((s) => s.status === "RESERVED").length.toString(), color: "text-blue-400" },
+          { label: "DIRTY / BUSSED", value: tableServices.filter((s) => s.status === "DIRTY").length.toString(), color: "text-red-400" },
+          { label: "TOTAL TABLES", value: tables.length.toString(), color: "text-[#f5efe2]" },
+        ].map((stat, idx) => (
+          <div
+            key={stat.label}
+            className={`p-6 relative group transition-all duration-300 ${
+              idx === 1 
+                ? "bg-gradient-to-br from-[#f0a040]/5 via-transparent to-transparent" 
+                : "hover:bg-white/[0.01]"
+            }`}
+          >
+            {idx === 1 && (
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#f0a040] to-[#e85a2a]" />
+            )}
+            
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[#f5efe2]/40 uppercase">
+                {stat.label}
+              </span>
+              <TableIcon className="size-3.5 text-[#f5efe2]/40" />
+            </div>
 
-      {/* Tables Display */}
-      {minLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <Skeleton key={i} className="h-48 rounded-xl bg-neutral-100 dark:bg-[#141414]" />
-          ))}
-        </div>
-      ) : viewMode === "floorplan" ? (
+            <div className="mt-4 flex items-baseline gap-2">
+              <h3 className={`text-3xl md:text-4xl font-extrabold tracking-tight font-mono-dashboard leading-none ${stat.color}`}>
+                {stat.value}
+              </h3>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-lg w-fit">
+        {["all", "AVAILABLE", "OCCUPIED", "RESERVED", "DIRTY"].map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-3.5 py-1.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold transition-all ${
+              filter === f
+                ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08]"
+                : "text-[#f5efe2]/55 hover:text-[#f5efe2] hover:bg-white/5"
+            }`}
+          >
+            {f.charAt(0) + f.slice(1).toLowerCase()}
+          </button>
+        ))}
+      </div>
+
+      {/* Tables Layout Display */}
+      {viewMode === "floorplan" ? (
         <FloorPlanEditor
           locationId={locationId}
           restaurantId={restaurantId}
@@ -321,59 +351,61 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
             filteredServices.map((service) => (
               <div
                 key={service.id}
-                className={`bg-[#111111] border ${getStatusColor(service.status)} rounded-xl p-5 space-y-4`}
+                className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-5 space-y-4 hover:border-[#f0a040]/30 transition-all flex flex-col justify-between shadow-lg"
               >
                 {/* Table Header */}
                 <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[18px] font-bold text-[#f0ece4]">{service.table.name}</span>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[18px] font-bold text-[#f5efe2]">{service.table.name}</span>
                       {service.table.capacity && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(255,255,255,0.1)] text-[#9a9488]">
+                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-white/5 text-[#f5efe2]/60 font-mono-dashboard">
                           {service.table.capacity} seats
                         </span>
                       )}
                     </div>
-                    <div className={`text-[10px] px-2 py-1 rounded-lg font-medium ${getStatusColor(service.status)}`}>
+                    <span className={`px-2.5 py-0.5 text-[9px] rounded-full font-black uppercase tracking-wider ${getStatusColor(service.status)}`}>
                       {service.status}
-                    </div>
+                    </span>
                   </div>
                 </div>
 
                 {/* Server Assignment */}
-                {service.server ? (
-                  <div className="flex items-center gap-2 text-[12px] text-[#9a9488]">
-                    <User className="size-3" />
-                    <span>{service.server.name}</span>
-                  </div>
-                ) : (
-                  <select
-                    onChange={(e) => assignServer(service.id, e.target.value)}
-                    className="w-full h-8 bg-[#222222] border-[rgba(255,255,255,0.12)] text-[#f0ece4] text-[11px] px-2 outline-none"
-                  >
-                    <option value="">Assign server</option>
-                    {staff.map((person) => (
-                      <option key={person.id} value={person.id}>
-                        {person.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                <div className="pt-2 border-t border-[rgba(255,255,255,0.04)]">
+                  {service.server ? (
+                    <div className="flex items-center gap-2 text-[12px] text-[#f5efe2]/60">
+                      <User className="size-3.5 text-[#f0a040]" />
+                      <span>Server: <strong className="text-[#f5efe2]">{service.server.name}</strong></span>
+                    </div>
+                  ) : (
+                    <select
+                      onChange={(e) => assignServer(service.id, e.target.value)}
+                      className="w-full h-9 bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] text-[11px] px-2 outline-none focus:border-[#f0a040] rounded-lg transition-all cursor-pointer"
+                    >
+                      <option value="" className="bg-[#0b0a08]">Assign server</option>
+                      {staff.map((person) => (
+                        <option key={person.id} value={person.id} className="bg-[#0b0a08]">
+                          {person.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
 
                 {/* Time Info */}
                 {service.seatedAt && service.status === "OCCUPIED" && (
-                  <div className="flex items-center gap-2 text-[11px] text-[#9a9488]">
-                    <Clock className="size-3" />
+                  <div className="flex items-center gap-2 text-[11px] text-[#f5efe2]/40 font-mono-dashboard">
+                    <Clock className="size-3.5" />
                     <span>Seated {getElapsedTime(service.seatedAt)} ago</span>
                   </div>
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 pt-2 border-t border-[rgba(255,255,255,0.04)]">
                   {service.status === "AVAILABLE" && (
                     <button
                       onClick={() => updateTableService(service.id, "OCCUPIED")}
-                      className="flex-1 py-2 rounded-lg bg-[#f97316] text-white text-[11px] font-semibold hover:bg-[#ea6c0a] transition-colors"
+                      className="flex-1 py-2 rounded-lg bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] text-[11px] font-black uppercase tracking-wider hover:brightness-110 transition-all"
                     >
                       Seat
                     </button>
@@ -382,13 +414,13 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
                     <>
                       <button
                         onClick={() => updateTableService(service.id, "DIRTY")}
-                        className="flex-1 py-2 rounded-lg bg-[#f87171] text-white text-[11px] font-semibold hover:bg-[#ef4444] transition-colors"
+                        className="flex-1 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-bold hover:bg-red-500/20 transition-all uppercase tracking-wider"
                       >
                         Clear
                       </button>
                       <button
                         onClick={() => updateTableService(service.id, "AVAILABLE")}
-                        className="flex-1 py-2 rounded-lg bg-[#4ade80] text-white text-[11px] font-semibold hover:bg-[#22c55e] transition-colors"
+                        className="flex-1 py-2 rounded-lg bg-[#52d27a]/10 border border-[#52d27a]/20 text-[#52d27a] text-[11px] font-bold hover:bg-[#52d27a]/20 transition-all uppercase tracking-wider"
                       >
                         Free
                       </button>
@@ -397,16 +429,16 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
                   {service.status === "DIRTY" && (
                     <button
                       onClick={() => updateTableService(service.id, "AVAILABLE")}
-                      className="flex-1 py-2 rounded-lg bg-[#4ade80] text-white text-[11px] font-semibold hover:bg-[#22c55e] transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 py-2 rounded-lg bg-[#52d27a]/15 border border-[#52d27a]/25 text-[#52d27a] text-[11px] font-black hover:brightness-110 transition-all flex items-center justify-center gap-1 uppercase tracking-wider"
                     >
-                      <CheckCircle className="size-3" />
+                      <Check className="size-3" />
                       Clean
                     </button>
                   )}
                   {service.status === "RESERVED" && (
                     <button
                       onClick={() => updateTableService(service.id, "OCCUPIED")}
-                      className="flex-1 py-2 rounded-lg bg-[#f97316] text-white text-[11px] font-semibold hover:bg-[#ea6c0a] transition-colors"
+                      className="flex-1 py-2 rounded-lg bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] text-[11px] font-black uppercase tracking-wider hover:brightness-110 transition-all"
                     >
                       Seat Guest
                     </button>
@@ -415,15 +447,15 @@ export default function TableServiceManagement({ restaurantId, locationId }: { r
 
                 {/* Notes */}
                 {service.notes && (
-                  <div className="text-[11px] text-[#9a9488] italic">{service.notes}</div>
+                  <div className="text-[11px] text-[#f5efe2]/40 italic font-serif border-t border-[rgba(255,255,255,0.03)] pt-2">{service.notes}</div>
                 )}
               </div>
             ))
           ) : (
-            <div className="text-center py-16">
-              <MapPin className="size-12 text-[#5a5650] mx-auto mb-4" />
-              <p className="text-[#5a5650] text-[13px]">No tables in this status</p>
-              <p className="text-[#5a5650] text-[11px] mt-2">Add tables to get started</p>
+            <div className="text-center py-16 col-span-full bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl w-full">
+              <MapPin className="size-12 text-[#f5efe2]/20 mx-auto mb-4" />
+              <p className="text-[#f5efe2]/40 text-[13px] font-serif italic">No tables in this status</p>
+              <p className="text-[#f5efe2]/20 text-[11px] mt-1 font-mono-dashboard">Add tables to get started</p>
             </div>
           )}
         </div>

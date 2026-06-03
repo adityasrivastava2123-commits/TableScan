@@ -31,14 +31,8 @@ export default async function ReportsPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold text-neutral-800 dark:text-white">Reports</h1>
-        <p className="text-sm text-neutral-500 dark:text-[#999999]">
-          Revenue and order performance insights.
-        </p>
-      </div>
-      <ReportsDashboard restaurantId={restaurant.id} />
+    <div className="w-full">
+      <ReportsDashboard restaurantId={restaurant.id} restaurant={restaurant} />
     </div>
   );
 }

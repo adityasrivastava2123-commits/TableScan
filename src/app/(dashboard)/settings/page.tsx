@@ -33,12 +33,6 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-800 dark:text-white">Settings</h1>
-        <p className="text-neutral-500 dark:text-[#999999]">Manage your restaurant settings</p>
-      </div>
-      <SettingsForm restaurant={restaurant} />
-    </div>
+    <SettingsForm restaurant={restaurant} />
   );
 }

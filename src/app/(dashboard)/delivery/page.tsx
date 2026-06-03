@@ -23,7 +23,7 @@ export default async function DeliveryPage() {
 
   return (
     <div className="w-full">
-      <DeliveryDashboard restaurantId={restaurant.id} />
+      <DeliveryDashboard restaurantId={restaurant.id} restaurant={restaurant} />
     </div>
   );
 }

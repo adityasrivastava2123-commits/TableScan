@@ -39,7 +39,7 @@ export default async function ReservationsPage() {
 
   return (
     <div className="w-full">
-      <ReservationBooking restaurantId={restaurant.id} locationId={location.id} />
+      <ReservationBooking restaurantId={restaurant.id} locationId={location.id} restaurant={restaurant} />
     </div>
   );
 }

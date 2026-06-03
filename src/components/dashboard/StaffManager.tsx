@@ -44,17 +44,17 @@ type StaffManagerProps = {
 const roleOptions: StaffRole[] = ["ADMIN", "MANAGER", "WAITER", "KITCHEN"];
 
 const roleBadgeMap: Record<StaffRole, { bg: string; text: string; border: string; icon: React.ReactNode }> = {
-  ADMIN: { bg: "bg-[#ef4444]/10", text: "text-[#ef4444]", border: "border-[#ef4444]/20", icon: <Crown className="size-3" /> },
-  MANAGER: { bg: "bg-purple-500/10", text: "text-purple-500", border: "border-purple-500/20", icon: <Briefcase className="size-3" /> },
-  WAITER: { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20", icon: <Utensils className="size-3" /> },
-  KITCHEN: { bg: "bg-[#f97316]/10", text: "text-[#f97316]", border: "border-[#f97316]/20", icon: <ChefHat className="size-3" /> },
+  ADMIN: { bg: "bg-red-500/10", text: "text-red-400", border: "border-red-500/20", icon: <Crown className="size-3" /> },
+  MANAGER: { bg: "bg-purple-500/10", text: "text-purple-400", border: "border-purple-500/20", icon: <Briefcase className="size-3" /> },
+  WAITER: { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20", icon: <Utensils className="size-3" /> },
+  KITCHEN: { bg: "bg-[#f0a040]/10", text: "text-[#f0a040]", border: "border-[#f0a040]/20", icon: <ChefHat className="size-3" /> },
 };
 
 const roleAvatarMap: Record<StaffRole, { bg: string; text: string }> = {
-  ADMIN: { bg: "bg-[#ef4444]/10", text: "text-[#ef4444]" },
-  MANAGER: { bg: "bg-purple-500/10", text: "text-purple-500" },
-  WAITER: { bg: "bg-blue-500/10", text: "text-blue-500" },
-  KITCHEN: { bg: "bg-[#f97316]/10", text: "text-[#f97316]" },
+  ADMIN: { bg: "bg-red-500/10", text: "text-red-400" },
+  MANAGER: { bg: "bg-purple-500/10", text: "text-purple-400" },
+  WAITER: { bg: "bg-blue-500/10", text: "text-blue-400" },
+  KITCHEN: { bg: "bg-[#f0a040]/10", text: "text-[#f0a040]" },
 };
 
 export function StaffManager({ restaurantId }: StaffManagerProps) {
@@ -219,28 +219,34 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea6c0a]">
-            <Users className="size-6 text-white" />
+    <div className="space-y-8 relative">
+      {/* ── Page Header ────────────────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(255,255,255,0.08)] pb-5">
+        <div className="flex items-center gap-3.5">
+          <div className="w-[50px] h-[50px] rounded-2xl bg-gradient-to-tr from-[#f0a040] to-[#e85a2a] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#f0a040]/15 border border-[#f0a040]/20">
+            <Users className="size-5 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Staff Accounts</h1>
-            <p className="text-sm text-gray-500 dark:text-[#999999]">Manage staff members and role-based responsibilities.</p>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#f0a040]">HUMAN RESOURCES</span>
+            <h1 className="text-2xl font-bold tracking-tight text-[#f5efe2] font-editorial italic mt-0.5">
+              Staff Accounts
+            </h1>
+            <p className="text-[11px] text-[#f5efe2]/50 font-serif italic mt-0.5">
+              Manage staff members and role-based responsibilities
+            </p>
           </div>
         </div>
+
         <button
           onClick={() => setShowForm((prev) => !prev)}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] shadow-lg shadow-[#f97316]/20 transition-all"
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-white text-[10px] font-mono-dashboard uppercase tracking-wider font-bold hover:brightness-110 shadow-lg shadow-[#f0a040]/10 transition-all"
         >
-          <Plus className="size-5" /> Add Staff
+          <Plus className="size-4" /> Add Staff
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
         <StatsCard label="Total Staff" value={stats.total} icon={<Users className="size-4" />} color="blue" />
         <StatsCard label="Active Staff" value={stats.active} icon={<UserCheck className="size-4" />} color="green" />
         <StatsCard label="Admins" value={stats.roleCounts.ADMIN} icon={<Crown className="size-4" />} color="red" />
@@ -251,101 +257,105 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
       {/* Add Staff Form */}
       {showForm ? (
-        <div>
-          <Card className="space-y-6 p-6 bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Add Staff Member</h2>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="staff-name" className="text-gray-700 dark:text-white text-sm font-medium">Name *</Label>
-                  <Input
-                    id="staff-name"
-                    value={form.name}
-                    onChange={(e) => {
-                      setForm((prev) => ({ ...prev, name: e.target.value }));
-                      setFormErrors((prev) => ({ ...prev, name: undefined }));
-                    }}
-                    placeholder="Rahul Sharma"
-                    className="h-11 bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-[#555555] focus:border-[#f97316]"
-                  />
-                  {formErrors.name ? (
-                    <p className="text-xs text-[#ef4444]">{formErrors.name}</p>
-                  ) : null}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="staff-email" className="text-gray-700 dark:text-white text-sm font-medium">Email *</Label>
-                  <Input
-                    id="staff-email"
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => {
-                      setForm((prev) => ({ ...prev, email: e.target.value }));
-                      setFormErrors((prev) => ({ ...prev, email: undefined }));
-                    }}
-                    placeholder="rahul@example.com"
-                    className="h-11 bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-[#555555] focus:border-[#f97316]"
-                  />
-                  {formErrors.email ? (
-                    <p className="text-xs text-[#ef4444]">{formErrors.email}</p>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="max-w-xs space-y-2">
-                <Label className="text-gray-700 dark:text-white text-sm font-medium">Role *</Label>
-                <Select
-                  value={form.role}
-                  onValueChange={(value) => {
-                    setForm((prev) => ({ ...prev, role: value as StaffRole }));
-                    setFormErrors((prev) => ({ ...prev, role: undefined }));
+        <div className="transition-all duration-300">
+          <Card className="space-y-6 p-6 bg-[#0b0a08]/60 border border-[rgba(255,255,255,0.08)] backdrop-blur-md rounded-2xl shadow-xl">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-1 h-5 bg-[#f0a040] rounded-full animate-pulse" />
+              <p className="text-[11px] font-mono-dashboard font-black text-[#f0a040] uppercase tracking-[0.15em]">Add Staff Member</p>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="staff-name" className="text-[#f5efe2]/40 text-[9px] font-mono-dashboard font-bold uppercase tracking-wider block">Name *</Label>
+                <Input
+                  id="staff-name"
+                  value={form.name}
+                  onChange={(e) => {
+                    setForm((prev) => ({ ...prev, name: e.target.value }));
+                    setFormErrors((prev) => ({ ...prev, name: undefined }));
                   }}
-                >
-                  <SelectTrigger className="w-full bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
-                    {roleOptions.map((role) => (
-                      <SelectItem key={role} value={role} className="text-gray-900 dark:text-white">
-                        {role}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formErrors.role ? (
-                  <p className="text-xs text-[#ef4444]">{formErrors.role}</p>
+                  placeholder="Rahul Sharma"
+                  className="h-10 bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] placeholder-[#f5efe2]/20 focus:border-[#f0a040] text-[13px] rounded-xl outline-none"
+                />
+                {formErrors.name ? (
+                  <p className="text-[10px] text-red-400 font-mono-dashboard mt-1">{formErrors.name}</p>
                 ) : null}
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => void createStaff()}
-                  disabled={saving}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#f97316] text-white font-medium hover:bg-[#ea6c0a] transition-colors disabled:opacity-50"
-                >
-                  {saving ? <Loader2 className="size-4 animate-spin" /> : null}
-                  Save
-                </button>
-                <button
-                  onClick={() => {
-                    setShowForm(false);
-                    setFormErrors({});
+              <div className="space-y-1.5">
+                <Label htmlFor="staff-email" className="text-[#f5efe2]/40 text-[9px] font-mono-dashboard font-bold uppercase tracking-wider block">Email *</Label>
+                <Input
+                  id="staff-email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => {
+                    setForm((prev) => ({ ...prev, email: e.target.value }));
+                    setFormErrors((prev) => ({ ...prev, email: undefined }));
                   }}
-                  disabled={saving}
-                  className="px-6 py-2.5 rounded-lg bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#252525] text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1e1e1e] transition-colors disabled:opacity-50"
-                >
-                  Cancel
-                </button>
+                  placeholder="rahul@example.com"
+                  className="h-10 bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] placeholder-[#f5efe2]/20 focus:border-[#f0a040] text-[13px] rounded-xl outline-none"
+                />
+                {formErrors.email ? (
+                  <p className="text-[10px] text-red-400 font-mono-dashboard mt-1">{formErrors.email}</p>
+                ) : null}
               </div>
-            </Card>
-          </div>
-        ) : null}
+            </div>
+
+            <div className="max-w-xs space-y-1.5">
+              <Label className="text-[#f5efe2]/40 text-[9px] font-mono-dashboard font-bold uppercase tracking-wider block">Role *</Label>
+              <Select
+                value={form.role}
+                onValueChange={(value) => {
+                  setForm((prev) => ({ ...prev, role: value as StaffRole }));
+                  setFormErrors((prev) => ({ ...prev, role: undefined }));
+                }}
+              >
+                <SelectTrigger className="w-full bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040]">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2]">
+                  {roleOptions.map((role) => (
+                    <SelectItem key={role} value={role} className="text-[#f5efe2] focus:bg-[#f0a040]/10">
+                      {role}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {formErrors.role ? (
+                <p className="text-[10px] text-red-400 font-mono-dashboard mt-1">{formErrors.role}</p>
+              ) : null}
+            </div>
+
+            <div className="flex items-center gap-3 pt-1.5">
+              <button
+                onClick={() => void createStaff()}
+                disabled={saving}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-white text-[10px] font-mono-dashboard font-bold uppercase tracking-wider hover:brightness-110 transition-all shadow-md shadow-[#f0a040]/10 disabled:opacity-50"
+              >
+                {saving ? <Loader2 className="size-4 animate-spin" /> : null}
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setShowForm(false);
+                  setFormErrors({});
+                }}
+                disabled={saving}
+                className="px-5 py-2.5 rounded-xl bg-transparent border border-[rgba(255,255,255,0.08)] text-[#f5efe2]/60 hover:text-white hover:bg-[rgba(255,255,255,0.02)] transition-colors text-[10px] font-mono-dashboard font-bold uppercase tracking-wider disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </Card>
+        </div>
+      ) : null}
 
       {/* Staff Table */}
       <div>
-        <Card className="overflow-hidden bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
+        <Card className="overflow-hidden bg-[#0b0a08]/40 border border-[rgba(255,255,255,0.08)] backdrop-blur-md rounded-2xl shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-gray-50 dark:bg-[#1e1e1e] text-left text-xs uppercase tracking-wide text-gray-500 dark:text-[#999999]">
+              <thead className="bg-[#0b0a08] text-left text-[9px] uppercase tracking-wider font-mono-dashboard text-[#f5efe2]/40 border-b border-[rgba(255,255,255,0.08)]">
                 <tr>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
@@ -357,13 +367,13 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-[#999999]">
+                    <td colSpan={5} className="px-6 py-12 text-center text-[#f5efe2]/40 font-serif italic text-sm">
                       Loading staff...
                     </td>
                   </tr>
                 ) : staff.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-gray-400 dark:text-[#555555]">
+                    <td colSpan={5} className="px-6 py-12 text-center text-[#f5efe2]/40 font-serif italic text-sm">
                       No staff yet — add your first staff member
                     </td>
                   </tr>
@@ -371,13 +381,13 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                   staff.map((member) => (
                     <tr
                       key={member.id}
-                      className="border-t border-gray-100 dark:border-[#252525] transition hover:bg-gray-50 dark:hover:bg-[#1e1e1e]"
+                      className="border-t border-[rgba(255,255,255,0.08)] transition hover:bg-[rgba(255,255,255,0.01)]"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div
                             className={cn(
-                              "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold",
+                              "flex h-10 w-10 items-center justify-center rounded-full text-xs font-mono-dashboard font-black border border-[rgba(255,255,255,0.08)]",
                               roleAvatarMap[member.role].bg,
                               roleAvatarMap[member.role].text,
                             )}
@@ -389,16 +399,16 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                               .join("")}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-[#999999]">{member.email}</p>
+                            <p className="font-bold text-[#f5efe2] text-sm">{member.name}</p>
+                            <p className="text-[10px] font-mono-dashboard text-[#f5efe2]/40 mt-0.5 uppercase">{member.role}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-[#999999]">{member.email}</td>
+                      <td className="px-6 py-4 text-xs font-mono-dashboard text-[#f5efe2]/60 select-all">{member.email}</td>
                       <td className="px-6 py-4">
                         <Badge
                           variant="outline"
-                          className={cn("border flex items-center gap-1.5", roleBadgeMap[member.role].bg, roleBadgeMap[member.role].text, roleBadgeMap[member.role].border)}
+                          className={cn("border flex items-center gap-1.5 w-fit text-[9px] font-mono-dashboard font-black uppercase py-0.5 px-2", roleBadgeMap[member.role].bg, roleBadgeMap[member.role].text, roleBadgeMap[member.role].border)}
                         >
                           {roleBadgeMap[member.role].icon}
                           {member.role}
@@ -408,10 +418,10 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                         <button
                           onClick={() => void toggleActive(member)}
                           disabled={updatingId === member.id}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono-dashboard font-black uppercase tracking-wider transition-colors disabled:opacity-50 border ${
                             member.isActive
-                              ? "bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20"
-                              : "bg-gray-100 dark:bg-[#555555]/10 text-gray-500 dark:text-[#999999] border border-gray-200 dark:border-[#252525]"
+                              ? "bg-[#52d27a]/10 text-[#52d27a] border-[#52d27a]/20"
+                              : "bg-transparent text-[#f5efe2]/40 border-[rgba(255,255,255,0.08)]"
                           }`}
                         >
                           {updatingId === member.id ? (
@@ -433,12 +443,12 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                             }
                             disabled={updatingId === member.id}
                           >
-                            <SelectTrigger size="sm" className="w-[140px] bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#252525] text-gray-900 dark:text-white">
+                            <SelectTrigger className="h-8 w-[120px] bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] text-xs font-mono-dashboard">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
+                            <SelectContent className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2]">
                               {roleOptions.map((role) => (
-                                <SelectItem key={role} value={role} className="text-gray-900 dark:text-white">
+                                <SelectItem key={role} value={role} className="text-[#f5efe2] focus:bg-[#f0a040]/10">
                                   {role}
                                 </SelectItem>
                               ))}
@@ -447,7 +457,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
                           <button
                             onClick={() => setDeleteCandidate(member)}
-                            className="flex items-center justify-center h-8 w-8 rounded-lg bg-[#ef4444] hover:bg-[#dc2626] transition-colors text-white"
+                            className="flex items-center justify-center h-8 w-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/25 text-rose-400 hover:text-rose-300 transition-colors"
                           >
                             <Trash2 className="size-4" />
                           </button>
@@ -464,27 +474,27 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
       {/* Role Permissions Card */}
       <div>
-        <Card className="space-y-4 p-6 bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <Shield className="size-5 text-[#f97316]" />
-            Role Permissions
+        <Card className="space-y-4 p-6 bg-[#0b0a08]/60 border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-sm">
+          <h3 className="text-[13px] font-mono-dashboard font-black text-[#f0a040] uppercase tracking-wider flex items-center gap-2">
+            <Shield className="size-4 text-[#f0a040]" />
+            Role Permissions Matrix
           </h3>
-          <ul className="space-y-3 text-sm text-gray-500 dark:text-[#999999]">
-            <li className="flex items-start gap-2">
-              <Crown className="size-4 text-[#ef4444] mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-gray-900 dark:text-white">ADMIN:</span> Full access to everything</span>
+          <ul className="space-y-3 text-xs text-[#f5efe2]/60 font-serif italic">
+            <li className="flex items-start gap-2.5">
+              <Crown className="size-4 text-red-400 flex-shrink-0" />
+              <span><span className="font-mono-dashboard font-bold uppercase tracking-wider text-red-400 not-italic mr-1">ADMIN:</span> Full systems control access</span>
             </li>
-            <li className="flex items-start gap-2">
-              <Briefcase className="size-4 text-purple-500 mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-gray-900 dark:text-white">MANAGER:</span> Orders, menu, reports (no billing)</span>
+            <li className="flex items-start gap-2.5">
+              <Briefcase className="size-4 text-purple-400 flex-shrink-0" />
+              <span><span className="font-mono-dashboard font-bold uppercase tracking-wider text-purple-400 not-italic mr-1">MANAGER:</span> Order dispatching, menus, inventory reporting (restricted billing)</span>
             </li>
-            <li className="flex items-start gap-2">
-              <Utensils className="size-4 text-blue-500 mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-gray-900 dark:text-white">WAITER:</span> View orders, call status updates</span>
+            <li className="flex items-start gap-2.5">
+              <Utensils className="size-4 text-blue-400 flex-shrink-0" />
+              <span><span className="font-mono-dashboard font-bold uppercase tracking-wider text-blue-400 not-italic mr-1">WAITER:</span> Order registries management and ticket service updates</span>
             </li>
-            <li className="flex items-start gap-2">
-              <ChefHat className="size-4 text-[#f97316] mt-0.5 flex-shrink-0" />
-              <span><span className="font-medium text-gray-900 dark:text-white">KITCHEN:</span> Kitchen display only</span>
+            <li className="flex items-start gap-2.5">
+              <ChefHat className="size-4 text-[#f0a040] flex-shrink-0" />
+              <span><span className="font-mono-dashboard font-bold uppercase tracking-wider text-[#f0a040] not-italic mr-1">KITCHEN:</span> Dedicated terminal view access only</span>
             </li>
           </ul>
         </Card>
@@ -497,20 +507,20 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
           if (!open) setDeleteCandidate(null);
         }}
       >
-        <DialogContent className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525]">
+        <DialogContent className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2]">
           <DialogHeader>
-            <DialogTitle className="text-gray-900 dark:text-white">Delete staff member?</DialogTitle>
-            <DialogDescription className="text-gray-500 dark:text-[#999999]">
-              This action cannot be undone. {deleteCandidate?.name} will be removed from
-              your staff list.
+            <DialogTitle className="text-[#f5efe2] font-editorial italic text-lg">Deactivate Staff Member?</DialogTitle>
+            <DialogDescription className="text-[#f5efe2]/50 font-serif italic text-xs">
+              This action cannot be undone. {deleteCandidate?.name} will be permanently removed from
+              your active staff lists.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button
               variant="outline"
               onClick={() => setDeleteCandidate(null)}
               disabled={Boolean(deletingId)}
-              className="bg-white dark:bg-[#141414] border-gray-200 dark:border-[#252525] text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1e1e1e]"
+              className="bg-transparent border border-[rgba(255,255,255,0.08)] text-[#f5efe2]/60 hover:text-white hover:bg-[rgba(255,255,255,0.02)]"
             >
               Cancel
             </Button>
@@ -521,12 +531,12 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                 if (!deleteCandidate) return;
                 void deleteStaff(deleteCandidate);
               }}
-              className="bg-[#ef4444] hover:bg-[#dc2626]"
+              className="bg-rose-500 hover:bg-rose-600 text-white"
             >
               {deletingId && deleteCandidate?.id === deletingId ? (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               ) : null}
-              Delete
+              Remove Staff
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -537,21 +547,20 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
 
 function StatsCard({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: string }) {
   const colorClasses = {
-    blue: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-    green: "bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20",
-    red: "bg-[#ef4444]/10 text-[#ef4444] border-[#ef4444]/20",
-    purple: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-    orange: "bg-[#f97316]/10 text-[#f97316] border-[#f97316]/20",
+    blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    green: "bg-[#52d27a]/10 text-[#52d27a] border-[#52d27a]/20",
+    red: "bg-red-500/10 text-red-400 border-red-500/20",
+    purple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+    orange: "bg-[#f0a040]/10 text-[#f0a040] border-[#f0a040]/20",
   };
 
   return (
-    <div className="bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#252525] rounded-xl p-4">
+    <div className="bg-[#0b0a08]/40 border border-[rgba(255,255,255,0.08)] backdrop-blur-md rounded-2xl p-4 flex flex-col justify-between">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-[#999999]">{label}</p>
-        <div className={`p-2 rounded-lg ${colorClasses[color as keyof typeof colorClasses]}`}>{icon}</div>
+        <p className="text-[9px] uppercase tracking-widest text-[#f5efe2]/40 font-mono-dashboard">{label}</p>
+        <div className={`p-1.5 rounded-lg border ${colorClasses[color as keyof typeof colorClasses]}`}>{icon}</div>
       </div>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{value}</p>
+      <p className="text-xl font-bold text-[#f5efe2] font-mono-dashboard tabular-nums">{value}</p>
     </div>
   );
 }
-

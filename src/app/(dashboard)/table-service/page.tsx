@@ -32,7 +32,7 @@ export default async function TableServicePage() {
 
   return (
     <div className="w-full">
-      <TableServiceManagement restaurantId={restaurant.id} locationId={location.id} />
+      <TableServiceManagement restaurantId={restaurant.id} locationId={location.id} restaurant={restaurant} />
     </div>
   );
 }

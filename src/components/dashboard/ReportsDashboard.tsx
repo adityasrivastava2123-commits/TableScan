@@ -3,14 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -18,11 +11,7 @@ import {
   Area,
   AreaChart,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, DollarSign, ShoppingCart, PieChart as PieChartIcon, Activity, Download } from "lucide-react";
+import { TrendingUp, DollarSign, ShoppingCart, PieChart as PieChartIcon, Activity, Download, Sparkles } from "lucide-react";
 
 type Period = "today" | "week" | "month";
 
@@ -44,9 +33,8 @@ type ReportResponse = {
 
 type ReportsDashboardProps = {
   restaurantId: string;
+  restaurant?: any;
 };
-
-const statusColors = ["#f97316", "#f59e0b", "#22c55e", "#64748b", "#ef4444"];
 
 const inr = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -54,7 +42,26 @@ const inr = new Intl.NumberFormat("en-IN", {
   maximumFractionDigits: 0,
 });
 
-export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-[#0b0a08] border border-[rgba(240,160,64,0.3)] rounded-lg p-3.5 shadow-xl text-[12px] font-mono-dashboard">
+      <p className="text-[#f5efe2]/40 mb-2 font-medium uppercase tracking-widest">{label}</p>
+      {payload.map((entry: any, i: number) => (
+        entry.value !== null && entry.value !== undefined && (
+          <div key={i} className="flex items-center justify-between gap-6 mb-1 text-xs">
+            <span className="text-[#f5efe2]/60">{entry.name === "revenue" ? "Revenue" : entry.name}:</span>
+            <span className="text-[#f5efe2] font-black">
+              {typeof entry.value === "number" ? inr.format(entry.value) : entry.value}
+            </span>
+          </div>
+        )
+      ))}
+    </div>
+  );
+};
+
+export function ReportsDashboard({ restaurantId, restaurant }: ReportsDashboardProps) {
   const [period, setPeriod] = useState<Period>("today");
   const [report, setReport] = useState<ReportResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,14 +94,11 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
     if (!report) return;
 
     const csvRows = [];
-    
-    // 1. Header
     csvRows.push(["TableScan Restaurant Report Summary"]);
     csvRows.push([`Period,${period.toUpperCase()}`]);
     csvRows.push([`Generated At,${new Date().toLocaleString("en-IN")}`]);
     csvRows.push([]);
 
-    // 2. Overview Metrics
     csvRows.push(["METRIC", "VALUE"]);
     csvRows.push(["Total Revenue", `INR ${report.totalRevenue.toFixed(2)}`]);
     csvRows.push(["Total Orders", report.totalOrders]);
@@ -102,7 +106,6 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
     csvRows.push(["Completion Rate", `${completionRate.toFixed(1)}%`]);
     csvRows.push([]);
 
-    // 3. Status Breakdown
     csvRows.push(["ORDER STATUS", "COUNT"]);
     csvRows.push(["NEW", report.ordersByStatus.NEW]);
     csvRows.push(["PREPARING", report.ordersByStatus.PREPARING]);
@@ -111,7 +114,6 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
     csvRows.push(["CANCELLED", report.ordersByStatus.CANCELLED]);
     csvRows.push([]);
 
-    // 4. Daily Revenue Breakdown
     csvRows.push(["DAILY REVENUE BREAKDOWN"]);
     csvRows.push(["Date", "Revenue (INR)", "Orders"]);
     report.revenueByDay.forEach(day => {
@@ -119,14 +121,12 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
     });
     csvRows.push([]);
 
-    // 5. Popular Items Breakdown
     csvRows.push(["POPULAR ITEMS"]);
     csvRows.push(["Item Name", "Quantity Sold", "Revenue (INR)"]);
     report.topItems.forEach(item => {
       csvRows.push([item.name, item.quantity, item.revenue.toFixed(2)]);
     });
 
-    // Generate CSV string
     const csvContent = csvRows
       .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
       .join("\n");
@@ -144,213 +144,197 @@ export function ReportsDashboard({ restaurantId }: ReportsDashboardProps) {
     return <ReportsSkeleton />;
   }
 
-  if (!report || report.totalOrders === 0) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Tabs value={period} onValueChange={(value) => setPeriod(value as Period)}>
-            <TabsList className="bg-neutral-100 dark:bg-[#141414] border border-neutral-200 dark:border-[#252525]">
-              <TabsTrigger value="today" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">Today</TabsTrigger>
-              <TabsTrigger value="week" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">This Week</TabsTrigger>
-              <TabsTrigger value="month" className="data-[state=active]:bg-[#f97316] data-[state=active]:text-white">This Month</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Button 
-            onClick={exportReportCsv}
-            className="bg-white dark:bg-[#141414] border border-neutral-200 dark:border-[#252525] text-neutral-800 dark:text-white hover:bg-neutral-50 dark:hover:bg-[#1e1e1e]"
-          >
-            <Download className="size-4 mr-2" />
-            Export
-          </Button>
-        </div>
-        <Card className="flex min-h-[300px] items-center justify-center p-6 text-center bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] shadow-sm">
-          <div>
-            <Activity className="size-12 mx-auto mb-4 text-neutral-300 dark:text-[#555555]" />
-            <h3 className="text-xl font-semibold text-neutral-800 dark:text-white">No orders yet</h3>
-            <p className="mt-2 text-sm text-neutral-400 dark:text-[#999999]">
-              Place orders to start seeing revenue and performance insights.
-            </p>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex gap-1 bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-lg p-1 shadow-sm">
+    <div className="space-y-8 relative">
+      {/* Thin Saffron Accenting Border at top */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#f0a040] to-transparent absolute top-0 left-0 opacity-40 pointer-events-none" />
+
+      {/* EDITORIAL HERO HEADER */}
+      <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#f0a040] bg-[#f0a040]/10 border border-[#f0a040]/20 px-3 py-1 rounded-full">
+              ANALYTICS CONTROL
+            </span>
+            <span className="text-[10px] text-[#f5efe2]/40 font-mono-dashboard">
+              {new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" }).toUpperCase()}
+            </span>
+          </div>
+          
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#f5efe2] leading-none">
+            Performance Reports {restaurant?.name && <>at <em className="font-editorial italic font-normal text-[#f0a040]">{restaurant.name}</em></>}
+          </h2>
+          
+          <p className="text-xs sm:text-sm text-[#f5efe2]/60 font-serif italic tracking-wide max-w-xl">
+            Analyze kitchen cycle times, total revenue metrics, and item popularity stats.
+          </p>
+        </div>
+
+        {/* Actions panel */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="flex bg-white/5 border border-white/10 p-1 rounded-lg">
+            {["today", "week", "month"].map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p as Period)}
+                className={`px-3.5 py-1.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold transition-all ${
+                  period === p
+                    ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08]"
+                    : "text-[#f5efe2]/50 hover:text-[#f5efe2] hover:bg-white/5"
+                }`}
+              >
+                {p === "today" ? "Today" : p === "week" ? "This Week" : "This Month"}
+              </button>
+            ))}
+          </div>
+
           <button
-            onClick={() => setPeriod("today")}
-            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "today" ? "bg-[#f97316] text-white" : "text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4]"}`}
+            onClick={exportReportCsv}
+            disabled={!report || report.totalOrders === 0}
+            className="px-4.5 py-3 border border-[rgba(255,255,255,0.08)] bg-white/[0.02] hover:bg-white/[0.04] rounded-lg text-xs font-semibold tracking-wider text-[#f5efe2] transition-all flex items-center gap-2 hover:border-[#f0a040] disabled:opacity-50"
           >
-            Today
-          </button>
-          <button
-            onClick={() => setPeriod("week")}
-            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "week" ? "bg-[#f97316] text-white" : "text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4]"}`}
-          >
-            This Week
-          </button>
-          <button
-            onClick={() => setPeriod("month")}
-            className={`px-4 py-1.5 rounded-md text-[12px] font-medium transition-all ${period === "month" ? "bg-[#f97316] text-white" : "text-neutral-500 dark:text-[#9a9488] hover:text-neutral-800 dark:hover:text-[#f0ece4]"}`}
-          >
-            This Month
+            <Download className="size-3.5 text-[#f5efe2]/60" />
+            <span>EXPORT REPORT</span>
           </button>
         </div>
-        <button 
-          onClick={exportReportCsv}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] text-neutral-800 dark:text-[#f0ece4] text-[12px] font-medium hover:border-[#f97316] hover:text-[#f97316] transition-all shadow-sm"
-        >
-          ↓ Export Report
-        </button>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <StatCard
-          label="Total Revenue"
-          value={inr.format(report.totalRevenue)}
-          icon={<DollarSign className="text-[16px]" />}
-          color="green"
-        />
-        <StatCard
-          label="Total Orders"
-          value={report.totalOrders.toString()}
-          icon={<ShoppingCart className="text-[16px]" />}
-          color="blue"
-        />
-        <StatCard
-          label="Average Order Value"
-          value={inr.format(report.avgOrderValue)}
-          icon={<TrendingUp className="text-[16px]" />}
-          color="purple"
-        />
-        <StatCard
-          label="Completion Rate"
-          value={`${completionRate.toFixed(1)}%`}
-          icon={<PieChartIcon className="text-[16px]" />}
-          color="orange"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-        <ChartCard title="Revenue by Day" description="Daily revenue trends">
-          <ResponsiveContainer width="100%" height={160}>
-            <AreaChart data={report.revenueByDay}>
-              <defs>
-                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f97316" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#f97316" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="date" tick={{ fontSize: 8 }} stroke="var(--text3)" />
-              <YAxis tickFormatter={(value) => `₹${value}`} tick={{ fontSize: 8 }} stroke="var(--text3)" />
-              <Tooltip
-                formatter={(value) => typeof value === 'number' ? inr.format(value) : value}
-                contentStyle={{
-                  backgroundColor: "var(--bg1)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "8px",
-                }}
-                itemStyle={{ color: "var(--text)" }}
-              />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                stroke="#f97316"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorRevenue)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard title="Top 5 Menu Items" description="Most popular items by quantity">
-          <div className="mt-4 space-y-3.5">
-            {report.topItems.slice(0, 3).map((item, idx) => (
-              <div key={idx}>
-                <div className="flex justify-between mb-1.5">
-                  <span className="text-[12px] text-neutral-500 dark:text-[#9a9488]">{item.name}</span>
-                  <span className="text-[11px] text-neutral-400 dark:text-[#5a5650]">{item.quantity}</span>
+      {!report || report.totalOrders === 0 ? (
+        <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-16 text-center shadow-xl">
+          <Activity className="size-12 mx-auto mb-4 text-[#f5efe2]/20 animate-pulse" />
+          <h3 className="text-lg font-bold text-[#f5efe2] uppercase tracking-widest">No Order Data Recorded</h3>
+          <p className="mt-2 text-sm text-[#f5efe2]/60 font-serif italic max-w-sm mx-auto">
+            Operational and transaction reports will generate automatically as orders process.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* STAT STRIP - 4-Column Grid with 1px Dividers */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-[rgba(255,255,255,0.08)] relative z-10 shadow-xl">
+            {[
+              { label: "TOTAL REVENUE", value: inr.format(report.totalRevenue), icon: <DollarSign className="size-3.5 text-[#f0a040]" />, isFeatured: true },
+              { label: "TOTAL ORDERS", value: report.totalOrders.toString(), icon: <ShoppingCart className="size-3.5 text-[#f5efe2]/40" /> },
+              { label: "AVERAGE TICKET", value: inr.format(report.avgOrderValue), icon: <TrendingUp className="size-3.5 text-[#f5efe2]/40" /> },
+              { label: "COMPLETION RATE", value: `${completionRate.toFixed(1)}%`, icon: <PieChartIcon className="size-3.5 text-[#f5efe2]/40" /> }
+            ].map((stat, idx) => (
+              <div
+                key={stat.label}
+                className={`p-6 relative group transition-all duration-300 ${
+                  stat.isFeatured 
+                    ? "bg-gradient-to-br from-[#f0a040]/5 via-transparent to-transparent" 
+                    : "hover:bg-white/[0.01]"
+                }`}
+              >
+                {stat.isFeatured && (
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#f0a040] to-[#e85a2a]" />
+                )}
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-[#f5efe2]/40 uppercase">
+                    {stat.label}
+                  </span>
+                  {stat.icon}
                 </div>
-                <div className="bg-neutral-100 dark:bg-[#222222] rounded-[4px] h-2">
-                  <div
-                    className="bg-[#f97316] h-2 rounded-[4px]"
-                    style={{ width: `${(item.quantity / Math.max(...report.topItems.map(i => i.quantity))) * 100}%` }}
-                  />
+
+                <div className="mt-4 flex items-baseline gap-2">
+                  <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/60 font-mono-dashboard leading-none">
+                    {stat.value}
+                  </h3>
                 </div>
               </div>
             ))}
+          </section>
+
+          {/* TWO COLUMN CHART AREA */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+            
+            {/* Revenue Trend Area Chart */}
+            <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 flex flex-col justify-between shadow-xl min-h-[340px] relative overflow-hidden">
+              <div className="flex items-center justify-between mb-4 border-b border-[rgba(255,255,255,0.05)] pb-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-[#f0a040] uppercase">DAILY PROGRESSION</span>
+                  <h4 className="text-base font-bold text-[#f5efe2]">Revenue Flow Trends</h4>
+                </div>
+              </div>
+
+              <div className="flex-1 w-full min-h-[200px] mt-4">
+                <ResponsiveContainer width="100%" height={210}>
+                  <AreaChart data={report.revenueByDay} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#f0a040" stopOpacity={0.8} />
+                        <stop offset="100%" stopColor="#e85a2a" stopOpacity={0.05} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                    <XAxis dataKey="date" stroke="rgba(245, 239, 226, 0.3)" fontSize={9} tickLine={false} fontFamily="JetBrains Mono" />
+                    <YAxis tickFormatter={(value) => `₹${value}`} stroke="rgba(245, 239, 226, 0.3)" fontSize={9} tickLine={false} axisLine={false} fontFamily="JetBrains Mono" />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#f0a040"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorRevenue)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Top Items Cards */}
+            <div className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
+              <div className="flex items-center justify-between mb-4 border-b border-[rgba(255,255,255,0.05)] pb-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-[#e85a2a] uppercase">TOP SELLERS</span>
+                  <h4 className="text-base font-bold text-[#f5efe2]">Dish Revenue Matrix</h4>
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-3.5">
+                {report.topItems.slice(0, 4).map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-white/[0.01] border border-[rgba(255,255,255,0.03)] rounded-xl">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-6 h-6 rounded-lg bg-[rgba(240,160,64,0.1)] border border-[rgba(240,160,64,0.15)] flex items-center justify-center text-[10px] font-extrabold text-[#f0a040]">
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[#f5efe2] truncate">{item.name}</p>
+                        <p className="text-[9px] text-[#f5efe2]/40 font-mono-dashboard mt-0.5">
+                          {item.quantity} orders logged
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold font-mono-dashboard text-[#f5efe2]">
+                      {inr.format(item.revenue)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
-        </ChartCard>
-      </div>
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  icon,
-  color,
-}: {
-  label: string;
-  value: string;
-  icon: React.ReactNode;
-  color: "green" | "blue" | "purple" | "orange";
-}) {
-  const colorClasses = {
-    green: "bg-green-500/10 dark:bg-[rgba(34,197,94,0.1)] text-green-600 dark:text-[#4ade80]",
-    blue: "bg-blue-500/10 dark:bg-[rgba(59,130,246,0.1)] text-blue-600 dark:text-[#60a5fa]",
-    purple: "bg-purple-500/10 dark:bg-[rgba(168,85,247,0.1)] text-purple-600 dark:text-[#c084fc]",
-    orange: "bg-orange-500/10 dark:bg-[rgba(249,115,22,0.1)] text-orange-600 dark:text-[#f97316]",
-  };
-
-  return (
-    <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-[18px_20px] card-hover shadow-sm">
-      <div className={`w-[34px] h-[34px] rounded-lg flex items-center justify-center ${colorClasses[color]} mb-3.5`}>
-        {icon}
-      </div>
-      <p className="text-[10px] tracking-wider uppercase text-neutral-400 dark:text-[#5a5650] mb-1.5">{label}</p>
-      <p className="text-[22px] font-bold text-neutral-800 dark:text-[#f0ece4] tracking-tight leading-none">{value}</p>
-    </div>
-  );
-}
-
-function ChartCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[rgba(255,255,255,0.07)] rounded-xl p-5 shadow-sm">
-      <div className="text-[14px] font-semibold text-neutral-800 dark:text-[#f0ece4] mb-2">{title}</div>
-      {description && <div className="text-[11px] text-neutral-400 dark:text-[#5a5650] mb-4">{description}</div>}
-      {children}
+        </>
+      )}
     </div>
   );
 }
 
 function ReportsSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="h-8 w-80 animate-pulse rounded-md bg-neutral-100 dark:bg-[#141414]" />
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="space-y-8 pt-2">
+      <div className="h-8 animate-pulse bg-neutral-900 rounded" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="space-y-3 p-4 bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] shadow-sm">
-            <div className="h-4 w-28 animate-pulse rounded bg-neutral-100 dark:bg-[#1e1e1e]" />
-            <div className="h-7 w-32 animate-pulse rounded bg-neutral-100 dark:bg-[#1e1e1e]" />
-          </Card>
+          <div key={idx} className="h-28 animate-pulse bg-neutral-950 rounded-xl border border-neutral-800" />
         ))}
       </div>
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        {Array.from({ length: 4 }).map((_, idx) => (
-          <Card key={idx} className="space-y-3 p-4 bg-white dark:bg-[#141414] border-neutral-200 dark:border-[#252525] shadow-sm">
-            <div className="h-5 w-36 animate-pulse rounded bg-neutral-100 dark:bg-[#1e1e1e]" />
-            <div className="h-[300px] animate-pulse rounded bg-neutral-100/70 dark:bg-[#1e1e1e]/70" />
-          </Card>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {Array.from({ length: 2 }).map((_, idx) => (
+          <div key={idx} className="h-[280px] animate-pulse bg-neutral-950 rounded-xl border border-neutral-800" />
         ))}
       </div>
     </div>
   );
 }
-
