@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             capacity: true,
+            qrToken: true,
           },
         },
         server: {
@@ -38,6 +39,17 @@ export async function GET(request: NextRequest) {
             id: true,
             orderNumber: true,
             totalAmount: true,
+            status: true,
+            items: {
+              include: {
+                menuItem: {
+                  select: {
+                    name: true,
+                    price: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

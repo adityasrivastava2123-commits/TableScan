@@ -7,7 +7,15 @@ import { Plan, SubscriptionStatus } from "@prisma/client";
 async function checkAuth() {
   try {
     const { userId } = await auth();
-    if (userId) return true;
+    if (userId) {
+      const dbUser = await prisma.user.findUnique({
+        where: { clerkId: userId },
+      });
+      const isSuperAdmin = 
+        dbUser?.email === "superadmin@tablescan.com" || 
+        (process.env.SUPERADMIN_ID && dbUser?.clerkId === process.env.SUPERADMIN_ID);
+      if (isSuperAdmin) return true;
+    }
   } catch (error) {
     // Ignore error if auth() is called outside dynamic/request scope
   }

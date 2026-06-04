@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const body = await request.json();
-    const { status, serverId, notes, resolveServiceCall } = body;
+    const { status, serverId, notes, resolveServiceCall, orderId } = body;
 
     const updateData: any = {};
     if (status) {
@@ -19,9 +19,14 @@ export async function PATCH(
         updateData.seatedAt = new Date();
       } else if (status === "AVAILABLE" || status === "DIRTY") {
         updateData.clearedAt = new Date();
+        if (status === "AVAILABLE") {
+          updateData.orderId = null;
+          updateData.serverId = null;
+        }
       }
     }
     if (serverId !== undefined) updateData.serverId = serverId;
+    if (orderId !== undefined) updateData.orderId = orderId;
     if (notes !== undefined) updateData.notes = notes;
     if (resolveServiceCall) {
       updateData.notes = null;
@@ -36,6 +41,32 @@ export async function PATCH(
         order: true,
       },
     });
+
+    // Sync status to the linked Order if it exists
+    if (tableService.orderId && status) {
+      let orderStatus: any = null;
+      if (status === "PREPARING") orderStatus = "PREPARING";
+      if (status === "EATING") orderStatus = "READY";
+      if (status === "AVAILABLE" || status === "DIRTY") orderStatus = "DONE";
+      
+      if (orderStatus) {
+        try {
+          await prisma.order.update({
+            where: { id: tableService.orderId },
+            data: { 
+              status: orderStatus,
+              payment: orderStatus === "DONE" ? {
+                update: {
+                  status: "SUCCESS"
+                }
+              } : undefined
+            }
+          });
+        } catch (e) {
+          console.error("Failed to sync order status:", e);
+        }
+      }
+    }
 
     return NextResponse.json(tableService);
   } catch (error) {

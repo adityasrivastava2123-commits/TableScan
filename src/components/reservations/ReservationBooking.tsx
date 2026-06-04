@@ -450,80 +450,82 @@ export default function ReservationBooking({ restaurantId, locationId, restauran
 
           {/* MONTH VIEW */}
           {view === "month" && (
-            <div className="space-y-2 flex-1">
-              <div className="grid grid-cols-7 gap-1 text-center">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                  <div key={day} className="text-[10px] font-bold text-[#f5efe2]/40 py-2 uppercase tracking-wider font-mono-dashboard">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 gap-1.5">
-                {getMonthDays().map((day, idx) => {
-                  const dayBookings = reservations.filter((r) => isSameDay(new Date(r.date), day));
-                  const isDaySelected = isSameDay(day, selectedDate);
-                  const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+            <div className="overflow-x-auto -mx-6 px-6 lg:mx-0 lg:px-0 scrollbar-none">
+              <div className="min-w-[700px] lg:min-w-0 space-y-2 flex-1">
+                <div className="grid grid-cols-7 gap-1 text-center">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                    <div key={day} className="text-[10px] font-bold text-[#f5efe2]/40 py-2 uppercase tracking-wider font-mono-dashboard">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-1.5">
+                  {getMonthDays().map((day, idx) => {
+                    const dayBookings = reservations.filter((r) => isSameDay(new Date(r.date), day));
+                    const isDaySelected = isSameDay(day, selectedDate);
+                    const isCurrentMonth = day.getMonth() === currentDate.getMonth();
 
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedDate(day)}
-                      className={`min-h-[85px] p-2 rounded-lg border flex flex-col justify-between transition-all relative text-left ${
-                        isDaySelected 
-                          ? "bg-[#f0a040]/10 border-[#f0a040] ring-1 ring-[#f0a040]" 
-                          : isToday(day)
-                          ? "bg-white/5 border-[#f0a040]/40"
-                          : isCurrentMonth
-                          ? "bg-white/[0.01] border-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.12)]"
-                          : "bg-transparent border-transparent opacity-20 pointer-events-none"
-                      }`}
-                    >
-                      <div className="flex justify-between items-center w-full">
-                        <span className={`text-[10px] font-bold font-mono-dashboard ${
-                          isToday(day) ? "text-[#f0a040] bg-[#f0a040]/10 px-1 rounded-md" : "text-[#f5efe2]"
-                        }`}>
-                          {format(day, "d")}
-                        </span>
-                        {dayBookings.length > 0 && (
-                          <span className="w-4.5 h-4.5 rounded-full bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] text-[9px] font-black flex items-center justify-center">
-                            {dayBookings.length}
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedDate(day)}
+                        className={`min-h-[85px] p-2 rounded-lg border flex flex-col justify-between transition-all relative text-left ${
+                          isDaySelected 
+                            ? "bg-[#f0a040]/10 border-[#f0a040] ring-1 ring-[#f0a040]" 
+                            : isToday(day)
+                            ? "bg-white/5 border-[#f0a040]/40"
+                            : isCurrentMonth
+                            ? "bg-white/[0.01] border-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.12)]"
+                            : "bg-transparent border-transparent opacity-20 pointer-events-none"
+                        }`}
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <span className={`text-[10px] font-bold font-mono-dashboard ${
+                            isToday(day) ? "text-[#f0a040] bg-[#f0a040]/10 px-1 rounded-md" : "text-[#f5efe2]"
+                          }`}>
+                            {format(day, "d")}
                           </span>
-                        )}
-                      </div>
-                      
-                      <div className="w-full space-y-1 mt-2">
-                        {dayBookings.slice(0, 2).map((booking) => (
-                          <div 
-                            key={booking.id} 
-                            className={`text-[8px] px-1 py-0.5 rounded truncate font-mono-dashboard uppercase font-bold ${
-                              booking.status === "SEATED" 
-                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
-                                : booking.status === "CANCELLED"
-                                ? "bg-red-500/10 text-red-400/60 line-through border border-red-500/10"
-                                : booking.status === "COMPLETED"
-                                ? "bg-blue-500/10 text-blue-400"
-                                : "bg-white/5 text-[#f5efe2]/60 border border-white/5"
-                            }`}
-                          >
-                            {booking.customerName.split(" ")[0]} ({booking.partySize})
-                          </div>
-                        ))}
-                        {dayBookings.length > 2 && (
-                          <div className="text-[7px] text-[#f5efe2]/30 text-right font-black">
-                            +{dayBookings.length - 2} MORE
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+                          {dayBookings.length > 0 && (
+                            <span className="w-4.5 h-4.5 rounded-full bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08] text-[9px] font-black flex items-center justify-center">
+                              {dayBookings.length}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="w-full space-y-1 mt-2">
+                          {dayBookings.slice(0, 2).map((booking) => (
+                            <div 
+                              key={booking.id} 
+                              className={`text-[8px] px-1 py-0.5 rounded truncate font-mono-dashboard uppercase font-bold ${
+                                booking.status === "SEATED" 
+                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
+                                  : booking.status === "CANCELLED"
+                                  ? "bg-red-500/10 text-red-400/60 line-through border border-red-500/10"
+                                  : booking.status === "COMPLETED"
+                                  ? "bg-blue-500/10 text-blue-400"
+                                  : "bg-white/5 text-[#f5efe2]/60 border border-white/5"
+                              }`}
+                            >
+                              {booking.customerName.split(" ")[0]} ({booking.partySize})
+                            </div>
+                          ))}
+                          {dayBookings.length > 2 && (
+                            <div className="text-[7px] text-[#f5efe2]/30 text-right font-black">
+                              +{dayBookings.length - 2} MORE
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
 
           {/* WEEK VIEW */}
           {view === "week" && (
-            <div className="grid grid-cols-7 gap-3 flex-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 flex-1">
               {getWeekDays().map((day, idx) => {
                 const dayBookings = reservations.filter((r) => isSameDay(new Date(r.date), day));
                 const isDayToday = isToday(day);
@@ -531,7 +533,7 @@ export default function ReservationBooking({ restaurantId, locationId, restauran
                 return (
                   <div 
                     key={idx} 
-                    className={`bg-white/[0.01] border rounded-xl p-3.5 space-y-3 min-h-[350px] flex flex-col ${
+                    className={`bg-white/[0.01] border rounded-xl p-3.5 space-y-3 min-h-[120px] sm:min-h-[350px] flex flex-col ${
                       isDayToday ? "border-[#f0a040] bg-[#f0a040]/5" : "border-[rgba(255,255,255,0.06)]"
                     }`}
                   >

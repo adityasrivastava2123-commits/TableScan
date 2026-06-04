@@ -1,20 +1,22 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import DeveloperConsole from "@/components/admin/DeveloperConsole";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Superadmin Control Center - TableScan",
-  description: "Global SaaS developer console and metrics dashboard",
-};
+import { prisma } from "@/lib/prisma";
 
 export default async function AdminPage() {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) notFound();
 
-  return (
-    <div className="w-full">
-      <DeveloperConsole />
-    </div>
-  );
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkId: userId },
+  });
+
+  const isSuperAdmin = 
+    dbUser?.email === "superadmin@tablescan.com" || 
+    (process.env.SUPERADMIN_ID && dbUser?.clerkId === process.env.SUPERADMIN_ID);
+
+  if (isSuperAdmin) {
+    redirect("/superadmin");
+  }
+
+  notFound();
 }

@@ -311,20 +311,22 @@ export default function DeliveryDashboard({ restaurantId, restaurant }: { restau
       </section>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-lg w-fit">
-        {["all", "PENDING", "ASSIGNED", "IN_TRANSIT", "DELIVERED"].map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-3.5 py-1.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold transition-all ${
-              filter === f
-                ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08]"
-                : "text-[#f5efe2]/50 hover:text-[#f5efe2] hover:bg-white/5"
-            }`}
-          >
-            {f.charAt(0) + f.slice(1).toLowerCase().replace("_", " ")}
-          </button>
-        ))}
+      <div className="max-w-full overflow-x-auto whitespace-nowrap scrollbar-none">
+        <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-lg w-fit">
+          {["all", "PENDING", "ASSIGNED", "IN_TRANSIT", "DELIVERED"].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3.5 py-1.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold transition-all ${
+                filter === f
+                  ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-[#0b0a08]"
+                  : "text-[#f5efe2]/50 hover:text-[#f5efe2] hover:bg-white/5"
+              }`}
+            >
+              {f.charAt(0) + f.slice(1).toLowerCase().replace("_", " ")}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Deliveries List */}

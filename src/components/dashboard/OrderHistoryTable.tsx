@@ -183,7 +183,7 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                     setPage(1);
                   }}
                 >
-                  <SelectTrigger className="w-[170px] bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040] text-xs font-mono-dashboard h-10">
+                  <SelectTrigger className="w-full sm:w-[170px] bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040] text-xs font-mono-dashboard h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2]">
@@ -208,11 +208,11 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                     setFrom(e.target.value);
                     setPage(1);
                   }}
-                  className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040] text-xs font-mono-dashboard h-10"
+                  className="w-full sm:w-auto bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040] text-xs font-mono-dashboard h-10"
                 />
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 w-full sm:w-auto">
                 <Label className="text-[#f5efe2]/40 text-[9px] font-mono-dashboard font-black uppercase tracking-wider block flex items-center gap-1.5">
                   <Calendar className="size-3 text-[#f0a040]" /> To
                 </Label>
@@ -223,7 +223,7 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                     setTo(e.target.value);
                     setPage(1);
                   }}
-                  className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040] text-xs font-mono-dashboard h-10"
+                  className="w-full sm:w-auto bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] text-[#f5efe2] focus:border-[#f0a040] text-xs font-mono-dashboard h-10"
                 />
               </div>
             </div>
@@ -231,7 +231,7 @@ export function OrderHistoryTable({ restaurantId }: Props) {
             <button
               onClick={() => void exportCsv()}
               disabled={exporting}
-              className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-white font-mono-dashboard font-bold uppercase tracking-wider text-[10px] hover:brightness-110 shadow-lg shadow-[#f0a040]/10 transition-all disabled:opacity-50 h-10"
+              className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-white font-mono-dashboard font-bold uppercase tracking-wider text-[10px] hover:brightness-110 shadow-lg shadow-[#f0a040]/10 transition-all disabled:opacity-50 h-10 w-full sm:w-auto"
             >
               <Download className="size-4" />
               {exporting ? "Exporting..." : "Export CSV"}
@@ -249,10 +249,10 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                 <tr>
                   <th className="px-6 py-4">Order #</th>
                   <th className="px-6 py-4">Table</th>
-                  <th className="px-6 py-4">Items</th>
+                  <th className="hidden sm:table-cell px-6 py-4">Items</th>
                   <th className="px-6 py-4">Amount</th>
                   <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Time</th>
+                  <th className="hidden md:table-cell px-6 py-4">Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -287,7 +287,7 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-[#f5efe2]/75 font-semibold text-sm">{order.table.name}</td>
-                          <td className="px-6 py-4 text-xs font-serif italic text-[#f5efe2]/50">
+                          <td className="hidden sm:table-cell px-6 py-4 text-xs font-serif italic text-[#f5efe2]/50">
                             {order.items.length} {order.items.length === 1 ? "item" : "items"}
                           </td>
                           <td className="px-6 py-4 text-[#f5efe2] font-mono-dashboard font-black text-sm">
@@ -300,7 +300,7 @@ export function OrderHistoryTable({ restaurantId }: Props) {
                               {order.status}
                             </Badge>
                           </td>
-                          <td className="px-6 py-4 text-xs font-mono-dashboard text-[#f5efe2]/40">
+                          <td className="hidden md:table-cell px-6 py-4 text-xs font-mono-dashboard text-[#f5efe2]/40">
                             {format(new Date(order.createdAt), "dd MMM yyyy · hh:mm a").toUpperCase()}
                           </td>
                         </tr>

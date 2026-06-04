@@ -325,7 +325,7 @@ function ReportsSkeleton() {
   return (
     <div className="space-y-8 pt-2">
       <div className="h-8 animate-pulse bg-neutral-900 rounded" />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, idx) => (
           <div key={idx} className="h-28 animate-pulse bg-neutral-950 rounded-xl border border-neutral-800" />
         ))}

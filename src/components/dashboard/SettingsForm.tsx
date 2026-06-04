@@ -254,34 +254,34 @@ export default function SettingsForm({ restaurant }: SettingsFormProps) {
           {/* Left Category Sidebar Navigation (Sticky on Desktop) */}
           <aside className="lg:w-64 flex-shrink-0">
             <div className="lg:sticky lg:top-24 space-y-5">
-              <div className="px-2 text-[9px] font-bold tracking-widest text-[#f0a040]/55 uppercase font-mono-dashboard">
+              <div className="hidden lg:block px-2 text-[9px] font-bold tracking-widest text-[#f0a040]/55 uppercase font-mono-dashboard">
                 Configuration Pages
               </div>
-              <TabsList className="flex flex-col h-auto w-full bg-white/[0.015] border border-white/[0.05] p-1.5 rounded-2xl gap-1">
+              <TabsList className="flex flex-row lg:flex-col h-auto w-full bg-white/[0.015] border border-white/[0.05] p-1.5 rounded-2xl gap-1 overflow-x-auto lg:overflow-visible scrollbar-none whitespace-nowrap lg:whitespace-normal">
                 <TabsTrigger 
                   value="general" 
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-[#f5efe2]/40 data-[state=active]:bg-[#f0a040]/10 data-[state=active]:text-[#f0a040] data-[state=active]:border-l-2 data-[state=active]:border-[#f0a040] hover:text-[#f5efe2]/75 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
+                  className="w-auto lg:w-full shrink-0 flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-[#f5efe2]/40 data-[state=active]:bg-[#f0a040]/10 data-[state=active]:text-[#f0a040] lg:data-[state=active]:border-l-2 lg:data-[state=active]:border-[#f0a040] data-[state=active]:border-b-2 data-[state=active]:border-[#f0a040] lg:data-[state=active]:border-b-0 hover:text-[#f5efe2]/75 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
                 >
                   <Building2 className="size-4 shrink-0" />
                   <span>General Registry</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="tax-theme" 
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-[#f5efe2]/40 data-[state=active]:bg-[#f0a040]/10 data-[state=active]:text-[#f0a040] data-[state=active]:border-l-2 data-[state=active]:border-[#f0a040] hover:text-[#f5efe2]/75 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
+                  className="w-auto lg:w-full shrink-0 flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-[#f5efe2]/40 data-[state=active]:bg-[#f0a040]/10 data-[state=active]:text-[#f0a040] lg:data-[state=active]:border-l-2 lg:data-[state=active]:border-[#f0a040] data-[state=active]:border-b-2 data-[state=active]:border-[#f0a040] lg:data-[state=active]:border-b-0 hover:text-[#f5efe2]/75 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
                 >
                   <Palette className="size-4 shrink-0" />
                   <span>Tax & Theme</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="hours" 
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-[#f5efe2]/40 data-[state=active]:bg-[#f0a040]/10 data-[state=active]:text-[#f0a040] data-[state=active]:border-l-2 data-[state=active]:border-[#f0a040] hover:text-[#f5efe2]/75 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
+                  className="w-auto lg:w-full shrink-0 flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-[#f5efe2]/40 data-[state=active]:bg-[#f0a040]/10 data-[state=active]:text-[#f0a040] lg:data-[state=active]:border-l-2 lg:data-[state=active]:border-[#f0a040] data-[state=active]:border-b-2 data-[state=active]:border-[#f0a040] lg:data-[state=active]:border-b-0 hover:text-[#f5efe2]/75 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
                 >
                   <Clock className="size-4 shrink-0" />
                   <span>Operating Hours</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="danger" 
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-rose-500/50 data-[state=active]:bg-rose-500/10 data-[state=active]:text-rose-400 data-[state=active]:border-l-2 data-[state=active]:border-rose-500 hover:text-rose-400 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
+                  className="w-auto lg:w-full shrink-0 flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-rose-500/50 data-[state=active]:bg-rose-500/10 data-[state=active]:text-rose-400 lg:data-[state=active]:border-l-2 lg:data-[state=active]:border-rose-500 data-[state=active]:border-b-2 data-[state=active]:border-rose-500 lg:data-[state=active]:border-b-0 hover:text-rose-400 hover:bg-white/[0.01] transition-all justify-start font-mono-dashboard uppercase tracking-wider"
                 >
                   <AlertTriangle className="size-4 shrink-0" />
                   <span>Danger Zone</span>

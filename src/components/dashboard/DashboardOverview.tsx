@@ -485,10 +485,10 @@ export default function DashboardOverview({ restaurant }: DashboardOverviewProps
                 <tr className="border-b border-[rgba(255,255,255,0.05)] text-[10px] font-bold uppercase tracking-widest text-[#f5efe2]/40">
                   <th className="py-3 px-4">Order ID</th>
                   <th className="py-3 px-4">Table / Area</th>
-                  <th className="py-3 px-4">Items count</th>
+                  <th className="py-3 px-4 hidden sm:table-cell">Items count</th>
                   <th className="py-3 px-4 text-right">Price</th>
                   <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4 text-right">Time Elapsed</th>
+                  <th className="py-3 px-4 text-right hidden md:table-cell">Time Elapsed</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[rgba(255,255,255,0.05)] text-xs">
@@ -504,7 +504,7 @@ export default function DashboardOverview({ restaurant }: DashboardOverviewProps
                     <td className="py-4 px-4 font-bold text-[#f5efe2]">
                       {order.table?.name || "Self Service"}
                     </td>
-                    <td className="py-4 px-4 text-[#f5efe2]/60 group-hover:text-white transition-colors">
+                    <td className="py-4 px-4 text-[#f5efe2]/60 group-hover:text-white transition-colors hidden sm:table-cell">
                       {order.items?.length || 0} items ordered
                     </td>
                     <td className="py-4 px-4 text-right font-mono-dashboard text-[#f5efe2] font-semibold">
@@ -513,7 +513,7 @@ export default function DashboardOverview({ restaurant }: DashboardOverviewProps
                     <td className="py-4 px-4 text-center">
                       <OrderStatusBadge status={order.status} />
                     </td>
-                    <td className="py-4 px-4 text-right text-[10px] text-[#f5efe2]/40 font-mono-dashboard">
+                    <td className="py-4 px-4 text-right text-[10px] text-[#f5efe2]/40 font-mono-dashboard hidden md:table-cell">
                       {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
                     </td>
                   </tr>

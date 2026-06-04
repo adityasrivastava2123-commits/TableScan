@@ -233,7 +233,7 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
       )}
 
       {/* Search and Filter */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-xl p-3.5 flex items-center gap-2 text-[#f5efe2]/40">
           <Search className="size-4" />
           <input
@@ -246,7 +246,7 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl px-4 py-3.5 text-[#f5efe2] text-[13px] outline-none focus:border-[#f0a040]/50"
+          className="w-full sm:w-auto bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-xl px-4 py-3.5 text-[#f5efe2] text-[13px] outline-none focus:border-[#f0a040]/50"
         >
           <option value="all" className="bg-[#0b0a08]">All Categories</option>
           {categories.map((cat) => (
@@ -463,12 +463,12 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
       {/* Ingredients List */}
       <div className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
         <div className="grid grid-cols-12 gap-4 px-5 py-3 border-b border-[rgba(255,255,255,0.08)] bg-white/[0.01] text-[10px] text-[#f5efe2]/40 font-bold tracking-wider uppercase">
-          <div className="col-span-3">Ingredient</div>
-          <div className="col-span-2">Category</div>
-          <div className="col-span-2">Stock</div>
-          <div className="col-span-2">Min Stock</div>
-          <div className="col-span-2">Supplier</div>
-          <div className="col-span-1">Status</div>
+          <div className="col-span-6 sm:col-span-5 md:col-span-4 lg:col-span-3">Ingredient</div>
+          <div className="hidden md:block md:col-span-2">Category</div>
+          <div className="col-span-4 sm:col-span-3 md:col-span-2">Stock</div>
+          <div className="hidden sm:block sm:col-span-2">Min Stock</div>
+          <div className="hidden lg:block lg:col-span-2">Supplier</div>
+          <div className="col-span-2 sm:col-span-2 md:col-span-2 lg:col-span-1">Status</div>
         </div>
         {filteredIngredients.length === 0 ? (
           <div className="text-center py-16">
@@ -480,15 +480,15 @@ export default function InventoryManagement({ restaurantId }: { restaurantId: st
           <div className="divide-y divide-[rgba(255,255,255,0.05)]">
             {filteredIngredients.map((item) => (
               <div key={item.id} className="grid grid-cols-12 gap-4 px-5 py-3.5 items-center hover:bg-white/[0.01] transition-colors">
-                <div className="col-span-3">
+                <div className="col-span-6 sm:col-span-5 md:col-span-4 lg:col-span-3">
                   <div className="text-[13px] font-bold text-[#f5efe2]">{item.name}</div>
                   {item.description && <div className="text-[11px] text-[#f5efe2]/40 mt-0.5">{item.description}</div>}
                 </div>
-                <div className="col-span-2 text-[12px] text-[#f5efe2]/60">{item.category || "-"}</div>
-                <div className="col-span-2 text-[13px] font-semibold text-[#f5efe2] font-mono-dashboard">{item.currentStock} {item.unit}</div>
-                <div className="col-span-2 text-[12px] text-[#f5efe2]/40 font-mono-dashboard">{item.minStock} {item.unit}</div>
-                <div className="col-span-2 text-[12px] text-[#f5efe2]/60">{item.supplier?.name || "-"}</div>
-                <div className="col-span-1">
+                <div className="hidden md:block md:col-span-2 text-[12px] text-[#f5efe2]/60">{item.category || "-"}</div>
+                <div className="col-span-4 sm:col-span-3 md:col-span-2 text-[13px] font-semibold text-[#f5efe2] font-mono-dashboard">{item.currentStock} {item.unit}</div>
+                <div className="hidden sm:block sm:col-span-2 text-[12px] text-[#f5efe2]/40 font-mono-dashboard">{item.minStock} {item.unit}</div>
+                <div className="hidden lg:block lg:col-span-2 text-[12px] text-[#f5efe2]/60">{item.supplier?.name || "-"}</div>
+                <div className="col-span-2 sm:col-span-2 md:col-span-2 lg:col-span-1">
                   {item.currentStock <= item.minStock ? (
                     <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-[#e85a2a] font-black uppercase tracking-wider">Low</span>
                   ) : (

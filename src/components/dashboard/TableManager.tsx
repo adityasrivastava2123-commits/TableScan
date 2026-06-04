@@ -654,14 +654,15 @@ export default function TableManager({
               </div>
 
               {/* Grid Canvas area */}
-              <div 
-                ref={canvasRef}
-                className="relative w-full h-[540px] bg-[#070707] border border-[rgba(255,255,255,0.03)] rounded-2xl overflow-hidden shadow-inner select-none"
-                style={{
-                  backgroundImage: "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
-                  backgroundSize: "20px 20px"
-                }}
-              >
+              <div className="overflow-x-auto w-full scrollbar-none rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#070707]">
+                <div 
+                  ref={canvasRef}
+                  className="relative min-w-[750px] lg:min-w-full h-[540px] overflow-hidden shadow-inner select-none"
+                  style={{
+                    backgroundImage: "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+                    backgroundSize: "20px 20px"
+                  }}
+                >
                 
                 {/* Placed Tables */}
                 {placedTables.map((table) => {
@@ -744,6 +745,7 @@ export default function TableManager({
                   );
                 })}
 
+                </div>
               </div>
 
               {/* Canvas layout details controller popover drawer */}
@@ -960,7 +962,7 @@ export default function TableManager({
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.22 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-[820px] h-full sm:h-[90vh] md:h-[540px] max-h-[540px] bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+              className="w-full max-w-[820px] h-auto max-h-[90vh] md:h-[540px] md:max-h-[540px] bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             >
               
               <div className="p-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#0b0a08]/80">

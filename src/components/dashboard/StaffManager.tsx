@@ -357,11 +357,11 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
             <table className="min-w-full">
               <thead className="bg-[#0b0a08] text-left text-[9px] uppercase tracking-wider font-mono-dashboard text-[#f5efe2]/40 border-b border-[rgba(255,255,255,0.08)]">
                 <tr>
-                  <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Role</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Actions</th>
+                  <th className="px-4 py-4 sm:px-6">Name</th>
+                  <th className="px-6 py-4 hidden md:table-cell">Email</th>
+                  <th className="px-6 py-4 hidden sm:table-cell">Role</th>
+                  <th className="px-4 py-4 sm:px-6">Status</th>
+                  <th className="px-4 py-4 sm:px-6">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -383,7 +383,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                       key={member.id}
                       className="border-t border-[rgba(255,255,255,0.08)] transition hover:bg-[rgba(255,255,255,0.01)]"
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-4 sm:px-6">
                         <div className="flex items-center gap-3">
                           <div
                             className={cn(
@@ -404,8 +404,8 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-xs font-mono-dashboard text-[#f5efe2]/60 select-all">{member.email}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 hidden md:table-cell text-xs font-mono-dashboard text-[#f5efe2]/60 select-all">{member.email}</td>
+                      <td className="px-6 py-4 hidden sm:table-cell">
                         <Badge
                           variant="outline"
                           className={cn("border flex items-center gap-1.5 w-fit text-[9px] font-mono-dashboard font-black uppercase py-0.5 px-2", roleBadgeMap[member.role].bg, roleBadgeMap[member.role].text, roleBadgeMap[member.role].border)}
@@ -414,7 +414,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                           {member.role}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-4 sm:px-6">
                         <button
                           onClick={() => void toggleActive(member)}
                           disabled={updatingId === member.id}
@@ -434,7 +434,7 @@ export function StaffManager({ restaurantId }: StaffManagerProps) {
                           {member.isActive ? "Active" : "Inactive"}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-4 sm:px-6">
                         <div className="flex items-center gap-2">
                           <Select
                             value={member.role}

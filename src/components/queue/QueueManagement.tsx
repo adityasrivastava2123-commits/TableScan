@@ -471,7 +471,7 @@ export default function QueueManagement({ restaurantId }: { restaurantId: string
                 </div>
 
                 {/* Seating controls / Actions */}
-                <div className="flex items-center gap-2 pl-5 sm:pl-0 sm:border-l border-[rgba(255,255,255,0.08)] sm:py-2 sm:pl-6" onClick={(e) => e.stopPropagation()}>
+                <div className="flex flex-wrap items-center gap-2 pl-5 sm:pl-0 sm:border-l border-[rgba(255,255,255,0.08)] sm:py-2 sm:pl-6" onClick={(e) => e.stopPropagation()}>
                   {entry.status === "WAITING" && (
                     <>
                       <button

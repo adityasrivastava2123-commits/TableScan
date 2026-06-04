@@ -142,7 +142,7 @@ export default function ForecastingDashboard({ restaurant }: Props) {
     return (
       <div className="space-y-6 pt-2">
         <div className="h-8 animate-pulse bg-neutral-900 rounded" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-28 animate-pulse bg-neutral-950 rounded-xl border border-neutral-800" />
           ))}
@@ -244,7 +244,7 @@ export default function ForecastingDashboard({ restaurant }: Props) {
       </section>
 
       {/* KPI Cards Strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <ForecastKPICard
           label="PREDICTED REVENUE"
           sublabel="Tomorrow"
@@ -367,7 +367,7 @@ export default function ForecastingDashboard({ restaurant }: Props) {
             <p className="text-[11px] text-[#f5efe2]/40 font-serif italic mb-4">Order density matrix by day & hour</p>
 
             <div className="overflow-x-auto custom-scrollbar">
-              <div className="min-w-[280px]">
+              <div className="min-w-[500px]">
                 {/* Hour labels */}
                 <div className="flex gap-[2px] mb-1 pl-8">
                   {heatmap.hours.map((h, i) => (

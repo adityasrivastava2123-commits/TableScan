@@ -172,7 +172,7 @@ export default function CustomersDashboard({ restaurant }: CustomersDashboardPro
       </div>
 
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <Card className="bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-xl p-[18px_20px] shadow-sm relative overflow-hidden transition-all duration-300 hover:border-[#f0a040]/30 card-hover">
           <div className="absolute inset-0 bg-gradient-to-br from-[#f0a040]/5 to-transparent pointer-events-none" />
           <div className="flex items-center justify-between">
@@ -286,11 +286,11 @@ export default function CustomersDashboard({ restaurant }: CustomersDashboardPro
             <thead>
               <tr className="bg-white/[0.01] text-[#f5efe2]/40 text-[10px] font-bold tracking-wider uppercase border-b border-[rgba(255,255,255,0.08)]">
                 <th className="px-6 py-4">Customer</th>
-                <th className="px-6 py-4">Contact Detail</th>
-                <th className="px-6 py-4">Loyalty Group</th>
-                <th className="px-6 py-4 text-center">Visits</th>
+                <th className="hidden md:table-cell px-6 py-4">Contact Detail</th>
+                <th className="hidden sm:table-cell px-6 py-4">Loyalty Group</th>
+                <th className="hidden sm:table-cell px-6 py-4 text-center">Visits</th>
                 <th className="px-6 py-4">Total Spend</th>
-                <th className="px-6 py-4">Last Activity</th>
+                <th className="hidden md:table-cell px-6 py-4">Last Activity</th>
                 <th className="px-6 py-4 w-12"></th>
               </tr>
             </thead>
@@ -339,7 +339,7 @@ export default function CustomersDashboard({ restaurant }: CustomersDashboardPro
                         </td>
 
                         {/* Contact Details */}
-                        <td className="px-6 py-4">
+                        <td className="hidden md:table-cell px-6 py-4">
                           <div className="space-y-0.5">
                             {customer.phone && customer.phone !== "N/A" && (
                               <div className="flex items-center gap-1.5 text-[11px] text-[#f5efe2]/60">
@@ -385,14 +385,14 @@ export default function CustomersDashboard({ restaurant }: CustomersDashboardPro
                         </td>
 
                         {/* Loyalty Group */}
-                        <td className="px-6 py-4">
+                        <td className="hidden sm:table-cell px-6 py-4">
                           <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wider ${getTierBadgeStyles(customer.loyaltyTier)}`}>
                             {customer.loyaltyTier}
                           </span>
                         </td>
 
                         {/* Total Visits */}
-                        <td className="px-6 py-4 text-center text-[12px] font-semibold text-[#f5efe2] font-mono-dashboard">
+                        <td className="hidden sm:table-cell px-6 py-4 text-center text-[12px] font-semibold text-[#f5efe2] font-mono-dashboard">
                           {customer.totalVisits}
                         </td>
 
@@ -402,7 +402,7 @@ export default function CustomersDashboard({ restaurant }: CustomersDashboardPro
                         </td>
 
                         {/* Last Visit Date */}
-                        <td className="px-6 py-4 text-[12px] text-[#f5efe2]/60 font-mono-dashboard">
+                        <td className="hidden md:table-cell px-6 py-4 text-[12px] text-[#f5efe2]/60 font-mono-dashboard">
                           {customer.lastVisit ? (
                             <span className="flex items-center gap-1.5">
                               <Clock className="size-3 text-[#f5efe2]/40" />

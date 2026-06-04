@@ -131,7 +131,7 @@ export default function SupportChatsManagement({ restaurantId }: { restaurantId:
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch min-h-[580px]">
         
         {/* Left: Chats session selector list */}
-        <div className="lg:col-span-1 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl p-5 flex flex-col h-[600px]">
+        <div className={`lg:col-span-1 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl p-5 flex flex-col h-[600px] ${selectedChat ? "hidden lg:flex" : "flex"}`}>
           <h3 className="text-xs font-bold text-[#f5efe2]/40 uppercase tracking-wider mb-4">
             Open Requests ({openChats.length})
           </h3>
@@ -179,7 +179,7 @@ export default function SupportChatsManagement({ restaurantId }: { restaurantId:
         </div>
 
         {/* Right: Focused Live chat panel viewport */}
-        <div className="lg:col-span-2 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl flex flex-col h-[600px] overflow-hidden">
+        <div className={`lg:col-span-2 bg-white/[0.02] border border-[rgba(255,255,255,0.08)] rounded-2xl flex flex-col h-[600px] overflow-hidden ${selectedChat ? "flex" : "hidden lg:flex"}`}>
           {!selectedChat ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-12 text-[#f5efe2]/40 space-y-4">
               <div className="w-16 h-16 rounded-full bg-[#f0a040]/10 flex items-center justify-center mx-auto text-3xl">
@@ -196,12 +196,18 @@ export default function SupportChatsManagement({ restaurantId }: { restaurantId:
             <div className="flex-1 flex flex-col h-full overflow-hidden">
               {/* Active Chat Header strip */}
               <div className="bg-white/[0.01] border-b border-[rgba(255,255,255,0.06)] px-5 py-4 flex items-center justify-between flex-shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#f0a040]/20 flex items-center justify-center text-lg font-black text-[#f0a040] font-mono-dashboard">
+                <div className="flex items-center gap-3 min-w-0">
+                  <button
+                    onClick={() => setSelectedChat(null)}
+                    className="lg:hidden flex items-center justify-center w-8 h-8 rounded-xl bg-white/5 border border-white/10 text-[#f5efe2]/60 hover:text-white mr-1 flex-shrink-0 text-xs font-bold"
+                  >
+                    &larr;
+                  </button>
+                  <div className="w-9 h-9 rounded-full bg-[#f0a040]/20 flex items-center justify-center text-lg font-black text-[#f0a040] font-mono-dashboard flex-shrink-0">
                     {selectedChat.tableName}
                   </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[#f5efe2]">Table {selectedChat.tableName}</h3>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold text-[#f5efe2] truncate">Table {selectedChat.tableName}</h3>
                     <p className="text-[10px] text-[#52d27a] font-semibold uppercase tracking-wider flex items-center gap-1 mt-0.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Live Connection

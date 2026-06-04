@@ -379,7 +379,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
             <thead className="bg-[#0b0a08] text-left text-[9px] font-mono-dashboard font-black uppercase tracking-wider text-[#f5efe2]/40 border-b border-[rgba(255,255,255,0.08)]">
               <tr>
                 <th className="px-6 py-4">Order</th>
-                <th className="px-6 py-4">Customer</th>
+                <th className="px-6 py-4 hidden sm:table-cell">Customer</th>
                 <th className="px-6 py-4">Table</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 cursor-pointer hover:text-[#f0a040]"
@@ -390,7 +390,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                     <ArrowUpDown className="w-3 h-3" />
                   </div>
                 </th>
-                <th className="px-6 py-4 cursor-pointer hover:text-[#f0a040]"
+                <th className="px-6 py-4 cursor-pointer hover:text-[#f0a040] hidden md:table-cell"
                   onClick={() => toggleSort("createdAt")}
                 >
                   <div className="flex items-center gap-1">
@@ -417,7 +417,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                         <p className="text-[10px] text-[#f5efe2]/40 font-serif italic mt-0.5">{order.items.length} items</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 hidden sm:table-cell">
                       <p className="text-sm font-semibold text-[#f5efe2]">
                         {order.customerName || "Guest"}
                       </p>
@@ -436,7 +436,7 @@ export const OrdersBoard = memo(function OrdersBoard({ restaurantId }: OrdersBoa
                         ₹{order.totalAmount.toFixed(0)}
                       </p>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 hidden md:table-cell">
                       <p className="text-xs font-mono-dashboard text-[#f5efe2]/75">
                         {format(new Date(order.createdAt), "MMM dd · HH:mm")}
                       </p>

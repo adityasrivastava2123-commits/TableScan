@@ -445,12 +445,12 @@ export default function RoleDashboards({ restaurant }: RoleDashboardsProps) {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[620px] text-left text-xs">
+            <table className="w-full text-left text-xs">
               <thead className="border-b border-white/[0.06] text-[10px] uppercase tracking-widest text-[#f5efe2]/35">
                 <tr>
                   <th className="py-3 pr-4">Order</th>
                   <th className="py-3 pr-4">Table</th>
-                  <th className="py-3 pr-4">Items</th>
+                  <th className="py-3 pr-4 hidden sm:table-cell">Items</th>
                   <th className="py-3 pr-4">Amount</th>
                   <th className="py-3 text-right">Status</th>
                 </tr>
@@ -464,7 +464,7 @@ export default function RoleDashboards({ restaurant }: RoleDashboardsProps) {
                     <td className="py-3.5 pr-4 text-[#f5efe2]">
                       {order.table?.name ?? "Counter"}
                     </td>
-                    <td className="py-3.5 pr-4 text-[#f5efe2]/55">
+                    <td className="py-3.5 pr-4 text-[#f5efe2]/55 hidden sm:table-cell">
                       {order.items?.length ?? 0} items
                     </td>
                     <td className="py-3.5 pr-4 font-mono-dashboard text-[#f5efe2]/70">
