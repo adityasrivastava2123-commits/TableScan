@@ -768,6 +768,9 @@ export default function OrderStatusPage() {
       {/* Print CSS Injector */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
+          @page {
+            margin: 0 !important;
+          }
           body {
             background: white !important;
             color: black !important;

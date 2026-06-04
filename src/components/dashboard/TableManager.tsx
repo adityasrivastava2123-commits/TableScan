@@ -325,6 +325,153 @@ export default function TableManager({
     window.print();
   }
 
+  function handlePrintAll() {
+    const win = window.open("", "_blank", "width=900,height=700");
+    if (!win) {
+      toast.error("Popup blocked! Please allow popups and try again.");
+      return;
+    }
+
+    const bgColor = selectedTemplate === "obsidian" ? "#0f0f0f" : "#ffffff";
+    const textColor = selectedTemplate === "obsidian" ? "#ffffff" : "#000000";
+    const accentColor = "#f0a040";
+    const badgeBg = selectedTemplate === "sunset"
+      ? "linear-gradient(to right, #f0a040, #e85a2a)"
+      : selectedTemplate === "obsidian"
+      ? "#222222"
+      : "#000000";
+    const badgeText = selectedTemplate === "obsidian" ? "#f0a040" : "#ffffff";
+    const labelColor = selectedTemplate === "obsidian" ? "#f0a040" : "#e85a2a";
+    const subTextColor = selectedTemplate === "obsidian" ? "#9ca3af" : "#4b5563";
+
+    const pagesHtml = tables.map((table) => {
+      const qrSrc = qrUrls[table.id] || "";
+      return `
+        <div class="page">
+          <div class="header">
+            <p class="label">TABLESCAN ORDERING</p>
+            <h2 class="restaurant">${restaurantSlug.replace(/-/g, " ").toUpperCase()}</h2>
+            <div class="divider"></div>
+          </div>
+          <div class="qr-section">
+            <div class="qr-box">
+              <img src="${qrSrc}" alt="QR ${table.name}" />
+            </div>
+            <span class="badge">${table.name.toUpperCase()}</span>
+          </div>
+          <div class="footer">
+            <p class="instructions">${customInstructions}</p>
+            <p class="scan-text">&#9643; SCAN TO DIGITAL DINE</p>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>QR Flyers - ${restaurantSlug}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          @page { size: A4; margin: 0; }
+          body {
+            background: ${bgColor};
+            color: ${textColor};
+            font-family: sans-serif;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+          .page {
+            width: 100vw;
+            height: 100vh;
+            background: ${bgColor};
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6mm;
+            page-break-after: always;
+            break-after: page;
+          }
+          .page:last-child { page-break-after: auto; break-after: auto; }
+          .header { text-align: center; }
+          .label {
+            font-size: 10pt;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: ${labelColor};
+            margin-bottom: 2mm;
+          }
+          .restaurant {
+            font-size: 22pt;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: ${textColor};
+          }
+          .divider {
+            width: 24px;
+            height: 2px;
+            background: ${textColor};
+            opacity: 0.15;
+            margin: 3mm auto 0;
+            border-radius: 2px;
+          }
+          .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4mm;
+          }
+          .qr-box {
+            background: white;
+            padding: 6px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0,0,0,0.06);
+          }
+          .qr-box img { width: 55mm; height: 55mm; display: block; }
+          .badge {
+            padding: 2mm 6mm;
+            border-radius: 999px;
+            font-size: 13pt;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            background: ${badgeBg};
+            color: ${badgeText};
+          }
+          .footer { text-align: center; max-width: 80mm; }
+          .instructions {
+            font-size: 9pt;
+            line-height: 1.5;
+            color: ${subTextColor};
+            font-weight: 600;
+            margin-bottom: 2mm;
+          }
+          .scan-text {
+            font-size: 8pt;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: ${accentColor};
+          }
+        </style>
+      </head>
+      <body>${pagesHtml}</body>
+      </html>
+    `);
+    win.document.close();
+    win.onload = () => {
+      setTimeout(() => {
+        win.focus();
+        win.print();
+      }, 300);
+    };
+  }
+
   // ── Loading Skeleton ───────────────────────────────────────────────────
   if (minLoading) {
     return (
@@ -358,24 +505,103 @@ export default function TableManager({
       {/* Dynamic Hidden Stylesheet for Native Print Media Formatting */}
       <style jsx global>{`
         @media print {
+          @page {
+            size: A4;
+            margin: 0 !important;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            background: transparent !important;
+          }
           body * {
             visibility: hidden !important;
           }
+          /* Single flyer print */
           #print-area-wrapper, #print-area-wrapper * {
             visibility: visible !important;
           }
           #print-area-wrapper {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background: white !important;
-            color: black !important;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+            background: transparent !important;
             z-index: 9999999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          #print-area-wrapper > div {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            max-height: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 5mm !important;
+          }
+          #print-area-wrapper img {
+            width: 50mm !important;
+            height: 50mm !important;
+          }
+          /* Print All mode — must be in normal flow for page breaks to work */
+          #print-all-area, #print-all-area * {
+            visibility: visible !important;
+          }
+          #print-all-area {
+            display: block !important;
+            position: relative !important;
+            width: 100% !important;
+            z-index: 9999999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+          }
+          /* When print-all is active, hide the single flyer wrapper */
+          #print-all-area ~ #print-area-wrapper {
+            display: none !important;
+          }
+          .print-flyer-page {
+            width: 100% !important;
+            height: 100vh !important;
+            page-break-after: always !important;
+            break-after: page !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 5mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            border: none !important;
+          }
+          .print-flyer-page:last-child {
+            page-break-after: auto !important;
+            break-after: auto !important;
+          }
+          .print-flyer-page img {
+            width: 50mm !important;
+            height: 50mm !important;
+          }
+          #print-area-wrapper *,
+          #print-all-area * {
+            print-color-adjust: exact !important;
+            -webkit-print-color-adjust: exact !important;
           }
           .no-print {
             display: none !important;
@@ -425,6 +651,14 @@ export default function TableManager({
             </button>
           </div>
 
+          {tables.length > 0 && (
+            <button
+              onClick={handlePrintAll}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-transparent border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.02)] text-[#f5efe2]/70 hover:text-white text-[10px] font-mono-dashboard uppercase tracking-wider font-bold transition-all"
+            >
+              <Printer className="size-4" /> Print All QR
+            </button>
+          )}
           <button
             onClick={() => setAdding(true)}
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-white text-[10px] font-mono-dashboard uppercase tracking-wider font-bold hover:brightness-110 shadow-lg shadow-[#f0a040]/10 transition-all"
@@ -954,7 +1188,7 @@ export default function TableManager({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setCustomizerOpen(false)}
-            className="fixed inset-0 bg-black/85 backdrop-blur-xs z-[99999] no-print flex items-center justify-center p-3 sm:p-4"
+            className="fixed inset-0 bg-black/85 backdrop-blur-xs z-[99999] flex items-center justify-center p-3 sm:p-4"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
@@ -965,7 +1199,7 @@ export default function TableManager({
               className="w-full max-w-[820px] h-auto max-h-[90vh] md:h-[540px] md:max-h-[540px] bg-[#0b0a08] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             >
               
-              <div className="p-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#0b0a08]/80">
+              <div className="p-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#0b0a08]/80 no-print">
                 <div>
                   <h3 className="text-[14px] font-mono-dashboard font-black text-[#f0a040] uppercase tracking-wider flex items-center gap-1.5">
                     <Printer className="size-4 text-[#f0a040]" /> QR Flyer Customizer
@@ -983,73 +1217,74 @@ export default function TableManager({
               <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
                 
                 <div className="flex-1 bg-[#070707] p-4 sm:p-5 flex items-center justify-center overflow-y-auto border-r border-[rgba(255,255,255,0.08)] min-h-[360px] md:min-h-0">
-                  <div 
-                    id="print-area-wrapper"
-                    className={`w-[230px] h-[310px] sm:w-[250px] sm:h-[340px] md:w-[260px] md:h-[360px] rounded-xl flex flex-col justify-between p-4 sm:p-5 md:p-6 shadow-2xl transition-all duration-300 ${
-                      selectedTemplate === "sunset" 
-                        ? "bg-white text-black border-8 border-transparent" 
-                        : selectedTemplate === "obsidian"
-                        ? "bg-[#0f0f0f] text-white border border-[#222]"
-                        : "bg-white text-black border-2 border-black"
-                    }`}
-                    style={
-                      selectedTemplate === "sunset" 
-                        ? { borderImage: "linear-gradient(to bottom, #f0a040, #e85a2a) 8" }
-                        : {}
-                    }
-                  >
-                    <div className="text-center space-y-1">
-                      <p className={`text-[8px] sm:text-[10px] font-extrabold tracking-[0.2em] uppercase leading-none ${
-                        selectedTemplate === "obsidian" ? "text-[#f0a040]" : "text-[#e85a2a]"
-                      }`}>
-                        TABLESCAN ORDERING
-                      </p>
-                      <h4 className="text-[13px] sm:text-[16px] font-bold sm:font-extrabold tracking-tight truncate leading-tight uppercase font-sans">
-                        {restaurantSlug.replace(/-/g, " ")}
-                      </h4>
-                      <div className={`w-8 h-0.5 mx-auto rounded-full mt-1.5 ${
-                        selectedTemplate === "obsidian" ? "bg-white/20" : "bg-black/10"
-                      }`} />
-                    </div>
-
-                    <div className="flex flex-col items-center justify-center space-y-1.5 sm:space-y-2 py-1.5">
-                      <div className={`p-1.5 sm:p-2 rounded-xl bg-white flex items-center justify-center shadow-lg ${
-                        selectedTemplate === "obsidian" ? "border border-white/15" : "border border-black/5"
-                      }`}>
-                        <img
-                          src={qrUrls[selectedTable.id]}
-                          alt="flyer QR"
-                          className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[110px] md:h-[110px] object-contain"
-                        />
-                      </div>
-                      
-                      <span className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[11px] sm:text-[13px] font-black tracking-widest font-mono shadow-md ${
-                        selectedTemplate === "sunset"
-                          ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-white"
+                  <div id="print-area-wrapper">
+                    <div 
+                      className={`w-[230px] h-[310px] sm:w-[250px] sm:h-[340px] md:w-[260px] md:h-[360px] rounded-xl flex flex-col justify-between p-4 sm:p-5 md:p-6 shadow-2xl transition-all duration-300 ${
+                        selectedTemplate === "sunset" 
+                          ? "bg-white text-black border-8 border-transparent" 
                           : selectedTemplate === "obsidian"
-                          ? "bg-[#222] text-[#f0a040] border border-[#f0a040]/25"
-                          : "bg-black text-white"
-                      }`}>
-                        {selectedTable.name.toUpperCase()}
-                      </span>
-                    </div>
-
-                    <div className="text-center space-y-1.5 sm:space-y-2">
-                      <p className={`text-[8px] sm:text-[9px] leading-relaxed font-bold tracking-tight px-1 font-sans ${
-                        selectedTemplate === "obsidian" ? "text-gray-400" : "text-gray-600"
-                      }`}>
-                        {customInstructions}
-                      </p>
-                      
-                      <div className="flex items-center justify-center gap-1 text-[7px] sm:text-[8px] font-black tracking-wider uppercase font-mono">
-                        <QrCode className="size-2 sm:size-2.5" /> SCAN TO DIGITAL DINE
+                          ? "bg-[#0f0f0f] text-white border border-[#222]"
+                          : "bg-white text-black border-2 border-black"
+                      }`}
+                      style={
+                        selectedTemplate === "sunset" 
+                          ? { borderImage: "linear-gradient(to bottom, #f0a040, #e85a2a) 8" }
+                          : {}
+                      }
+                    >
+                      <div className="text-center space-y-1">
+                        <p className={`text-[8px] sm:text-[10px] font-extrabold tracking-[0.2em] uppercase leading-none ${
+                          selectedTemplate === "obsidian" ? "text-[#f0a040]" : "text-[#e85a2a]"
+                        }`}>
+                          TABLESCAN ORDERING
+                        </p>
+                        <h4 className="text-[13px] sm:text-[16px] font-bold sm:font-extrabold tracking-tight truncate leading-tight uppercase font-sans">
+                          {restaurantSlug.replace(/-/g, " ")}
+                        </h4>
+                        <div className={`w-8 h-0.5 mx-auto rounded-full mt-1.5 ${
+                          selectedTemplate === "obsidian" ? "bg-white/20" : "bg-black/10"
+                        }`} />
                       </div>
-                    </div>
 
+                      <div className="flex flex-col items-center justify-center space-y-1.5 sm:space-y-2 py-1.5">
+                        <div className={`p-1.5 sm:p-2 rounded-xl bg-white flex items-center justify-center shadow-lg ${
+                          selectedTemplate === "obsidian" ? "border border-white/15" : "border border-black/5"
+                        }`}>
+                          <img
+                            src={qrUrls[selectedTable.id]}
+                            alt="flyer QR"
+                            className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[110px] md:h-[110px] object-contain"
+                          />
+                        </div>
+                        
+                        <span className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[11px] sm:text-[13px] font-black tracking-widest font-mono shadow-md ${
+                          selectedTemplate === "sunset"
+                            ? "bg-gradient-to-r from-[#f0a040] to-[#e85a2a] text-white"
+                            : selectedTemplate === "obsidian"
+                            ? "bg-[#222] text-[#f0a040] border border-[#f0a040]/25"
+                            : "bg-black text-white"
+                        }`}>
+                          {selectedTable.name.toUpperCase()}
+                        </span>
+                      </div>
+
+                      <div className="text-center space-y-1.5 sm:space-y-2">
+                        <p className={`text-[8px] sm:text-[9px] leading-relaxed font-bold tracking-tight px-1 font-sans ${
+                          selectedTemplate === "obsidian" ? "text-gray-400" : "text-gray-600"
+                        }`}>
+                          {customInstructions}
+                        </p>
+                        
+                        <div className="flex items-center justify-center gap-1 text-[7px] sm:text-[8px] font-black tracking-wider uppercase font-mono">
+                          <QrCode className="size-2 sm:size-2.5" /> SCAN TO DIGITAL DINE
+                        </div>
+                      </div>
+
+                    </div>
                   </div>
                 </div>
 
-                <div className="w-full md:w-[320px] p-4 sm:p-5 space-y-4 sm:space-y-5 overflow-y-auto bg-[#0b0a08]/50 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[rgba(255,255,255,0.08)]">
+                <div className="w-full md:w-[320px] p-4 sm:p-5 space-y-4 sm:space-y-5 overflow-y-auto bg-[#0b0a08]/50 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[rgba(255,255,255,0.08)] no-print">
                   
                   <div className="space-y-4">
                     <div className="space-y-2">

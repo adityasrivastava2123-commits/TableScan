@@ -22,6 +22,17 @@ export default function PrintQRPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          @page {
+            margin: 0 !important;
+          }
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+        }
+      ` }} />
       <div className="text-center space-y-4 print:shadow-none">
         <h1 className="text-2xl font-bold">TableScan</h1>
         <p className="text-gray-500">Scan to order</p>
