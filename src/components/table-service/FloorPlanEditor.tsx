@@ -229,7 +229,22 @@ export default function FloorPlanEditor({
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
-        setAssets(JSON.parse(saved));
+        const parsed = JSON.parse(saved) as FloorAsset[];
+        // Sanitize coordinates to pull back any assets outside the 800x600 grid bounds
+        const sanitized = parsed.map((asset) => {
+          const w = asset.w || 60;
+          const h = asset.h || 60;
+          const rawX = typeof asset.x === "number" && !isNaN(asset.x) ? asset.x : 200;
+          const rawY = typeof asset.y === "number" && !isNaN(asset.y) ? asset.y : 200;
+          const x = Math.max(0, Math.min(800 - w, rawX));
+          const y = Math.max(0, Math.min(600 - h, rawY));
+          // Snap to 20px grid
+          const snappedX = Math.round(x / 20) * 20;
+          const snappedY = Math.round(y / 20) * 20;
+          return { ...asset, x: snappedX, y: snappedY };
+        });
+        setAssets(sanitized);
+        localStorage.setItem(storageKey, JSON.stringify(sanitized));
       } catch (e) {
         console.error("Failed to load floorplan layout", e);
       }
@@ -237,7 +252,7 @@ export default function FloorPlanEditor({
       // Auto-populate layout with default configuration
       const defaultAssets: FloorAsset[] = [];
       let currentX = 80;
-      let currentY = 180;
+      let currentY = 140; // Avoid overlapping with Cocktail Bar at (40, 40)
 
       tables.forEach((table, index) => {
         defaultAssets.push({
@@ -254,10 +269,13 @@ export default function FloorPlanEditor({
           capacity: table.capacity || 4
         });
 
-        currentX += 130;
-        if (currentX > 550) {
+        currentX += 120;
+        if (currentX > 680) {
           currentX = 80;
-          currentY += 130;
+          currentY += 100;
+          if (currentY > 500) {
+            currentY = 140; // Wrap back within bounds
+          }
         }
       });
 
@@ -279,10 +297,10 @@ export default function FloorPlanEditor({
         type: "plant",
         name: "Lobby Fig",
         shape: "round",
-        x: 350,
+        x: 360,
         y: 40,
-        w: 45,
-        h: 45,
+        w: 40,
+        h: 40,
         rotation: 0
       });
 
@@ -291,10 +309,10 @@ export default function FloorPlanEditor({
         type: "plant",
         name: "Restroom Fig",
         shape: "round",
-        x: 30,
+        x: 40,
         y: 520,
-        w: 45,
-        h: 45,
+        w: 40,
+        h: 40,
         rotation: 0
       });
 
@@ -637,12 +655,16 @@ export default function FloorPlanEditor({
     let targetY = info.startAssetY + dy;
 
     if (snapToGrid) {
-      targetX = Math.round(targetX / 10) * 10;
-      targetY = Math.round(targetY / 10) * 10;
+      targetX = Math.round(targetX / 20) * 20;
+      targetY = Math.round(targetY / 20) * 20;
     }
 
-    targetX = Math.max(0, Math.min(780 - 40, targetX));
-    targetY = Math.max(0, Math.min(580 - 40, targetY));
+    const asset = assets.find((a) => a.id === info.assetId);
+    const assetW = asset?.w || 60;
+    const assetH = asset?.h || 60;
+
+    targetX = Math.max(0, Math.min(800 - assetW, targetX));
+    targetY = Math.max(0, Math.min(600 - assetH, targetY));
 
     setAssets((prev) =>
       prev.map((a) => {
@@ -793,25 +815,25 @@ export default function FloorPlanEditor({
       case "wall":
         name = "Room Divider";
         w = 120;
-        h = 12;
+        h = 20;
         shape = "rectangle";
         break;
       case "plant":
         name = "Fiddle Fig";
-        w = 45;
-        h = 45;
+        w = 40;
+        h = 40;
         shape = "round";
         break;
       case "bar":
         name = "Cocktail Counter";
         w = 180;
-        h = 50;
+        h = 60;
         shape = "rectangle";
         break;
       case "door":
         name = "Doorway";
-        w = 70;
-        h = 10;
+        w = 80;
+        h = 20;
         shape = "rectangle";
         break;
     }
@@ -1223,7 +1245,7 @@ export default function FloorPlanEditor({
         {/* Live Canvas Workspace Area */}
         <div className="flex-1 overflow-auto bg-[#0a0908] flex items-center justify-center p-2 sm:p-6 relative">
           {/* Blueprint style grid lines overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
 
           {/* Scale controls floating */}
           <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-20 flex bg-black/60 border border-white/10 p-0.5 sm:p-1 rounded-xl backdrop-blur-md">
@@ -1248,10 +1270,10 @@ export default function FloorPlanEditor({
             ref={canvasRef}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            className="relative bg-[#0d0c0b] rounded-2xl sm:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.6)] border border-white/10 flex-shrink-0 select-none"
+            className="relative bg-[#0d0c0b] rounded-2xl sm:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.6)] border border-white/10 flex-shrink-0 select-none overflow-hidden"
             style={{
-              width: "min(800px, calc(100vw - 32px))",
-              height: "min(600px, calc(100vh - 200px))",
+              width: "800px",
+              height: "600px",
               transform: `scale(${canvasScale})`,
               transformOrigin: "center center",
               transition: dragInfoRef.current ? "none" : "transform 0.15s ease-out"
@@ -1402,7 +1424,7 @@ export default function FloorPlanEditor({
                     }}
                     onDragOver={handleDragOver}
                     onDrop={(e) => tableService && handleDropStaff(e, tableService.id)}
-                    className={`absolute flex flex-col items-center justify-center cursor-pointer transition-all select-none border-2 text-center relative group ${
+                    className={`absolute flex flex-col items-center justify-center cursor-pointer transition-all select-none touch-none border-2 text-center relative group ${
                       isRound ? "rounded-full" : "rounded-2xl"
                     } ${
                       isDesignMode
@@ -1506,7 +1528,7 @@ export default function FloorPlanEditor({
                   <div
                     key={asset.id}
                     onPointerDown={(e) => handlePointerDown(e, asset.id)}
-                    className={`absolute border flex items-center justify-center cursor-pointer transition-all select-none ${getDecorStyle()} ${
+                    className={`absolute border flex items-center justify-center cursor-pointer transition-all select-none touch-none ${getDecorStyle()} ${
                       isDesignMode && isSelected
                         ? "ring-2 ring-amber-500 border-amber-500 scale-102 z-20"
                         : ""
