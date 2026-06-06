@@ -5,7 +5,7 @@ import StaffScheduling from "@/components/staff/StaffScheduling";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Schedule - TableScan",
+  title: "Schedule - Serveaura",
   description: "Manage staff shifts and schedules",
 };
 

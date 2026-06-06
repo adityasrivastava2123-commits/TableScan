@@ -5,7 +5,7 @@ import QueueManagement from "@/components/queue/QueueManagement";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Queue - TableScan",
+  title: "Queue - Serveaura",
   description: "Manage customer queue and waitlist",
 };
 

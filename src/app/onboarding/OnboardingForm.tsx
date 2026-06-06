@@ -90,7 +90,7 @@ export function OnboardingForm() {
         state: location.state || null,
         plan,
       });
-      toast.success("Welcome to TableScan!");
+      toast.success("Welcome to Serveaura!");
       router.push("/dashboard");
     } catch (error) {
       const message = (() => {
@@ -113,7 +113,7 @@ export function OnboardingForm() {
           <div className="w-9 h-9 rounded-xl bg-[#f97316] flex items-center justify-center">
             <QrCode className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-[#f0ece4]">TableScan</span>
+          <span className="text-xl font-bold text-[#f0ece4]">Serveaura</span>
         </div>
 
         <div className="bg-[#111111] border border-[rgba(255,255,255,0.07)] rounded-2xl overflow-hidden">

@@ -397,7 +397,7 @@ export default function AIAssistant({ restaurant }: AIAssistantProps) {
             </div>
             <div>
               <h2 className="text-sm font-extrabold text-neutral-800 dark:text-[#f0ece4] flex items-center gap-2 leading-none">
-                TableScan Agent
+                Serveaura Agent
                 <span className="flex items-center">
                   <span className={`w-2 h-2 rounded-full ${
                     status === "listening" ? "bg-red-500 animate-ping" :

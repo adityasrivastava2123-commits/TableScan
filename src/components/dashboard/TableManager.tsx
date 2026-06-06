@@ -76,8 +76,8 @@ export default function TableManager({
       generateQRCodes(res.data);
       
       // Load positions & decorations from LocalStorage
-      const savedPos = localStorage.getItem(`tablescan:floorplan:pos:${locationId}`);
-      const savedDecor = localStorage.getItem(`tablescan:floorplan:decor:${locationId}`);
+      const savedPos = localStorage.getItem(`serveaura:floorplan:pos:${locationId}`);
+      const savedDecor = localStorage.getItem(`serveaura:floorplan:decor:${locationId}`);
       
       if (savedPos) {
         setPositions(JSON.parse(savedPos));
@@ -170,7 +170,7 @@ export default function TableManager({
       setPositions(prev => {
         const next = { ...prev };
         delete next[id];
-        localStorage.setItem(`tablescan:floorplan:pos:${locationId}`, JSON.stringify(next));
+        localStorage.setItem(`serveaura:floorplan:pos:${locationId}`, JSON.stringify(next));
         return next;
       });
 
@@ -206,7 +206,7 @@ export default function TableManager({
     if (isDecoration) {
       setDecorations(prev => {
         const next = prev.map(d => d.id === id ? { ...d, x: boundedX, y: boundedY } : d);
-        localStorage.setItem(`tablescan:floorplan:decor:${locationId}`, JSON.stringify(next));
+        localStorage.setItem(`serveaura:floorplan:decor:${locationId}`, JSON.stringify(next));
         return next;
       });
     } else {
@@ -220,7 +220,7 @@ export default function TableManager({
             status: current.status
           }
         };
-        localStorage.setItem(`tablescan:floorplan:pos:${locationId}`, JSON.stringify(next));
+        localStorage.setItem(`serveaura:floorplan:pos:${locationId}`, JSON.stringify(next));
         return next;
       });
     }
@@ -237,7 +237,7 @@ export default function TableManager({
           status: "FREE"
         }
       };
-      localStorage.setItem(`tablescan:floorplan:pos:${locationId}`, JSON.stringify(next));
+      localStorage.setItem(`serveaura:floorplan:pos:${locationId}`, JSON.stringify(next));
       return next;
     });
     setSelectedPlanItem({ id, type: "table" });
@@ -249,7 +249,7 @@ export default function TableManager({
     setPositions(prev => {
       const next = { ...prev };
       delete next[id];
-      localStorage.setItem(`tablescan:floorplan:pos:${locationId}`, JSON.stringify(next));
+      localStorage.setItem(`serveaura:floorplan:pos:${locationId}`, JSON.stringify(next));
       return next;
     });
     if (selectedPlanItem?.id === id) setSelectedPlanItem(null);
@@ -268,7 +268,7 @@ export default function TableManager({
           status
         }
       };
-      localStorage.setItem(`tablescan:floorplan:pos:${locationId}`, JSON.stringify(next));
+      localStorage.setItem(`serveaura:floorplan:pos:${locationId}`, JSON.stringify(next));
       return next;
     });
   };
@@ -283,7 +283,7 @@ export default function TableManager({
     };
     const next = [...decorations, newDecor];
     setDecorations(next);
-    localStorage.setItem(`tablescan:floorplan:decor:${locationId}`, JSON.stringify(next));
+    localStorage.setItem(`serveaura:floorplan:decor:${locationId}`, JSON.stringify(next));
     setSelectedPlanItem({ id: newDecor.id, type: "decor" });
     toast.success(`Added visual ${type} block to canvas!`);
   };
@@ -291,7 +291,7 @@ export default function TableManager({
   const deleteDecoration = (id: string) => {
     const next = decorations.filter(d => d.id !== id);
     setDecorations(next);
-    localStorage.setItem(`tablescan:floorplan:decor:${locationId}`, JSON.stringify(next));
+    localStorage.setItem(`serveaura:floorplan:decor:${locationId}`, JSON.stringify(next));
     if (selectedPlanItem?.id === id) setSelectedPlanItem(null);
     toast.success("Removed layout element");
   };
@@ -300,8 +300,8 @@ export default function TableManager({
     if (!confirm("Are you sure you want to clear the visual floor plan? All tables will be sent back to the shelf.")) return;
     setPositions({});
     setDecorations([]);
-    localStorage.removeItem(`tablescan:floorplan:pos:${locationId}`);
-    localStorage.removeItem(`tablescan:floorplan:decor:${locationId}`);
+    localStorage.removeItem(`serveaura:floorplan:pos:${locationId}`);
+    localStorage.removeItem(`serveaura:floorplan:decor:${locationId}`);
     setSelectedPlanItem(null);
     toast.success("Floor layout reset successfully!");
   };
@@ -349,7 +349,7 @@ export default function TableManager({
       return `
         <div class="page">
           <div class="header">
-            <p class="label">TABLESCAN ORDERING</p>
+            <p class="label">SERVEAURA ORDERING</p>
             <h2 class="restaurant">${restaurantSlug.replace(/-/g, " ").toUpperCase()}</h2>
             <div class="divider"></div>
           </div>
@@ -1236,7 +1236,7 @@ export default function TableManager({
                         <p className={`text-[8px] sm:text-[10px] font-extrabold tracking-[0.2em] uppercase leading-none ${
                           selectedTemplate === "obsidian" ? "text-[#f0a040]" : "text-[#e85a2a]"
                         }`}>
-                          TABLESCAN ORDERING
+                          SERVEAURA ORDERING
                         </p>
                         <h4 className="text-[13px] sm:text-[16px] font-bold sm:font-extrabold tracking-tight truncate leading-tight uppercase font-sans">
                           {restaurantSlug.replace(/-/g, " ")}

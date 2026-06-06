@@ -353,7 +353,7 @@ export default function PremiumDashboard() {
     const branchOrders = orders[activeBranch.id];
     
     let csvRows = [];
-    csvRows.push([`TableScan Premium Admin Dashboard - ${activeBranch.name}`]);
+    csvRows.push([`Serveaura Premium Admin Dashboard - ${activeBranch.name}`]);
     csvRows.push([`Branch Location,${activeBranch.location}`]);
     csvRows.push([`Exported Time,${new Date().toLocaleString()}`]);
     csvRows.push([]);
@@ -372,7 +372,7 @@ export default function PremiumDashboard() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `tablescan_report_${activeBranch.id}_${Date.now()}.csv`);
+    link.setAttribute("download", `serveaura_report_${activeBranch.id}_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -429,7 +429,7 @@ export default function PremiumDashboard() {
               <Sparkles className="size-4" />
             </div>
             <div>
-              <h1 className="text-sm font-black uppercase tracking-widest text-[#f5efe2]">TableScan</h1>
+              <h1 className="text-sm font-black uppercase tracking-widest text-[#f5efe2]">Serveaura</h1>
               <p className="text-[9px] text-[#f5efe2]/40 font-semibold tracking-wider">PREMIUM OPERATING OS</p>
             </div>
           </div>

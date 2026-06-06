@@ -114,7 +114,7 @@ export default function OrderStatusPage() {
 
     if (typeof window !== "undefined") {
       try {
-        const saved = JSON.parse(localStorage.getItem(`tablescan_orders_${tableToken}`) || "[]");
+        const saved = JSON.parse(localStorage.getItem(`serveaura_orders_${tableToken}`) || "[]");
         if (Array.isArray(saved)) {
           saved.forEach((id: string) => {
             if (id && typeof id === "string" && !ids.includes(id)) {
@@ -569,7 +569,7 @@ export default function OrderStatusPage() {
                     )}
                   </div>
                   <h2 className="text-base font-black text-white tracking-widest uppercase">
-                    {order.restaurant?.name || "TableScan Invoice"}
+                    {order.restaurant?.name || "Serveaura Invoice"}
                   </h2>
                   <p className="text-[10px] text-[#f5efe2]/60 uppercase tracking-widest font-extrabold">Exclusive Dine-In Service</p>
                 </div>

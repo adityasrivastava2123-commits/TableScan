@@ -150,7 +150,7 @@ export default function DashboardOverview({ restaurant }: DashboardOverviewProps
     if (!data) return;
 
     const csvRows = [];
-    csvRows.push(["TableScan Restaurant Dashboard Summary"]);
+    csvRows.push(["Serveaura Restaurant Dashboard Summary"]);
     csvRows.push([`Restaurant Name,${restaurant.name}`]);
     csvRows.push([`Generated At,${new Date().toLocaleString("en-IN")}`]);
     csvRows.push([]);
@@ -183,7 +183,7 @@ export default function DashboardOverview({ restaurant }: DashboardOverviewProps
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `tablescan-dashboard-${restaurant.slug}-${Date.now()}.csv`;
+    link.download = `serveaura-dashboard-${restaurant.slug}-${Date.now()}.csv`;
     link.click();
     URL.revokeObjectURL(url);
     toast.success("CSV report downloaded!");

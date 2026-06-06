@@ -153,7 +153,7 @@ export async function POST(req: Request) {
       if (parsed.customerEmail) {
         try {
           const customerEmailPromise = resend.emails.send({
-            from: "TableScan <onboarding@resend.dev>",
+            from: "Serveaura <onboarding@resend.dev>",
             to: parsed.customerEmail,
             subject: `Order Confirmation - ${restaurant.name}`,
             react: OrderConfirmationEmail({
@@ -187,7 +187,7 @@ export async function POST(req: Request) {
           const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/orders`;
 
           const ownerEmailPromise = resend.emails.send({
-            from: "TableScan <onboarding@resend.dev>",
+            from: "Serveaura <onboarding@resend.dev>",
             to: notificationEmail,
             subject: `New Order Received - ${restaurant.name}`,
             react: NewOrderAlertEmail({

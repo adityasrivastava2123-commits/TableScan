@@ -5,7 +5,7 @@ import { StaffManager } from "@/components/dashboard/StaffManager";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Staff - TableScan",
+  title: "Staff - Serveaura",
   description: "Manage your restaurant staff accounts",
 };
 

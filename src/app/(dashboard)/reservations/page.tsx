@@ -5,7 +5,7 @@ import ReservationBooking from "@/components/reservations/ReservationBooking";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Reservations - TableScan",
+  title: "Reservations - Serveaura",
   description: "Manage table reservations and bookings",
 };
 

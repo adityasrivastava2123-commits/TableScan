@@ -5,7 +5,7 @@ import { OrdersBoard } from "@/components/orders/OrdersBoard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Orders - TableScan",
+  title: "Orders - Serveaura",
   description: "Live orders board for your restaurant",
 };
 

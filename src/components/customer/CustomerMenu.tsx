@@ -189,10 +189,10 @@ export default function CustomerMenu({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(`tablescan_last_order_${tableToken}`);
+      const saved = localStorage.getItem(`serveaura_last_order_${tableToken}`);
       if (saved) setLastOrderId(saved);
       try {
-        const savedList = JSON.parse(localStorage.getItem(`tablescan_orders_${tableToken}`) || "[]");
+        const savedList = JSON.parse(localStorage.getItem(`serveaura_orders_${tableToken}`) || "[]");
         if (Array.isArray(savedList)) setSessionOrderIds(savedList);
       } catch (e) {}
     }
@@ -209,7 +209,7 @@ export default function CustomerMenu({
     setChatMessages([
       {
         sender: "staff" as const,
-        text: `Welcome to TableScan Support! 👋 Let us know how we can assist you at Table #${table.name} today.`,
+        text: `Welcome to Serveaura Support! 👋 Let us know how we can assist you at Table #${table.name} today.`,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -480,7 +480,7 @@ export default function CustomerMenu({
               setSelectedOrderId(data.orderId);
               setLastOrderId(data.orderId);
               if (typeof window !== "undefined") {
-                localStorage.setItem(`tablescan_last_order_${tableToken}`, data.orderId);
+                localStorage.setItem(`serveaura_last_order_${tableToken}`, data.orderId);
               }
               clearCart(); setShowCartDrawer(false);
               toast.success("Payment successful! 🎉", {
@@ -518,7 +518,7 @@ export default function CustomerMenu({
       setSelectedOrderId(data.orderId);
       setLastOrderId(data.orderId);
       if (typeof window !== "undefined") {
-        localStorage.setItem(`tablescan_last_order_${tableToken}`, data.orderId);
+        localStorage.setItem(`serveaura_last_order_${tableToken}`, data.orderId);
       }
       clearCart(); setShowCartDrawer(false);
       toast.success("Order placed! 🎉", {

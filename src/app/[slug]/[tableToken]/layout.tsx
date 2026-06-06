@@ -9,7 +9,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Order Food | TableScan",
+  title: "Order Food | Serveaura",
   description: "Scan, browse and order food right from your table.",
 };
 

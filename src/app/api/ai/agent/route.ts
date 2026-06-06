@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     });
 
     if (!dbUser) {
-      return NextResponse.json({ error: "User registration not found in TableScan." }, { status: 404 });
+      return NextResponse.json({ error: "User registration not found in Serveaura." }, { status: 404 });
     }
 
     // Extract client IP address for the audit logger

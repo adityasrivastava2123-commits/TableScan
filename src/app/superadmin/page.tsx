@@ -116,7 +116,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
             <ShieldAlert className="size-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Developer Portal</h1>
-          <p className="text-[10px] text-[#4a4642] mt-1 tracking-widest uppercase font-mono">TableScan · Superadmin Access</p>
+          <p className="text-[10px] text-[#4a4642] mt-1 tracking-widest uppercase font-mono">Serveaura · Superadmin Access</p>
         </div>
         <div className="bg-[#0c0c0c] border border-[rgba(255,255,255,0.07)] rounded-2xl p-8 shadow-2xl shadow-black/60">
           <div className="flex items-center gap-2 mb-6"><Lock className="size-3.5 text-violet-400" /><span className="text-[10px] font-bold text-[#4a4642] uppercase tracking-widest">Restricted Access</span></div>
@@ -916,7 +916,7 @@ function DeveloperConsole({ onLogout }: { onLogout: () => void }) {
       <div className="border-b border-[rgba(255,255,255,0.05)] bg-[#080808] px-5 py-3 flex items-center justify-between sticky top-0 z-20 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center"><ShieldAlert className="size-4 text-white" /></div>
-          <div><p className="text-sm font-bold text-white leading-tight">Developer Control Center</p><p className="text-[9px] text-[#3a3630] font-mono uppercase tracking-widest">TableScan · Superadmin</p></div>
+          <div><p className="text-sm font-bold text-white leading-tight">Developer Control Center</p><p className="text-[9px] text-[#3a3630] font-mono uppercase tracking-widest">Serveaura · Superadmin</p></div>
           <span className="ml-1 px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20 text-[9px] font-bold flex items-center gap-1"><Cpu className="size-2.5" />SUPERADMIN</span>
         </div>
         <div className="flex items-center gap-2">

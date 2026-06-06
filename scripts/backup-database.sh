@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TableScan Database Backup Script
+# Serveaura Database Backup Script
 # Run this script via cron job for automated backups
 
 set -e
@@ -8,7 +8,7 @@ set -e
 # Configuration
 BACKUP_DIR="./backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_FILE="${BACKUP_DIR}/tablescan_backup_${TIMESTAMP}.sql"
+BACKUP_FILE="${BACKUP_DIR}/serveaura_backup_${TIMESTAMP}.sql"
 RETENTION_DAYS=7
 
 # Colors for output
@@ -56,7 +56,7 @@ gzip ${BACKUP_FILE}
 
 # Delete old backups (older than RETENTION_DAYS)
 echo -e "${YELLOW}Cleaning up old backups (older than ${RETENTION_DAYS} days)...${NC}"
-find ${BACKUP_DIR} -name "tablescan_backup_*.sql.gz" -type f -mtime +${RETENTION_DAYS} -delete
+find ${BACKUP_DIR} -name "serveaura_backup_*.sql.gz" -type f -mtime +${RETENTION_DAYS} -delete
 
 echo -e "${GREEN}✅ Backup completed successfully: ${BACKUP_FILE}.gz${NC}"
 

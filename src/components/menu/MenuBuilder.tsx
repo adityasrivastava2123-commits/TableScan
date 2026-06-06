@@ -819,7 +819,7 @@ export const MenuBuilder = memo(function MenuBuilder({ restaurantId }: { restaur
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-[#0b0a08] to-[#121210] flex flex-col items-center justify-center text-[#f5efe2]/20">
                             <Utensils className="size-7 stroke-[1.5] mb-1 text-[#f5efe2]/20 group-hover/img:text-[#f0a040]/50 transition-colors" />
-                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-[#f5efe2]/20">TableScan Menu</span>
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-[#f5efe2]/20">Serveaura Menu</span>
                           </div>
                         )}
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Developer Portal — TableScan",
+  title: "Developer Portal — Serveaura",
   description: "Superadmin control center",
   robots: { index: false, follow: false },
 };

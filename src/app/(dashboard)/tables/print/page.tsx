@@ -34,7 +34,7 @@ export default function PrintQRPage() {
         }
       ` }} />
       <div className="text-center space-y-4 print:shadow-none">
-        <h1 className="text-2xl font-bold">TableScan</h1>
+        <h1 className="text-2xl font-bold">Serveaura</h1>
         <p className="text-gray-500">Scan to order</p>
         {qrUrl && <img src={qrUrl} alt="QR Code" className="w-64 h-64 mx-auto" />}
         <p className="text-xl font-semibold">{name}</p>

@@ -5,7 +5,7 @@ import KitchenDisplaySystem from "@/components/kds/KitchenDisplaySystem";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "KDS - TableScan",
+  title: "KDS - Serveaura",
   description: "Kitchen Display System for order preparation",
 };
 

@@ -5,7 +5,7 @@ import TableManager from "@/components/dashboard/TableManager";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tables - TableScan",
+  title: "Tables - Serveaura",
   description: "Manage your restaurant tables and QR codes",
 };
 

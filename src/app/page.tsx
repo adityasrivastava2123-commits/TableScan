@@ -140,7 +140,7 @@ function Navbar() {
               <UtensilsIcon className="h-5.5 w-5.5 text-[#0b0a08]" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-bold text-[#f5efe2] leading-none tracking-tight">DineFlow Pro</span>
+              <span className="text-base font-bold text-[#f5efe2] leading-none tracking-tight">Serveaura</span>
               <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mt-0.5 leading-none">Restaurant OS</span>
             </div>
           </div>
@@ -284,7 +284,7 @@ function Hero() {
                 <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-6">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#e85a2a] animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">DineFlow OS Live</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Serveaura OS Live</span>
                   </div>
                   <div className="flex gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-white/10" />
@@ -575,7 +575,7 @@ function ProductShowcase() {
                   Kitchens receive orders instantly.
                 </h3>
                 <p className="text-sm text-white/60 mt-4 leading-relaxed">
-                  Eliminate print delay. DineFlow KDS updates kitchen queues within milliseconds of table checkout. Route plates to cold larder, hot line, or bar automatically.
+                  Eliminate print delay. Serveaura KDS updates kitchen queues within milliseconds of table checkout. Route plates to cold larder, hot line, or bar automatically.
                 </p>
 
                 {/* Mini Stat Cards */}
@@ -744,7 +744,7 @@ function Testimonials() {
   const reviews = [
     {
       stars: 5,
-      quote: "DineFlow Pro revolutionized our kitchen communication. Wait times decreased by almost 10 minutes, and customers love split payments from their tables.",
+      quote: "Serveaura revolutionized our kitchen communication. Wait times decreased by almost 10 minutes, and customers love split payments from their tables.",
       author: "Vikram Malhotra",
       business: "Copper Pot Fine Dining",
       role: "Managing Director"
@@ -840,7 +840,7 @@ function Pricing() {
       features: [
         "3 Locations Included",
         "Unlimited Tables & Menus",
-        "DineFlow KDS Integration",
+        "Serveaura KDS Integration",
         "Inventory Depot Control",
         "Advanced Analytics & CSVs",
         "24/7 Priority Support"
@@ -990,7 +990,7 @@ function PageFooter() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-[#f0a040] to-[#e85a2a]">
                 <UtensilsIcon className="h-5 w-5 text-[#0b0a08]" />
               </div>
-              <span className="text-sm font-bold text-[#f5efe2] tracking-wider">DineFlow Pro</span>
+              <span className="text-sm font-bold text-[#f5efe2] tracking-wider">Serveaura</span>
             </div>
             <p className="text-xs sm:text-sm text-white/40 max-w-sm leading-relaxed">
               Premium SaaS platform designed for premium dining environments. Delighting patrons, powering kitchens, and simplifying operations across the globe.
@@ -1020,7 +1020,7 @@ function PageFooter() {
 
         {/* Lower footer row */}
         <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/35">
-          <span>&copy; {new Date().getFullYear()} DineFlow Pro / TableScan. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} Serveaura. All rights reserved.</span>
           <Link
             href="/superadmin"
             className="text-[10px] text-white/20 hover:text-[#f0a040] transition-colors font-mono tracking-widest flex items-center gap-1.5"

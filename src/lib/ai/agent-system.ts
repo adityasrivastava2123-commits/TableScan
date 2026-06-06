@@ -146,7 +146,7 @@ export async function executeAgentQuery(req: AgentSystemRequest): Promise<AgentS
 
   // 3. Construct System Prompt for Routing and Intent Detection
   const routingInstruction = `
-You are the central orchestrator for TableScan, a multi-agent restaurant operating system.
+You are the central orchestrator for Serveaura, a multi-agent restaurant operating system.
 Your job is to:
 1. Detect which agent should handle the user request. Available agents:
    - "operations": Handles tables, KDS, order status, qr codes, general settings.

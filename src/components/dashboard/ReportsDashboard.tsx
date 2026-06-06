@@ -94,7 +94,7 @@ export function ReportsDashboard({ restaurantId, restaurant }: ReportsDashboardP
     if (!report) return;
 
     const csvRows = [];
-    csvRows.push(["TableScan Restaurant Report Summary"]);
+    csvRows.push(["Serveaura Restaurant Report Summary"]);
     csvRows.push([`Period,${period.toUpperCase()}`]);
     csvRows.push([`Generated At,${new Date().toLocaleString("en-IN")}`]);
     csvRows.push([]);
@@ -135,7 +135,7 @@ export function ReportsDashboard({ restaurantId, restaurant }: ReportsDashboardP
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `tablescan-report-${period}-${Date.now()}.csv`;
+    link.download = `serveaura-report-${period}-${Date.now()}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };

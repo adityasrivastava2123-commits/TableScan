@@ -1,4 +1,4 @@
-# TableScan
+# Serveaura
 
 QR-based restaurant ordering platform for seamless customer experiences.
 
@@ -36,8 +36,8 @@ QR-based restaurant ordering platform for seamless customer experiences.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/tablescan.git
-cd tablescan
+git clone https://github.com/YOUR_USERNAME/serveaura.git
+cd serveaura
 ```
 
 2. Install dependencies:

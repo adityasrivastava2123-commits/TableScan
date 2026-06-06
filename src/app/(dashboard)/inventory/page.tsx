@@ -5,7 +5,7 @@ import InventoryManagement from "@/components/inventory/InventoryManagement";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Inventory - TableScan",
+  title: "Inventory - Serveaura",
   description: "Manage ingredients, stock levels, and suppliers",
 };
 

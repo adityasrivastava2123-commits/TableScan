@@ -225,7 +225,7 @@ export default function FloorPlanEditor({
 
   // Load layout from localStorage
   useEffect(() => {
-    const storageKey = `tablescan_floorplan_${locationId}`;
+    const storageKey = `serveaura_floorplan_${locationId}`;
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
@@ -322,7 +322,7 @@ export default function FloorPlanEditor({
 
   // Save layout to localStorage
   const saveLayout = (updatedAssets = assets) => {
-    const storageKey = `tablescan_floorplan_${locationId}`;
+    const storageKey = `serveaura_floorplan_${locationId}`;
     localStorage.setItem(storageKey, JSON.stringify(updatedAssets));
     toast.success("Layout configuration saved");
   };
@@ -2170,7 +2170,7 @@ export default function FloorPlanEditor({
                               {/* Receipt Header details */}
                               <div className="text-center font-mono text-[9px] text-neutral-500 uppercase tracking-widest shrink-0">
                                 <p className="font-bold text-[12px] text-black tracking-normal font-sans">
-                                  {restaurant?.name || "TABLESCAN BISTRO"}
+                                  {restaurant?.name || "SERVEAURA BISTRO"}
                                 </p>
                                 <p className="mt-0.5">Live Digital Twin Receipt</p>
                                 <p className="mt-1">

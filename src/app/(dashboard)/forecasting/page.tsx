@@ -5,7 +5,7 @@ import ForecastingDashboard from "@/components/dashboard/ForecastingDashboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Forecasting - TableScan",
+  title: "AI Forecasting - Serveaura",
   description: "AI-powered sales and demand forecasting for your restaurant",
 };
 

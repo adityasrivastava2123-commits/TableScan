@@ -5,7 +5,7 @@ import { ReportsDashboard } from "@/components/dashboard/ReportsDashboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Reports - TableScan",
+  title: "Reports - Serveaura",
   description: "Revenue and order performance insights",
 };
 

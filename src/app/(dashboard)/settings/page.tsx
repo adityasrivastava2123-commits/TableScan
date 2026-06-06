@@ -5,7 +5,7 @@ import SettingsForm from "@/components/dashboard/SettingsForm";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Settings - TableScan",
+  title: "Settings - Serveaura",
   description: "Manage your restaurant settings",
 };
 

@@ -4,7 +4,7 @@ import RoleDashboards from "@/components/dashboard/RoleDashboards";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Role Dashboards - TableScan",
+  title: "Role Dashboards - Serveaura",
   description: "Role-specific restaurant dashboards for owners, cashiers, kitchen, and waiters",
 };
 

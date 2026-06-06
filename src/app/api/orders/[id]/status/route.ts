@@ -94,7 +94,7 @@ export async function PATCH(
           const resend = getResend();
           if (resend) {
             await resend.emails.send({
-              from: "TableScan <onboarding@resend.dev>",
+              from: "Serveaura <onboarding@resend.dev>",
               to: customerEmail,
               subject: `Your Order is Ready! - ${updatedOrder.restaurant.name}`,
               react: OrderReadyEmail({

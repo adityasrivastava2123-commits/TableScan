@@ -5,7 +5,7 @@ import { OrderHistoryTable } from "@/components/dashboard/OrderHistoryTable";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Order History - TableScan",
+  title: "Order History - Serveaura",
   description: "Browse, filter, and export past orders",
 };
 

@@ -11,7 +11,7 @@ export default async function AdminPage() {
   });
 
   const isSuperAdmin = 
-    dbUser?.email === "superadmin@tablescan.com" || 
+    dbUser?.email === "superadmin@serveaura.com" || 
     (process.env.SUPERADMIN_ID && dbUser?.clerkId === process.env.SUPERADMIN_ID);
 
   if (isSuperAdmin) {

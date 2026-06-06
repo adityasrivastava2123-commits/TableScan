@@ -5,7 +5,7 @@ import DeliveryDashboard from "@/components/delivery/DeliveryDashboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Delivery - TableScan",
+  title: "Delivery - Serveaura",
   description: "Manage deliveries and drivers",
 };
 

@@ -5,7 +5,7 @@ import CustomersDashboard from "@/components/customers/CustomersDashboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Customers CRM - TableScan",
+  title: "Customers CRM - Serveaura",
   description: "View customer profiles, spend data, loyalty groups, and visit timelines",
 };
 

@@ -78,6 +78,6 @@ export const useCartStore = create<CartStore>()(
           ),
         }),
     }),
-    { name: "tablescan-cart" }
+    { name: "serveaura-cart" }
   )
 );

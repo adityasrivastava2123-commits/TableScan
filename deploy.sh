@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# TableScan Production Deployment Script
-# This script automates the deployment process for TableScan
+# Serveaura Production Deployment Script
+# This script automates the deployment process for Serveaura
 
 set -e  # Exit on any error
 
-echo "🚀 Starting TableScan deployment..."
+echo "🚀 Starting Serveaura deployment..."
 
 # Colors for output
 GREEN='\033[0;32m'

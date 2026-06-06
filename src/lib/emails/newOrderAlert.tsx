@@ -82,7 +82,7 @@ export default function NewOrderAlertEmail({
           </Section>
 
           <Text style={footer}>
-            This is an automated notification from TableScan.
+            This is an automated notification from Serveaura.
           </Text>
         </Container>
       </Body>

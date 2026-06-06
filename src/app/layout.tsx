@@ -12,7 +12,7 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "TableScan",
+  title: "Serveaura",
   description: "QR-based restaurant ordering platform",
 };
 

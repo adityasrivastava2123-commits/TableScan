@@ -1,6 +1,6 @@
-# TableScan Documentation
+# Serveaura Documentation
 
-Welcome to TableScan - QR-based digital menu and ordering system for modern restaurants.
+Welcome to Serveaura - QR-based digital menu and ordering system for modern restaurants.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Welcome to TableScan - QR-based digital menu and ordering system for modern rest
 
 ### Sign Up
 
-1. Visit [tablescan.com](https://tablescan.com)
+1. Visit [serveaura.com](https://serveaura.com)
 2. Click "Start Free Trial"
 3. Enter your restaurant details
 4. Verify your email address
@@ -247,7 +247,7 @@ The Kitchen Display System (KDS) helps kitchen staff manage orders efficiently.
 
 ### Contact Support
 
-- Email: support@tablescan.com
+- Email: support@serveaura.com
 - Phone: +91-XXX-XXX-XXXX
 - Live chat: Available in dashboard
 
@@ -259,9 +259,9 @@ Documentation is regularly updated. Check back for new features and improvements
 
 We value your feedback! Share your thoughts through:
 - Dashboard feedback form
-- Email to feedback@tablescan.com
+- Email to feedback@serveaura.com
 - In-app rating system
 
 ---
 
-**TableScan** - Transforming restaurant operations with QR-based ordering.
+**Serveaura** - Transforming restaurant operations with QR-based ordering.

@@ -1,4 +1,4 @@
-// Comprehensive logging system for TableScan
+// Comprehensive logging system for Serveaura
 // Logs to console in development, can be extended to send to external services in production
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';

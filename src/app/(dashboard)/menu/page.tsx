@@ -5,7 +5,7 @@ import { MenuBuilder } from "@/components/menu/MenuBuilder";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Menu Builder - TableScan",
+  title: "Menu Builder - Serveaura",
   description: "Create and manage your restaurant's menu",
 };
 

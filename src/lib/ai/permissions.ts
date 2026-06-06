@@ -74,7 +74,7 @@ export async function validatePermission(
     });
 
     if (!dbUser) {
-      return { allowed: false, reason: "User registration not found in TableScan database." };
+      return { allowed: false, reason: "User registration not found in Serveaura database." };
     }
 
     // 2. Check if user is the Owner of the Restaurant
@@ -97,7 +97,7 @@ export async function validatePermission(
 
     if (!staff) {
       // Superadmin fallback - check env variables
-      const isSuperAdmin = process.env.SUPERADMIN_ID === dbUser.clerkId || dbUser.email === "superadmin@tablescan.com";
+      const isSuperAdmin = process.env.SUPERADMIN_ID === dbUser.clerkId || dbUser.email === "superadmin@serveaura.com";
       if (isSuperAdmin) {
         return { allowed: true, isOwner: true, userRole: "SUPERADMIN" };
       }

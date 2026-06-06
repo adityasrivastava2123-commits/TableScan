@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Billing - TableScan",
+  title: "Billing - Serveaura",
   description: "Manage your subscription and billing",
 };
 
