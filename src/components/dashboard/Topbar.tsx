@@ -1,11 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 
 export default function Topbar() {
   const [simulatedTime, setSimulatedTime] = useState("");
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const updateTime = () => {
       const now = new Date();
       const options: Intl.DateTimeFormatOptions = {
@@ -34,8 +39,29 @@ export default function Topbar() {
         </div>
       </div>
 
-      {/* Right clock & live indicators */}
-      <div className="flex items-center gap-6">
+      {/* Right clock, theme toggle & live indicators */}
+      <div className="flex items-center gap-4">
+        {/* Light / Dark Mode Switch */}
+        {mounted && (
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-[#f5efe2]/80 hover:text-[#f5efe2] hover:bg-white/[0.08] transition-all flex items-center gap-2 text-xs font-mono-dashboard cursor-pointer"
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="w-4 h-4 text-[#f0a040]" />
+                <span className="hidden sm:inline text-[10px] uppercase font-bold tracking-wider text-[#f5efe2]/70">Light Mode</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-[#7b9acc]" />
+                <span className="hidden sm:inline text-[10px] uppercase font-bold tracking-wider text-[#f5efe2]/70">Dark Mode</span>
+              </>
+            )}
+          </button>
+        )}
+
         <div className="text-right">
           <p className="text-[8px] font-mono-dashboard text-[#f5efe2]/30 uppercase tracking-widest font-bold">Environment Time</p>
           <p className="text-[10px] font-mono-dashboard text-[#f5efe2]/95 mt-0.5 font-bold tabular-nums">
@@ -51,3 +77,4 @@ export default function Topbar() {
     </header>
   );
 }
+

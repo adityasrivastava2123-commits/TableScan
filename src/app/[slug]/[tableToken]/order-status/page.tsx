@@ -319,24 +319,26 @@ export default function OrderStatusPage() {
 
   return (
     <div
-      className="min-h-screen bg-[#0b0a08] text-[#f5efe2] pb-10"
+      className="min-h-screen bg-[#faf8f5] text-[#1c1917] pb-10"
       style={{ fontFamily: "var(--font-poppins, 'Poppins', sans-serif)" }}
     >
       {/* Header */}
-      <div className="bg-[#0b0a08]/90 backdrop-blur-md px-5 pt-6 pb-4 border-b border-white/[0.06] sticky top-0 z-10 shadow-lg">
+      <div className="bg-white/90 backdrop-blur-md px-5 pt-6 pb-4 border-b border-amber-950/5 sticky top-0 z-10 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack}
-            className="w-9 h-9 rounded-xl bg-[#181512] border border-white/[0.08] flex items-center justify-center flex-shrink-0 text-[#f5efe2] hover:bg-[#222222] transition-colors">
+          <button
+            onClick={goBack}
+            className="w-9 h-9 rounded-xl bg-white border border-amber-950/10 flex items-center justify-center flex-shrink-0 text-[#78716c] hover:text-[#e85a2a] hover:bg-amber-900/5 transition-colors cursor-pointer"
+          >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="flex-1">
-            <h1 className="text-base font-extrabold text-white">Track Order</h1>
-            <p className="text-[11px] text-[#f5efe2]/60">#{order.orderNumber}</p>
+            <h1 className="text-base font-extrabold text-[#1c1917]">Track Order</h1>
+            <p className="text-[11px] text-[#78716c]">#{order.orderNumber}</p>
           </div>
           {/* Live dot */}
-          <div className="flex items-center gap-1.5 bg-[#f0a040]/10 border border-[#f0a040]/20 px-3 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#f0a040] animate-pulse" />
-            <span className="text-[10px] font-bold text-[#f0a040] uppercase tracking-wider">Live</span>
+          <div className="flex items-center gap-1.5 bg-[#e85a2a]/10 border border-[#e85a2a]/20 px-3 py-1.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#e85a2a] animate-pulse" />
+            <span className="text-[10px] font-extrabold text-[#e85a2a] uppercase tracking-wider">Live</span>
           </div>
         </div>
       </div>
@@ -345,8 +347,8 @@ export default function OrderStatusPage() {
 
         {/* Multiple Orders Selector Switcher */}
         {ordersList.length > 1 && (
-          <div className="bg-[#13110e] border border-white/[0.08] rounded-[24px] p-4 shadow-sm space-y-2">
-            <p className="text-[9px] font-black text-[#f5efe2]/40 uppercase tracking-widest">
+          <div className="bg-white border border-amber-950/5 rounded-[28px] p-4 shadow-sm space-y-2">
+            <p className="text-[9px] font-extrabold text-[#78716c] uppercase tracking-widest">
               Active Orders ({ordersList.length})
             </p>
             <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 -mx-1 px-1">
@@ -354,15 +356,15 @@ export default function OrderStatusPage() {
                 <button
                   key={o.id}
                   onClick={() => setOrder(o)}
-                  className={`px-3 py-2 rounded-xl text-xs font-black tracking-wide uppercase transition-all duration-200 flex-shrink-0 flex items-center gap-2 border ${
+                  className={`px-3 py-2 rounded-xl text-xs font-extrabold tracking-wide uppercase transition-all duration-200 flex-shrink-0 flex items-center gap-2 border cursor-pointer ${
                     order?.id === o.id
-                      ? "bg-[#f0a040] text-[#0b0a08] border-transparent shadow-sm font-bold"
-                      : "bg-[#181512] text-[#f5efe2]/60 border-white/[0.08] hover:bg-[#222222]"
+                      ? "bg-[#e85a2a] text-white border-transparent shadow-sm"
+                      : "bg-amber-900/5 text-[#78716c] border-amber-950/10 hover:bg-amber-900/10"
                   }`}
                 >
                   <span>#{o.orderNumber.substring(o.orderNumber.length - 4)}</span>
                   <span className={`w-1.5 h-1.5 rounded-full ${
-                    o.status === "DONE" ? "bg-emerald-500" : o.status === "CANCELLED" ? "bg-red-500" : "bg-orange-500 animate-pulse"
+                    o.status === "DONE" ? "bg-emerald-500" : o.status === "CANCELLED" ? "bg-red-500" : "bg-white animate-pulse"
                   }`} />
                 </button>
               ))}
@@ -375,7 +377,7 @@ export default function OrderStatusPage() {
           key={order.status}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-[#13110e] border border-white/[0.08] rounded-[24px] p-6 shadow-2xl text-center space-y-3"
+          className="bg-white border border-amber-950/5 rounded-[28px] p-6 shadow-sm text-center space-y-3"
         >
           <motion.div
             key={order.status + "-icon"}
@@ -387,32 +389,31 @@ export default function OrderStatusPage() {
             {STATUS_STEPS[currentIndex]?.icon ?? "⏳"}
           </motion.div>
           <div>
-            <h2 className="text-xl font-extrabold text-white">
+            <h2 className="text-xl font-black text-[#1c1917]">
               {STATUS_STEPS[currentIndex]?.label ?? "Processing"}
             </h2>
-            <p className="text-xs text-[#f5efe2]/60 mt-1">
+            <p className="text-xs text-[#78716c] mt-1 font-medium">
               {STATUS_STEPS[currentIndex]?.sublabel ?? "Please wait…"}
             </p>
           </div>
 
           {/* Progress bar */}
-          <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/[0.04]">
+          <div className="w-full bg-amber-900/5 rounded-full h-2 overflow-hidden border border-amber-950/10">
             <motion.div
-              className="h-2 rounded-full"
-              style={{ background: G }}
+              className="h-2 rounded-full bg-[#e85a2a]"
               initial={{ width: 0 }}
               animate={{ width: `${progressPct}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             />
           </div>
-          <p className="text-[10px] text-[#f5efe2]/60 font-medium">
+          <p className="text-[10px] text-[#78716c] font-semibold">
             Step {currentIndex + 1} of {STATUS_STEPS.length}
           </p>
         </motion.div>
 
         {/* Step tracker */}
-        <div className="bg-[#13110e] border border-white/[0.08] rounded-[24px] p-5 shadow-2xl space-y-1">
-          <p className="text-[10px] font-bold text-[#f5efe2]/40 uppercase tracking-widest mb-3">
+        <div className="bg-white border border-amber-950/5 rounded-[28px] p-5 shadow-sm space-y-1">
+          <p className="text-[10px] font-extrabold text-[#78716c] uppercase tracking-widest mb-3">
             Order Progress
           </p>
           {STATUS_STEPS.map((step, i) => {
@@ -426,18 +427,18 @@ export default function OrderStatusPage() {
                   <motion.div
                     animate={{
                       backgroundColor: done
-                        ? G
+                        ? "#e85a2a"
                         : active
-                        ? `${G}20`
-                        : "#181512",
-                      borderColor: active ? G : done ? G : "rgba(255,255,255,0.08)",
+                        ? "#e85a2a15"
+                        : "#faf8f5",
+                      borderColor: active ? "#e85a2a" : done ? "#e85a2a" : "rgba(0,0,0,0.08)",
                       scale: active ? 1.1 : 1,
                     }}
                     transition={{ duration: 0.3 }}
                     className="w-10 h-10 rounded-full flex items-center justify-center border-2"
                   >
                     {done ? (
-                      <CheckCircle2 className="w-4 h-4 text-[#0b0a08]" />
+                      <CheckCircle2 className="w-4 h-4 text-white" />
                     ) : (
                       <span className={`text-base ${future ? "opacity-35" : ""}`}>
                         {step.icon}
@@ -446,14 +447,14 @@ export default function OrderStatusPage() {
                   </motion.div>
                   {i < STATUS_STEPS.length - 1 && (
                     <div className={`w-0.5 h-6 mt-1 rounded-full transition-colors duration-500
-                      ${done ? "bg-[#f0a040]" : "bg-white/5"}`} />
+                      ${done ? "bg-[#e85a2a]" : "bg-amber-950/10"}`} />
                   )}
                 </div>
 
                 {/* Right: text */}
                 <div className={`flex-1 pb-6 ${i === STATUS_STEPS.length - 1 ? "pb-0" : ""}`}>
-                  <p className={`text-sm font-bold transition-colors duration-300 ${
-                    active ? "text-[#f0a040]" : done ? "text-[#f5efe2]" : "text-[#f5efe2]/40"
+                  <p className={`text-sm font-extrabold transition-colors duration-300 ${
+                    active ? "text-[#e85a2a]" : done ? "text-[#1c1917]" : "text-[#78716c]/50"
                   }`}>
                     {step.label}
                   </p>
@@ -461,7 +462,7 @@ export default function OrderStatusPage() {
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="text-[11px] text-[#f5efe2]/60 mt-0.5"
+                      className="text-[11px] text-[#78716c] font-medium mt-0.5"
                     >
                       {step.sublabel}
                     </motion.p>
@@ -473,8 +474,7 @@ export default function OrderStatusPage() {
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="text-[9px] font-black px-2 py-1 rounded-full text-[#0b0a08] flex-shrink-0"
-                    style={{ background: G }}
+                    className="text-[9px] font-black px-2 py-1 rounded-full bg-[#e85a2a] text-white flex-shrink-0"
                   >
                     NOW
                   </motion.span>
@@ -485,9 +485,9 @@ export default function OrderStatusPage() {
         </div>
 
         {/* Info footer */}
-        <div className="bg-[#f0a040]/10 border border-[#f0a040]/20 rounded-[20px] px-4 py-3 flex items-center gap-3">
-          <RefreshCw className="w-4 h-4 text-[#f0a040] flex-shrink-0" />
-          <p className="text-[11px] text-[#f0a040] font-semibold">
+        <div className="bg-[#e85a2a]/10 border border-[#e85a2a]/20 rounded-[20px] px-4 py-3 flex items-center gap-3">
+          <RefreshCw className="w-4 h-4 text-[#e85a2a] flex-shrink-0 animate-spin-slow" />
+          <p className="text-[11px] text-[#e85a2a] font-bold">
             This page updates automatically via live tracking. Last updated:{" "}
             {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
@@ -498,9 +498,7 @@ export default function OrderStatusPage() {
           {order.status === "DONE" && (
             <button
               onClick={() => setShowReceipt(true)}
-              className="w-full py-4 rounded-2xl text-[#0b0a08] font-black text-sm tracking-wider uppercase shadow-lg shadow-[#f0a040]/10
-                active:scale-95 transition-transform flex items-center justify-center gap-2 hover:brightness-110"
-              style={{ background: G }}
+              className="w-full py-4 rounded-2xl bg-[#e85a2a] text-white font-extrabold text-xs tracking-wider uppercase shadow-lg shadow-[#e85a2a]/25 active:scale-95 transition-all flex items-center justify-center gap-2 hover:brightness-110 cursor-pointer"
             >
               🧾 View Bill Receipt
             </button>
@@ -508,12 +506,11 @@ export default function OrderStatusPage() {
 
           <button
             onClick={goBack}
-            className={`w-full py-4 rounded-2xl font-bold text-sm active:scale-95 transition-transform ${
+            className={`w-full py-4 rounded-2xl font-extrabold text-xs active:scale-95 transition-all cursor-pointer ${
               order.status === "DONE"
-                ? "bg-white/5 border border-white/[0.08] text-[#f5efe2] hover:bg-white/10"
-                : "text-[#0b0a08] font-black tracking-wider uppercase shadow-md shadow-orange-500/10"
+                ? "bg-white border border-amber-950/10 text-[#1c1917] hover:bg-amber-900/5"
+                : "bg-[#e85a2a] text-white tracking-wider uppercase shadow-lg shadow-[#e85a2a]/25 hover:brightness-110"
             }`}
-            style={order.status === "DONE" ? {} : { background: G }}
           >
             {order.status === "DONE" ? "Go Back to Menu" : "+ Add More Items"}
           </button>
@@ -530,21 +527,21 @@ export default function OrderStatusPage() {
               animate={{ y: 0, scale: 1 }}
               exit={{ y: "100%", scale: 0.95 }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="relative w-full sm:max-w-md bg-[#13110e] rounded-t-[32px] sm:rounded-[32px] max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-white/[0.08] print:max-h-none print:shadow-none print:rounded-none"
+              className="relative w-full sm:max-w-md bg-white rounded-t-[32px] sm:rounded-[32px] max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-amber-950/10 print:max-h-none print:shadow-none print:rounded-none"
               onClick={e => e.stopPropagation()}
               id="print-receipt-modal"
             >
-              {/* Gold/Orange top aesthetic accent bar */}
-              <div className="h-2 w-full bg-gradient-to-r from-[#f0a040] via-[#ea6c0a] to-[#f0a040] flex-shrink-0" />
+              {/* Orange top aesthetic accent bar */}
+              <div className="h-2 w-full bg-gradient-to-r from-[#e85a2a] via-[#ea6c0a] to-[#e85a2a] flex-shrink-0" />
 
               {/* Receipt Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 print:overflow-visible relative bg-[#13110e]">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 print:overflow-visible relative bg-white">
                 
                 {/* Dynamic Restaurant Verified stamp */}
-                <div className="absolute -rotate-12 right-6 top-6 w-20 h-20 rounded-full border-2 border-[#f0a040]/30 flex items-center justify-center opacity-70 print:opacity-100 flex-shrink-0 select-none pointer-events-none">
-                  <div className="w-16 h-16 rounded-full border border-dashed border-[#f0a040]/35 flex flex-col items-center justify-center">
-                    <span className="text-[8px] font-black text-[#f0a040] tracking-wider leading-none">VERIFIED</span>
-                    <span className="text-[7px] font-bold text-[#f5efe2]/40 mt-1 uppercase truncate max-w-[50px]">
+                <div className="absolute -rotate-12 right-6 top-6 w-20 h-20 rounded-full border-2 border-[#e85a2a]/30 flex items-center justify-center opacity-70 print:opacity-100 flex-shrink-0 select-none pointer-events-none">
+                  <div className="w-16 h-16 rounded-full border border-dashed border-[#e85a2a]/35 flex flex-col items-center justify-center">
+                    <span className="text-[8px] font-black text-[#e85a2a] tracking-wider leading-none">VERIFIED</span>
+                    <span className="text-[7px] font-bold text-[#78716c] mt-1 uppercase truncate max-w-[50px]">
                       {order.restaurant?.name || "DINE"}
                     </span>
                   </div>
@@ -554,7 +551,7 @@ export default function OrderStatusPage() {
                 <div className="text-center space-y-2.5">
                   <div className="flex justify-center mb-1">
                     {order.restaurant?.logo ? (
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-white p-0.5 shadow-md border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-white p-0.5 shadow-md border border-amber-950/10 flex items-center justify-center flex-shrink-0">
                         <img
                           src={order.restaurant.logo}
                           alt={order.restaurant.name}
@@ -562,27 +559,27 @@ export default function OrderStatusPage() {
                         />
                       </div>
                     ) : (
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#f0a040] to-[#e85a2a] p-0.5 shadow-md flex items-center justify-center relative overflow-hidden">
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#e85a2a] to-[#ea6c0a] p-0.5 shadow-md flex items-center justify-center relative overflow-hidden">
                         <div className="absolute inset-1 rounded-full border border-dashed border-white/30" />
-                        <span className="text-[#0b0a08] text-xs font-black tracking-widest uppercase">DINE</span>
+                        <span className="text-white text-xs font-black tracking-widest uppercase">DINE</span>
                       </div>
                     )}
                   </div>
-                  <h2 className="text-base font-black text-white tracking-widest uppercase">
+                  <h2 className="text-base font-black text-[#1c1917] tracking-widest uppercase">
                     {order.restaurant?.name || "Serveaura Invoice"}
                   </h2>
-                  <p className="text-[10px] text-[#f5efe2]/60 uppercase tracking-widest font-extrabold">Exclusive Dine-In Service</p>
+                  <p className="text-[10px] text-[#78716c] uppercase tracking-widest font-extrabold">Exclusive Dine-In Service</p>
                 </div>
 
                 {/* Receipt Type Toggle (Only if multiple orders exist) */}
                 {ordersList.length > 1 && (
-                  <div className="flex p-1 bg-[#181512] border border-white/[0.08] rounded-xl gap-1 w-fit mx-auto print:hidden">
+                  <div className="flex p-1 bg-[#faf8f5] border border-amber-950/10 rounded-xl gap-1 w-fit mx-auto print:hidden">
                     <button
                       onClick={() => setReceiptType("SINGLE")}
                       className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
                         receiptType === "SINGLE"
-                          ? "bg-[#13110e] text-[#f5efe2] shadow-sm"
-                          : "text-[#f5efe2]/60 hover:text-white"
+                          ? "bg-white text-[#1c1917] shadow-sm"
+                          : "text-[#78716c] hover:text-[#1c1917]"
                       }`}
                     >
                       This Order
@@ -591,8 +588,8 @@ export default function OrderStatusPage() {
                       onClick={() => setReceiptType("COMBINED")}
                       className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
                         receiptType === "COMBINED"
-                          ? "bg-[#13110e] text-[#f5efe2] shadow-sm"
-                          : "text-[#f5efe2]/60 hover:text-white"
+                          ? "bg-white text-[#1c1917] shadow-sm"
+                          : "text-[#78716c] hover:text-[#1c1917]"
                       }`}
                     >
                       Combined Table Bill
@@ -601,53 +598,53 @@ export default function OrderStatusPage() {
                 )}
 
                 {/* Info Swatches */}
-                <div className="bg-[#181512] border border-white/[0.08] rounded-2xl p-4 text-[11px] space-y-2">
+                <div className="bg-[#faf8f5] border border-amber-950/10 rounded-2xl p-4 text-[11px] space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-[#f5efe2]/60 font-medium">Invoice Type</span>
-                    <span className="font-extrabold text-[#f5efe2] uppercase">
+                    <span className="text-[#78716c] font-medium">Invoice Type</span>
+                    <span className="font-extrabold text-[#1c1917] uppercase">
                       {receiptType === "COMBINED" ? "Consolidated Bill" : "Single Order Statement"}
                     </span>
                   </div>
                   {receiptType === "SINGLE" ? (
                     <div className="flex justify-between">
-                      <span className="text-[#f5efe2]/60 font-medium">Order Number</span>
-                      <span className="font-extrabold text-[#f5efe2]">#{order.orderNumber}</span>
+                      <span className="text-[#78716c] font-medium">Order Number</span>
+                      <span className="font-extrabold text-[#1c1917]">#{order.orderNumber}</span>
                     </div>
                   ) : (
                     <div className="flex justify-between">
-                      <span className="text-[#f5efe2]/60 font-medium">Consolidated Orders</span>
-                      <span className="font-extrabold text-[#f5efe2]">
+                      <span className="text-[#78716c] font-medium">Consolidated Orders</span>
+                      <span className="font-extrabold text-[#1c1917]">
                         {consolidatedDetails?.ordersCount || 1} Active Placements
                       </span>
                     </div>
                   )}
                   {order.table?.name && (
                     <div className="flex justify-between">
-                      <span className="text-[#f5efe2]/60 font-medium">Serving Table</span>
-                      <span className="font-extrabold text-[#f5efe2]">Table #{order.table.name}</span>
+                      <span className="text-[#78716c] font-medium">Serving Table</span>
+                      <span className="font-extrabold text-[#1c1917]">Table #{order.table.name}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-[#f5efe2]/60 font-medium">Payment Status</span>
-                    <span className="font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">
+                    <span className="text-[#78716c] font-medium">Payment Status</span>
+                    <span className="font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">
                       PAID
                     </span>
                   </div>
                   {order.payment?.method && (
                     <div className="flex justify-between">
-                      <span className="text-[#f5efe2]/60 font-medium">Payment Method</span>
-                      <span className="font-extrabold text-[#f5efe2] uppercase tracking-wide">{order.payment.method}</span>
+                      <span className="text-[#78716c] font-medium">Payment Method</span>
+                      <span className="font-extrabold text-[#1c1917] uppercase tracking-wide">{order.payment.method}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-[#f5efe2]/60 font-medium">Customer Guest</span>
-                    <span className="font-extrabold text-[#f5efe2]">
+                    <span className="text-[#78716c] font-medium">Customer Guest</span>
+                    <span className="font-extrabold text-[#1c1917]">
                       {order.customerName || "Guest Diner"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#f5efe2]/60 font-medium">Phone Contact</span>
-                    <span className="font-extrabold text-[#f5efe2]">
+                    <span className="text-[#78716c] font-medium">Phone Contact</span>
+                    <span className="font-extrabold text-[#1c1917]">
                       {order.customerPhone ? `+91 ${order.customerPhone}` : "Not Registered"}
                     </span>
                   </div>
@@ -655,50 +652,50 @@ export default function OrderStatusPage() {
 
                 {/* Items List */}
                 <div className="space-y-3">
-                  <p className="text-[9px] font-black text-[#f5efe2]/40 uppercase tracking-widest border-b border-white/[0.08] pb-2">
+                  <p className="text-[9px] font-black text-[#78716c] uppercase tracking-widest border-b border-amber-950/10 pb-2">
                     {receiptType === "COMBINED" ? "Consolidated Table Items" : "Line Items"}
                   </p>
                   <div className="space-y-2.5">
                     {receiptType === "COMBINED" && consolidatedDetails ? (
                       consolidatedDetails.items.map((item: any, idx: number) => (
-                        <div key={idx} className="bg-[#181512]/60 border border-white/[0.08] rounded-xl p-3 flex items-start justify-between gap-4">
+                        <div key={idx} className="bg-[#faf8f5] border border-amber-950/10 rounded-xl p-3 flex items-start justify-between gap-4">
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#f0a040] flex-shrink-0" />
-                              <p className="text-xs font-extrabold text-[#f5efe2] truncate">{item.menuItem?.name || "Menu Item"}</p>
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#e85a2a] flex-shrink-0" />
+                              <p className="text-xs font-extrabold text-[#1c1917] truncate">{item.menuItem?.name || "Menu Item"}</p>
                             </div>
-                            <p className="text-[10px] text-[#f5efe2]/60 mt-1 font-semibold ml-3">
+                            <p className="text-[10px] text-[#78716c] mt-1 font-semibold ml-3">
                               ₹{item.price} x {item.quantity}
                             </p>
                             {item.notes.length > 0 && (
-                              <p className="text-[9px] text-[#f0a040] font-bold mt-1.5 bg-[#f0a040]/5 px-2 py-0.5 rounded-md w-fit ml-3">
+                              <p className="text-[9px] text-[#e85a2a] font-extrabold mt-1.5 bg-[#e85a2a]/10 px-2 py-0.5 rounded-md w-fit ml-3">
                                 ✏️ {item.notes.join(", ")}
                               </p>
                             )}
                           </div>
-                          <span className="text-xs font-black text-white flex-shrink-0 font-mono-dashboard">
+                          <span className="text-xs font-black text-[#1c1917] flex-shrink-0">
                             ₹{(item.price * item.quantity).toFixed(0)}
                           </span>
                         </div>
                       ))
                     ) : (
                       order.items?.map((item, idx) => (
-                        <div key={item.id || idx} className="bg-[#181512]/60 border border-white/[0.08] rounded-xl p-3 flex items-start justify-between gap-4">
+                        <div key={item.id || idx} className="bg-[#faf8f5] border border-amber-950/10 rounded-xl p-3 flex items-start justify-between gap-4">
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#f0a040] flex-shrink-0" />
-                              <p className="text-xs font-extrabold text-[#f5efe2] truncate">{item.menuItem?.name || "Menu Item"}</p>
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#e85a2a] flex-shrink-0" />
+                              <p className="text-xs font-extrabold text-[#1c1917] truncate">{item.menuItem?.name || "Menu Item"}</p>
                             </div>
-                            <p className="text-[10px] text-[#f5efe2]/60 mt-1 font-semibold ml-3">
+                            <p className="text-[10px] text-[#78716c] mt-1 font-semibold ml-3">
                               ₹{item.price} x {item.quantity}
                             </p>
                             {item.note && (
-                              <p className="text-[9px] text-[#f0a040] font-bold mt-1.5 bg-[#f0a040]/5 px-2 py-0.5 rounded-md w-fit ml-3">
+                              <p className="text-[9px] text-[#e85a2a] font-extrabold mt-1.5 bg-[#e85a2a]/10 px-2 py-0.5 rounded-md w-fit ml-3">
                                 ✏️ {item.note}
                               </p>
                             )}
                           </div>
-                          <span className="text-xs font-black text-white flex-shrink-0 font-mono-dashboard">
+                          <span className="text-xs font-black text-[#1c1917] flex-shrink-0">
                             ₹{(item.price * item.quantity).toFixed(0)}
                           </span>
                         </div>
@@ -709,34 +706,34 @@ export default function OrderStatusPage() {
 
                 {/* Dashed paper tear simulation */}
                 <div className="relative h-2 w-full flex items-center justify-between overflow-hidden">
-                  <div className="w-full border-b-[2px] border-dashed border-white/[0.08]" />
+                  <div className="w-full border-b-[2px] border-dashed border-amber-950/10" />
                 </div>
 
                 {/* Bill Breakdown */}
-                <div className="bg-[#181512]/80 border border-white/[0.08] rounded-2xl p-4 space-y-2.5 text-xs">
-                  <div className="flex justify-between text-[#f5efe2]/60 font-semibold">
+                <div className="bg-[#faf8f5] border border-amber-950/10 rounded-2xl p-4 space-y-2.5 text-xs">
+                  <div className="flex justify-between text-[#78716c] font-semibold">
                     <span>Subtotal</span>
-                    <span className="font-extrabold text-[#f5efe2] font-mono-dashboard">
+                    <span className="font-extrabold text-[#1c1917]">
                       ₹{receiptType === "COMBINED" && consolidatedDetails 
                         ? consolidatedDetails.subtotal.toFixed(0)
                         : ((order.totalAmount ?? 0) - (order.taxAmount ?? 0)).toFixed(0)}
                     </span>
                   </div>
                   {((receiptType === "COMBINED" && consolidatedDetails ? consolidatedDetails.taxAmount : order.taxAmount) ?? 0) > 0 ? (
-                    <div className="flex justify-between text-[#f5efe2]/60 font-semibold">
+                    <div className="flex justify-between text-[#78716c] font-semibold">
                       <span>GST (Tax)</span>
-                      <span className="font-extrabold text-[#f5efe2] font-mono-dashboard">
+                      <span className="font-extrabold text-[#1c1917]">
                         ₹{(receiptType === "COMBINED" && consolidatedDetails 
                           ? consolidatedDetails.taxAmount
                           : (order.taxAmount ?? 0)).toFixed(0)}
                       </span>
                     </div>
                   ) : null}
-                  <div className="border-t border-dashed border-white/[0.08] pt-2.5 flex justify-between font-black text-sm text-white">
+                  <div className="border-t border-dashed border-amber-950/10 pt-2.5 flex justify-between font-black text-sm text-[#1c1917]">
                     <span className="tracking-widest uppercase text-xs">
                       {receiptType === "COMBINED" ? "Total Table Bill" : "Grand Total"}
                     </span>
-                    <span className="text-base font-mono-dashboard" style={{ color: G }}>
+                    <span className="text-base text-[#e85a2a]">
                       ₹{(receiptType === "COMBINED" && consolidatedDetails 
                         ? consolidatedDetails.totalAmount
                         : (order.totalAmount ?? 0)).toFixed(0)}
@@ -746,16 +743,16 @@ export default function OrderStatusPage() {
               </div>
 
               {/* Action buttons (Print / PDF and Close) */}
-              <div className="bg-[#13110e] border-t border-white/[0.08] p-5 space-y-2.5 flex-shrink-0 print:hidden">
+              <div className="bg-white border-t border-amber-950/10 p-5 space-y-2.5 flex-shrink-0 print:hidden">
                 <button
                   onClick={() => window.print()}
-                  className="w-full py-3.5 rounded-2xl bg-[#f5efe2] text-[#0b0a08] font-black text-xs shadow-md active:scale-95 hover:bg-white transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-2xl bg-[#e85a2a] text-white font-extrabold text-xs shadow-md active:scale-95 hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   🖨️ Print Receipt / Save PDF
                 </button>
                 <button
                   onClick={() => setShowReceipt(false)}
-                  className="w-full py-3.5 rounded-2xl border border-white/[0.08] bg-white/5 text-xs font-bold text-[#f5efe2] hover:bg-white/10 transition-all"
+                  className="w-full py-3.5 rounded-2xl border border-amber-950/10 bg-[#faf8f5] text-xs font-extrabold text-[#1c1917] hover:bg-amber-900/5 transition-all cursor-pointer"
                 >
                   Close Receipt
                 </button>
