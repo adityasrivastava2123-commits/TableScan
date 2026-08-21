@@ -1,6 +1,6 @@
 # Serveaura
 
-QR-based restaurant ordering platform for seamless customer experiences.
+ServeAura — AI-Powered Agentic Restaurant Commerce Platform
 
 ## Features
 
