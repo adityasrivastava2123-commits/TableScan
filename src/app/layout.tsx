@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 import { Sora } from "next/font/google";
-import { ReactQueryProvider } from "@/lib/react-query-provider";
+import { AppProviders } from "./providers";
 import "./globals.css";
 
 const sora = Sora({
@@ -22,18 +21,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      signInFallbackRedirectUrl="/dashboard"
-      signUpFallbackRedirectUrl="/onboarding"
-    >
-      <html lang="en" className={sora.variable} suppressHydrationWarning>
-        <body className="min-h-screen antialiased font-sans">
-          <ReactQueryProvider>
-            {children}
-          </ReactQueryProvider>
-          <Toaster position="top-right" />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className={sora.variable} suppressHydrationWarning>
+      <body className="min-h-screen antialiased font-sans">
+        <AppProviders
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? ""}
+        >
+          {children}
+        </AppProviders>
+        <Toaster position="top-right" />
+      </body>
+    </html>
   );
 }

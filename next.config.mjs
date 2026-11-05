@@ -31,6 +31,9 @@ const nextConfig = {
   // Experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    serverActions: {
+      allowedOrigins: ['localhost:3000', '*.v0.build'],
+    },
   },
 };
 
